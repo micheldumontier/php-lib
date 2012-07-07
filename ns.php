@@ -138,6 +138,7 @@ class CNamespace
 	'so'=> array('name' => 'Sequence Ontology'),
 	'superfamily'=> array('name' => ''),
 	'swissprot'=> array('name' => 'SwissProt'),
+	'symbol' => array('name' => 'Gene Symbols'),
 	'taxon'=> array('name' => '','synonyms'=>array('taxon','ncbitaxon'),'part-of' => 'irefindex'),
 	'tcdb'=> array('name' => ''),
 	'tigr'=> array('name' => 'TIGR'),
