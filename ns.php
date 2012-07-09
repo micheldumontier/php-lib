@@ -68,6 +68,7 @@ class CNamespace
 	'ddbj'      => array('name' => 'DDBJ sequence database'),
 	'dpd'		=> array('name' => 'Drugs Product Database'),
 	'drugbank'  => array('name' => 'DrugBank'),
+	'drugbank_target'  => array('name' => 'DrugBank targets'),
 	'ec'        => array('name' => 'Enzyme Classiciation'),
 	'embl'      => array('name' => 'EMBL sequence database'),
 	'ensembl'   => array('name' => 'EnsEMBL genomic database'),
