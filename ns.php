@@ -88,6 +88,8 @@ class CNamespace
 	'gtp'		=> array('name' => 'Guide to Pharmacology'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
+	'icd9'      => array('name' => 'International Classification of Disease v9'),
+	'icd10'     => array('name' => 'International Classification of Disease v10'),
 	'innatedb'  => array('name' => ''),
 	'intact'    => array('name' => 'Intact Interaction Database'),
 	'ipi'       => array('name' => 'International Protein Index'),
@@ -104,6 +106,7 @@ class CNamespace
 	'matrixdb'  => array('name' => ''),
 	'mesh' => array('name' => ''),
 	'metacyc' => array('name' => ''),
+	'mgi' => array('name'=>'Mouse Genome Informatics'),
 	'mi' => array('name' => ''),
 	'mint' => array('name' => ''),
 	'mips' => array('name' => ''),
@@ -115,6 +118,8 @@ class CNamespace
 	'obo' => array('name' => ''),
 	'omim' => array('name' => ''),
 	'ophid' => array('name' => ''),
+	'orphanet'=>array('name'=>''),
+	'ordr'=> array('name'=>'Office of Rare Disease Research'),
 	'patternscan' => array('name' => ''),
 	'pato' => array('name' => ''),
 	'panther' => array('name' => ''),
@@ -146,10 +151,14 @@ class CNamespace
 	'tpg'=> array('name' => ''),
 	'trembl'=> array('name' => 'TrEMBL'),
 	'umls'=> array('name' => 'UMLS'),
+	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
 	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
-	'uo'=> array('name' => 'Unit Ontology'));
+	'uo'=> array('name' => 'Unit Ontology'),
+	'wormbase' => array('name'=>'WormBase'),
+	'zfin'=>array('name'=>'Zebrafish')
+	);
 	
 	function __construct()
 	{
