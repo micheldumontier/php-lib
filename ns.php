@@ -88,6 +88,7 @@ class CNamespace
 	'gtp'		=> array('name' => 'Guide to Pharmacology'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
+	'hp'        => array('name' => 'Human Phenotype Ontology (HPO)'),
 	'icd9'      => array('name' => 'International Classification of Disease v9'),
 	'icd10'     => array('name' => 'International Classification of Disease v10'),
 	'innatedb'  => array('name' => ''),
