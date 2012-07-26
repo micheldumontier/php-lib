@@ -46,8 +46,10 @@ class CNamespace
 
   private $ext_ns = array(
   //'id' => array('name' => '','description' => '','uri' => '', 'synonyms' => array(), 'type' => 'data','classification','part-of' => 'ns'),
-	'aracyc'    => array('name' => 'Aradopsis CYC genome database');
-    'bio2rdf'   => array('name' => 'Bio2RDF'),
+	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
+    'bio2rdf'   => array('name' => 'Bio2RDF', 'url'=>'http://bio2rdf.org'),
+	'biopaxl2'  => array('name' => 'BioPAX level 2','url'=>'http://www.biopax.org'),
+	'biopaxl3'  => array('name' => 'BioPAX level 3','url'=>'http://www.biopax.org'),
 	'brenda'    => array('name' => 'BRENDA Enzyme database', 'url'=>'http://www.brenda-enzymes.info/'),
 	'ahfs'		=> array('name' => 'Pharmacologic-Therapeutic Classification System', 'url'=> 'http://www.ahfsdruginformation.com/class/index.aspx', 'type' => 'classification'),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
@@ -55,13 +57,15 @@ class CNamespace
 	'atc'       => array('name' => 'Anatomical Therapeutic Chemical Classification', 'url'=>'http://www.whocc.no/atc_ddd_index/','type' => 'classification'),
 	'bind'      => array('name' => 'Biomolecular Interaction Database'),
 	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
-	'biogrid'   => array('name' => 'BioGrid Interaction Database','url'=>'http://thebiogrid.org/'),
+	'biogrid'   => array('name' => 'BioGrid Interaction Database','url'=>'http://thebiogrid.org/', 'synonyms'=> array('grid')),
+	'cabri'     => array('name' => 'Common Access to Biotechnological Resources and Information', 'description' => 'an online service where users can search a number of European Biological Resource Centre catalogues', 'url'=> 'http://www.cabri.org/'),
 	'candida'   => array('name' => 'Candida Genome Database','url'=>'http://www.candidagenome.org/'),
 	'cas'       => array('name' => 'Chemical Abstracts Service','url'=>'http://www.cas.org/','synonyms'=>array('CHEMICALABSTRACTS')),
 	'chebi'     => array('name' => 'Chemical Entities of Biological Interest','part-of'=>'ebi','url'=>'http://www.ebi.ac.uk/chebi/'),
 	'chemspider' => array('name' => 'ChemSpider','url'=>'http://www.chemspider.com/'),
 	'coil'      => array('name' => 'Database of parallel two-stranded coiled-coils','url'=>'http://www.ch.embnet.org/software/coils/COILS_doc.html'),
 	'corum'     => array('name' => 'Comprehensive Resource of Mammalian protein Complexes', 'url'=>'http://mips.helmholtz-muenchen.de/genre/proj/corum/'),
+	'cpath'     => array('name' => 'CPATH - pathwaycommons resources'),
 	'ctd'       => array('name' => 'Comparative Toxicogenomics Database','url'=>'http://ctdbase.org/'),
 	'cygd'      => array('name' => 'MIPS Saccharomyces cerevisiae genome database','url'=>'http://mips.helmholtz-muenchen.de/genre/proj/yeast/'),
 	'dbsnp'     => array('name' => 'dbSNP short genetic variation database','part-of'=>'ncbi','url'=>'http://www.ncbi.nlm.nih.gov/projects/SNP/'),
@@ -74,6 +78,8 @@ class CNamespace
 	'embl'      => array('name' => 'EMBL sequence database'),
 	'ensembl'   => array('name' => 'EnsEMBL genomic database'),
 	'eco'       => array('name' => 'Evidence Code Ontology','type'=>'classification'),
+	'ecocyc'    => array('name' => 'E.coli CYC database'),
+	'ensembl'   => array('name' => 'ENSEMBL'),
 	'euroscarf' => array('name' => 'European Saccharomyces Cerevisiae Archive for Functional Analysis', 'url' => 'http://web.uni-frankfurt.de/fb15/mikro/euroscarf/'),
 	'flybase'   => array('name' => 'FlyBase','url'=>'http://flybase.org/'),
 	'fprintscan' => array('name' => ''),
@@ -91,10 +97,12 @@ class CNamespace
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
 	'hp'        => array('name' => 'Human Phenotype Ontology (HPO)'),
+	'humancyc'  => array('name' => 'Human CYC database'),
 	'icd9'      => array('name' => 'International Classification of Disease v9'),
 	'icd10'     => array('name' => 'International Classification of Disease v10'),
 	'innatedb'  => array('name' => ''),
 	'intact'    => array('name' => 'Intact Interaction Database'),
+	'interpro'  => array('name' => 'InterPro', 'url'=>'http://www.ebi.ac.uk/interpro/'),
 	'ipi'       => array('name' => 'International Protein Index'),
 	'irefindex'         => array('name' => 'iRefIndex'),
 	'irefindex_rogid'   => array('name' => 'iRefIndex','part-of' => 'irefindex'),
@@ -106,6 +114,7 @@ class CNamespace
 	'irefindex_icrigid' => array('name' => 'iRefIndex','part-of' => 'irefindex'),
 	'iuphar'		=> array('name' => 'iuphar'),
 	'iupharligand' => array('name' => '','part-of'=>'iuphar'),
+	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
 	'matrixdb'  => array('name' => ''),
 	'mesh' => array('name' => 'Medical Subject Headings'),
 	'metacyc' => array('name' => 'Encyclopedia of Metabolic Pathways'),
@@ -116,7 +125,9 @@ class CNamespace
 	'mpact' => array('name' => ''),
 	'mpi' => array('name' => ''),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
+	'ncit' => array('name' => 'National Cancer Institute Thesaurus'),
 	'ndc' => array('name' => 'National Drug Code Directory'),
+	'newt' => array('name' => 'UniProt taxonomy', 'url'=>'http://www.uniprot.org/help/taxonomy'),
 	'refseq' => array('name' => '','part-of' => 'ncbi'),
 	'obo' => array('name' => 'The Open Biological and Biomedical Ontologies'),
 	'omim' => array('name' => 'Online Mendelian Inheritance in Man'),
@@ -126,20 +137,23 @@ class CNamespace
 	'patternscan' => array('name' => ''),
 	'pato' => array('name' => 'Phenotypic Quality Ontology'),
 	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System'),
+	'pdb'=> array('name' => 'Protein Databank'),
 	'pfam' => array('name' => 'Protein Families'),
 	'pharmgkb' => array('name' => 'PharmGKB knowledge base'),
 	'pir'=> array('name' => 'Protein Information Resource'),
 	'prf'=> array('name' => 'Protein Research Foundation'),
 	'prodom'=> array('name' => 'Protein Domain Families'),
 	'profilescan'=> array('name' => ''),
-	'pdb'=> array('name' => 'Protein Databank'),
 	'pubmed'=> array('name' => 'PubMed'),
 	'pmc'=>array('name'=>'PubMed Central'),
+	'psi-mi'=>array('name'=>'Protein Standards Initiative - Molecular Interactions'),
+	'psi-mod'=>array('name'=>'Protein Standards Initiative - Modifications'),
 	'pubchemcompound'=> array('name' => '', 'synonyms' => array('PubChem Compound')),
 	'pubchemsubstance'=> array('name' => '', 'synonyms' => array('PubChem Substance')),
-	'reactome'=> array('name' => ''),
+	'reactome'=> array('name' => 'REACTOME'),
 	'registry'=> array('name' => 'Bio2RDF Namespace Registry'),
 	'registry_dataset'=> array('name' => 'Bio2RDF Dataset Registry'),
+	'resid' => array('name' => 'RESID database of protein modifications','url'=>'http://www.ebi.ac.uk/RESID/'),
 	'seg'=> array('name' => ''),
 	'sgd'=> array('name' => 'Saccharomyces Genome Database'),
 	'smart'=> array('name' => 'SMART'),
@@ -154,6 +168,7 @@ class CNamespace
 	'tpg'=> array('name' => ''),
 	'trembl'=> array('name' => 'TrEMBL'),
 	'umls'=> array('name' => 'UMLS'),
+	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/'),
 	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
 	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
@@ -187,9 +202,9 @@ class CNamespace
 		return FALSE;
 	}
 	
-	function ParsePrefixedName($prefixed_name,&$ns,&$id)
+	function ParsePrefixedName($prefixed_name,&$ns,&$id, $delimiter = ':')
 	{
-		$a = explode(":",$prefixed_name,2);
+		$a = explode($delimiter,$prefixed_name,2);
 		if(count($a) == 1) {
 			// there is no prefix
 			$ns = null;
