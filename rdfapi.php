@@ -60,7 +60,7 @@ class RDFFactory extends Application
 		return "<$s_uri> <$p_uri> <$o_uri> ".(isset($g_uri)?"<$g_uri>":"")." .".PHP_EOL;
 	}
 
-	function QuadLiteral($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
+	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
 		if(isset($lang) && isset($lt_uri)) {
 			trigger_error("Literal can only hold a language tag *or* datatype", E_USER_ERROR);
@@ -125,6 +125,12 @@ class RDFFactory extends Application
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
+	
+	function SafeLiteral($s)
+	{
+		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
+	}
+
 	
 }
 
