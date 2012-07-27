@@ -28,6 +28,8 @@ SOFTWARE.
  * @description 
 */
 require('utils.php');
+require('fileapi.php');
+
 function error_handler($level, $message, $file, $line, $context) {
 	//Handle user errors, warnings, and notices ourself	
 	if(_DEBUG_) {
@@ -177,5 +179,15 @@ class Application
 		return TRUE;
 	}
 	
+	public function CreateDirectory($dir)
+	{
+		if(!is_dir($dir)) {
+			if(@mkdir($dir,0777,true) === FALSE) {
+				trigger_error("Unable to create $dir");
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
 	
 }
