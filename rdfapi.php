@@ -100,7 +100,7 @@ class RDFFactory extends Application
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->ns->getFQURI($g);
 		
-		return $this->QuadLiteral($s_uri,$p_uri,$l,$lang,$lt_uri,$g_uri);		
+		return $this->QuadL($s_uri,$p_uri,$l,$lang,$lt_uri,$g_uri);		
 	}
 	
 	function QQuadText($s,$p,$l,$lang=null,$g=null)
