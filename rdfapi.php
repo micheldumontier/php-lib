@@ -37,6 +37,7 @@ class RDFFactory extends Application
 	private $types = null;
 	private $read_file=null;
 	private $write_file=null;
+	private $release_file_uri = null;
 	
 	function __construct()
 	{
@@ -83,7 +84,7 @@ class RDFFactory extends Application
 		$this->GetWriteFile()->Write($this->buf);
 		$this->DeleteRDF();
 		return TRUE;
-	}
+	}	
 	
 	function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
@@ -160,7 +161,30 @@ class RDFFactory extends Application
 	{
 		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
 	}
-
+	
+	function SetReleaseFileURI($name)
+	{
+		$date = date("d-m-y");
+		$this->release_file_uri = 'http://bio2rdf.org/release:'.$name."-bio2rdf-release-".$date.".ttl";
+	}
+	function GetReleaseFileURI()
+	{
+		return $this->release_file_uri;
+	}
+	
+	function GenerateReleaseFile($file,$dataset,$creator,$comment)
+	{
+		$release_file_uri = 'unnamed-bio2rdf-release.ttl';
+		if(isset($this->release_file_uri)) $release_file_uri = $this->release_file_uri;
+		
+		$date = date("D M j G:i:s T Y");
+		$this->AddRDF($this->QQuad($release_file_uri,"rdf:type","sio:Document"));
+		$this->AddRDF($this->QQuadL($release_file_uri,"rdfs:label", "$dataset by Bio2RDF"));
+		$this->AddRDF($this->QQuadL($release_file_uri,"dc:creator", $creator));
+		$this->AddRDF($this->QQuadL($release_file_uri,"dc:comment", $comment));
+		$this->AddRDF($this->QQuadO_URL($release_file_uri,"dc:provider", "http://bio2rdf.org"));
+		$this->AddRDF($this->QQuadL($release_file_uri,"dc:date", $date));	
+	}
 	
 }
 
