@@ -3,7 +3,7 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $isql = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql = "isql";
+//$isql = "/virtuoso-opensource/bin/isql";
 
 $options = array(
  "file" => "filename",
@@ -42,10 +42,19 @@ foreach($argv AS $i=> $arg) {
  else {echo "unknown key $b[0]";exit;}
 }
 
-if($options['instance']) {
+if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
- $fp = fopen("instances.tab","r");
+ $instance_file = "instances.tab";
+ if(!file_exists($file)) {
+   trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
+   exit;
+ }
+ $fp = fopen($instance_file,"r");
+ if(!isset($fp)) {
+	trigger_error("Unable to open $instance_file");
+	exit;
+ }
  while($l=fgets($fp)) {
   $a=explode("\t",trim($l));
   if(isset($a[2])) {
@@ -74,15 +83,6 @@ if($options['setns'] == 'true') {
   exit;
 }
 
-
-// do delete graph option
-if($options['deletegraph'] == "true") {
- $cmd = "sparql clear graph <".$options['graph'].">";
- echo "Deleting ".$options['graph'].PHP_EOL;
- echo $out = shell_exec($cmd_pre.$cmd.$cmd_post);
- if($options['deleteonly'] == "true") exit;
-}
-
 // check for valid file
 if($options['dir'] == 'dirname') {
  // must be a file
@@ -101,28 +101,39 @@ if($options['dir'] == 'dirname') {
  $files = getFileR($options['dir']);
 }
 
+$deletegraphs = null; // keep a list of deleted graphs
 
 foreach($files AS $file) {
- if($options['startat'] != '') {
-  if($options['startat'] == $file) { $options['startat'] = ''; }
-  else continue;
- }
+	if($options['startat'] != '') {
+		if($options['startat'] == $file) { $options['startat'] = ''; }
+		else continue;
+	}
 
- echo 'Processing '.$file."\n";
+	echo 'Processing '.$file."\n";
 
- // if the graph has not been set, then create a graph name from the file, minus path and extension
- $graph = $options['graph'];
- if($graph == "graphname") {
-  $pos = strrpos($file,"/");
-  if($pos !== FALSE) {
-   $graph = substr($file,$pos+1);
-  }
-  $pos = strpos($graph,".");
-  if($pos !== FALSE) {
-   $graph = substr($graph,0,$pos);
-  }
-  $graph = "http://bio2rdf.org/graph/".$graph;
- }
+	// if the graph has not been set, then create a graph name from the file, minus path and extension
+	$graph = $options['graph'];
+	if($graph == "graphname") {
+		$pos = strrpos($file,"/");
+		if($pos !== FALSE) {
+			$graph = substr($file,$pos+1);
+		}
+		$pos = strpos($graph,".");
+		if($pos !== FALSE) {
+			$graph = substr($graph,0,$pos);
+		}
+		$graph = "http://bio2rdf.org/graph/".$graph;
+	}
+ 
+	// do delete graph option, but only once 
+	if($options['deletegraph'] == "true" && !isset($deletedgraphs[$graph])) {
+		$deletedgraphs[$graph] = true;
+		$cmd = "sparql clear graph <$graph>";
+		echo "Deleting $graph".PHP_EOL;
+		echo $out = shell_exec($cmd_pre.$cmd.$cmd_post);
+		if($options['deleteonly'] == "true") exit;
+	}
+
 
  $path = '';
  $pos = strrpos($file,"/");
@@ -202,12 +213,11 @@ if($options['format'] == 'n3') {
  $program = 'DB.DBA.RDF_LOAD_RDFXML_MT';
 }
 
- 
 
- $t1 = $path."t1.txt"; // the source
- $t2 = $path."t2.txt"; // the destination
- if(file_exists($t1)) unlink($t1);
- if(file_exists($t2)) unlink($t2);
+$t1 = $path."t1.txt"; // the source
+$t2 = $path."t2.txt"; // the destination
+if(file_exists($t1)) unlink($t1);
+if(file_exists($t2)) unlink($t2);
 
  do { 
   echo "Loading $file into $graph ...".PHP_EOL; 
