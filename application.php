@@ -30,7 +30,7 @@ SOFTWARE.
 require('utils.php');
 function error_handler($level, $message, $file, $line, $context) {
 	//Handle user errors, warnings, and notices ourself	
-	if(_DEBUG_) {
+	// if(_DEBUG_) {
 		if($level === E_USER_ERROR) {
 			debug_print_backtrace();
 			return(true); //And prevent the PHP error handler from continuing
@@ -41,7 +41,7 @@ function error_handler($level, $message, $file, $line, $context) {
 			echo $message.PHP_EOL;
 			return(true);
 		}
-	}
+	//}
 	return(false); //Otherwise, use PHP's error handler
 }
 	
@@ -113,16 +113,17 @@ class Application
 		foreach($this->parameters AS $key => $a) {
 			if(isset($myargs[$key])) {
 				// use the supplied value
-				
-				// first check that it is a valid choice
+				$user_entries = explode(",",$myargs[$key]);
+				// check that each is a valid choice
 				if($this->parameters[$key]['list']) {
 					$m = explode('|',$this->parameters[$key]['list']);
-					if(!in_array($myargs[$key],$m)) {
-						trigger_error("input for $key parameter does not match any of the listed options", E_USER_WARNING);
-						return FALSE;
+					foreach($user_entries AS $user_entry) {
+						if(!in_array($user_entry,$m)) {
+							trigger_error("$user_entry for $key parameter does not match any of the listed options: ".$this->parameters[$key]['list'], E_USER_WARNING);
+							return FALSE;
+						}
 					}
 				}
-				
 				$this->parameters[$key]['value'] = $myargs[$key];				
 			} else if(!isset($myargs[$key]) && $this->parameters[$key]['mandatory']) {
 				trigger_error("$key is a mandatory argument!", E_USER_WARNING);
@@ -176,6 +177,5 @@ class Application
 		}
 		return TRUE;
 	}
-	
-	
+
 }
