@@ -77,6 +77,42 @@ class Utils
 		return TRUE;
 	} 
 	
+	public static function FTPDownload($host,$files,$ldir, $user='anonymous',$pass='myemail@email.com',$passive_mode = true)
+	{
+		echo "connecting to $host ...";
+		$ftp = ftp_connect($host);
+		if(!$ftp) {
+			trigger_error("Unable to connect to $host");
+			return FALSE;
+		}
+		ftp_pasv ($ftp, $passive_mode) ;				
+		$login = ftp_login($ftp, $user, $pass);
+		if ((!ftp) || (!$login)) { 
+			trigger_error("Unable to login to $host with user:$user and pass:$pass");
+			return FALSE;
+		} else {
+			echo "Connected ...";
+		}
+				
+		// download
+		foreach($files AS $filepath) {
+			if(($pos = strrpos($filepath,'/')) !== FALSE) {
+				$rdir = '';
+				$file = $filepath;
+			} else {
+				$rdir = substr($filepath,0,$pos);
+				$file = substr($filepath,$pos+1);
+			}
+			echo "Downloading $file ...";
+			if(ftp_get($ftp, $ldir.$file, $file, FTP_BINARY) === FALSE) {
+				trigger_error("Error in downloading $file");
+				continue;
+			}
+		}
+		if(isset($ftp)) ftp_close($ftp);
+		echo "success!".PHP_EOL;
+	}
+	
 	public static function BreakPath($path,&$dir,&$file)
 	{
 		$rpos = strrpos($path,'/');
