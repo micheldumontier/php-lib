@@ -62,12 +62,24 @@ class FileFactory
 		return TRUE;
 	}
 	
-	function Read($size)
+	function SetFilePointer($fp)
+	{
+		$this->fp = $fp;
+	}
+	function GetFilePointer()
+	{
+		return $this->fp;
+	}
+	
+	function Read($size = null)
 	{
 		if(!isset($this->fp)) {
 			$this->Open("r");
 		}
-		return fgets($this->fp,$size);
+		if(isset($size)) {
+			return fgets($this->fp,$size);
+		}
+		return fgets($this->fp);
 	}
 	function Write($buf)
 	{
@@ -78,7 +90,12 @@ class FileFactory
 	}
 	function Close()
 	{
-		return fclose($this->fp);
+		$ret = TRUE;
+		if(isset($this->fp)) {
+			$ret = fclose($this->fp);
+			$this->fp = null;
+		}
+		return $ret;
 	}
 	
 }
