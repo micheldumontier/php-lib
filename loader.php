@@ -46,7 +46,7 @@ if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
  $instance_file = "instances.tab";
- if(!file_exists($file)) {
+ if(!file_exists($instance_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
  }
