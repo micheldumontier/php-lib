@@ -1,13 +1,12 @@
 <?php
-// script to facilitate creating, starting, stoping and refreshing virtuoso instances
-$base_dir    = "/base/dir";
+$base_dir    = "/base/path";
 $instance_dir  = $base_dir."/virtuoso";
 $instance_file = $base_dir."/instances.tab";
 $apache_config_file   = $base_dir."/virtuoso-apache.conf";
 $virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.5";
 
 if($argc <= 2 || (isset($argv[2]) && !in_array($argv[2],array("create","refresh","start","stop","apacheconfig")))) {
- echo "$argv[0] [all|ns] [create|start|stop|config|refresh]".PHP_EOL;
+ echo "$argv[0] [all|ns] [create|start|stop|refresh|apacheconfig]".PHP_EOL;
  exit;
 }
 $ns = $argv[1];
@@ -90,7 +89,7 @@ function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 	),	
 	"Parameters" => array(
 		"ServerPort" => $instance['isql_port'],
-		"DirsAllowed" => "., /usr/local/, /opt, /home, /media ",
+		"DirsAllowed" => "., /usr/local/, /opt, /home, /media, /data ",
 		"NumberOfBuffers" => "1250000",
 		"MaxDirtyBuffers" => "1000000"
 	),
@@ -100,8 +99,7 @@ function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 	"SPARQL" => array(
 		"MaxQueryCostEstimationTime" => "20000",
 		"MaxQueryExecutionTime" => "10000",
-		"DefaultQuery" => "SELECT distinct ?graph ?type WHERE {graph ?graph {?x a ?type}} LIMIT 100"
-	)
+		"DefaultQuery" => "SELECT distinct ?graph ?type WHERE {graph ?graph {?x a ?type} FILTER (?graph != <b3sifp> && ?graph != <http://www.openlinksw.com/schemas/virtrdf#> && ?graph != <http://www.w3.org/2002/07/owl#> && ?graph != <virtrdf-label>)} ORDER BY ASC(?graph) ASC(?type) LIMIT 100")
   
  ));
  WriteVirtuosoINI($ini,"$this_instance_dir/virtuoso.ini");
