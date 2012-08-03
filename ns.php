@@ -109,6 +109,7 @@ class CNamespace
 	'ipi'       => array('name' => 'International Protein Index'),
 	'irefindex'         => array('name' => 'iRefIndex'),
 	'irefindex_rogid'   => array('name' => 'iRefIndex','part-of' => 'irefindex'),
+	'irefindex_irogid'  => array('name' => 'iRefIndex','part-of' => 'irefindex'),
 	'irefindex_rigid'   => array('name' => 'iRefIndex','part-of' => 'irefindex'),
 	'irefindex_irigid'  => array('name' => 'iRefIndex','part-of' => 'irefindex'),
 	'irefindex_crigid'  => array('name' => 'iRefIndex','part-of' => 'irefindex'),
