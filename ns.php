@@ -177,6 +177,7 @@ class CNamespace
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
 	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
+	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
 	'uo'=> array('name' => 'Unit Ontology'),
 	'wormbase' => array('name'=>'WormBase'),
 	'zfin'=>array('name'=>'Zebrafish')
