@@ -180,6 +180,7 @@ class CNamespace
 	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
 	'unigene'=> array('name' => 'UniGene', 'url' => 'http://www.ncbi.nlm.nih.gov/unigene/'),
 	'uo'=> array('name' => 'Unit Ontology'),
+	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
 	'wormbase' => array('name'=>'WormBase'),
 	'zfin'=>array('name'=>'Zebrafish')
 	);
