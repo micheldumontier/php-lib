@@ -70,6 +70,7 @@ class CNamespace
 	'cpath'     => array('name' => 'CPATH - pathwaycommons resources'),
 	'ctd'       => array('name' => 'Comparative Toxicogenomics Database','url'=>'http://ctdbase.org/'),
 	'cygd'      => array('name' => 'MIPS Saccharomyces cerevisiae genome database','url'=>'http://mips.helmholtz-muenchen.de/genre/proj/yeast/'),
+	'dailymed'  => array('name' => 'DailyMed Current Medication Information', 'url' => 'http://dailymed.nlm.nih.gov/'),
 	'dbsnp'     => array('name' => 'dbSNP short genetic variation database','part-of'=>'ncbi','url'=>'http://www.ncbi.nlm.nih.gov/projects/SNP/'),
 	'dip'       => array('name' => 'Database of Interacting Proteins','url'=>'http://dip.doe-mbi.ucla.edu/dip/Main.cgi'),
 	'ddbj'      => array('name' => 'DDBJ sequence database'),
@@ -184,7 +185,10 @@ class CNamespace
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
 	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
+	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
+	'unigene'=> array('name' => 'UniGene', 'url' => 'http://www.ncbi.nlm.nih.gov/unigene/'),
 	'uo'=> array('name' => 'Unit Ontology'),
+	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
 	'wormbase' => array('name'=>'WormBase'),
 	'zfin'=>array('name'=>'Zebrafish')
 	);
