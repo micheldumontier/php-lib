@@ -30,8 +30,9 @@ SOFTWARE.
 
 class CNamespace
 {
-  const bio2rdf_uri = "http://bio2rdf.org/";
+  const base_uri = "http://bio2rdf.org/";
   private $all_ns = '';
+  private $ns_map = null;
   
   private $base_ns = array(
 	'xsd'  => array('name'=>'XML Schema', 'uri' => 'http://www.w3.org/2001/XMLSchema#'),
@@ -104,6 +105,7 @@ class CNamespace
 	'humancyc'  => array('name' => 'Human CYC database'),
 	'icd9'      => array('name' => 'International Classification of Disease v9'),
 	'icd10'     => array('name' => 'International Classification of Disease v10'),
+	
 	'innatedb'  => array('name' => ''),
 	'intact'    => array('name' => 'Intact Interaction Database'),
 	'interpro'  => array('name' => 'InterPro', 'url'=>'http://www.ebi.ac.uk/interpro/'),
@@ -133,6 +135,7 @@ class CNamespace
 	'mpi' => array('name' => ''),
 	'mutdb' => array('name'=> 'MutDB contains annotations on human variation','url'=>'http://mutdb.org/'),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
+	'ncbo' => array('name' => 'National Center for Biomedical Ontology','url'=>'http://www.bioontology.org/'),
 	'ncit' => array('name' => 'National Cancer Institute Thesaurus'),
 	'ndc' => array('name' => 'National Drug Code Directory'),
 	'newt' => array('name' => 'UniProt taxonomy', 'url'=>'http://www.uniprot.org/help/taxonomy'),
@@ -171,7 +174,7 @@ class CNamespace
 	'superfamily'=> array('name' => ''),
 	'swissprot'=> array('name' => 'SwissProt', 'part-of' => 'uniprot'),
 	'symbol' => array('name' => 'Gene Symbols'),
-	'taxon'=> array('name' => 'NCBI Taxonomy','synonyms'=>array('taxon','ncbitaxon'),'part-of' => 'irefindex'),
+	'taxon'=> array('name' => 'NCBI Taxonomy','synonyms'=>array('taxid','ncbitaxon'),'part-of' => 'irefindex'),
 	'tcdb'=> array('name' => 'Transporter Classification Database'),
 	'tigr'=> array('name' => 'TIGR'),
 	'tpg'=> array('name' => ''),
@@ -182,29 +185,75 @@ class CNamespace
 	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/'),
 	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
-	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
+	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot', 'synonyms'=>'uniprotkb'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
 	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
 	'unigene'=> array('name' => 'UniGene', 'url' => 'http://www.ncbi.nlm.nih.gov/unigene/'),
 	'uo'=> array('name' => 'Unit Ontology'),
 	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
 	'wormbase' => array('name'=>'WormBase'),
-	'zfin'=>array('name'=>'Zebrafish')
+	'zfin'=>array('name'=>'Zebrafish'),
+	'id-validation-regexp' => array('name' => 'Regular Expression for identifier syntax'),
+	'search-url' => array('name' => 'Pattern for placing an identifier into a URI'),
+	'fbdv' => array('name'=>'Drosophila Development Ontology'),
+	'fbdv_root' => array('name'=>'Drosophila Development Root Ontology'),
+	'span' => array('name'=>'Basic Formal Ontology SPAN'),
+	'snap' => array('name'=>'Basic Formal Ontology SNAP'),
+	'mod' => array('name'=>'Protein modification'),
+	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
+	'chemidplus' => array('name'=>'chemidplus identifier for chemical compounds'),
+	'gmelin' => array('name'=>'German handbook/encyclopedia of inorganic compounds initiated by Leopold Gmelin'),
+	'nistchemistrywebbook' => array('name'=>'nist chemistry webbook'),
+	'lipidmaps' => array('name'=>'LIPIDMAPS database of lipds'),
+	'pr' => array('name'=>'Protein Ontology'),
+	'wikipedia'=>array('name'=>'Wikipedia'),
+	'nif_subcellular'=>array('name'=>'Neuroinformatics subcellular ontology'),
+	'obi' => array('name'=>'Ontology for biomedical investigation'),
+	'pirsf' => array('name' => 'Protein Information Resource SuperFamily','url'=>'http://pir.georgetown.edu/pirsf/'),
+	'peroxibase' => array('name' => 'Peroxidase database','url'=>'http://peroxibase.isb-sib.ch/'),
+	'uniprotkb_var' => array('name'=>'UniProt variant'),
+	'hamap' => array('name'=>'hapmap project'),
+	'ma' => array('name'=>'mouse anatomy ontology'),
+	'tads' => array('name'=>'tick gross anatomy ontology'),
+	'isbn' => array('name'=>'International standard book number'),
+	'atm' => array('name'=>'African Traditional Medicine Ontology'),
+	'aeo' => array('name'=>'Anatomical Entity ontology'),
+	'lsm' => array('name'=>'Leukocyte surface markers ontology')
 	);
 	
 	function __construct()
 	{
 		foreach($this->ext_ns AS $ns => $obj) {
-			$this->ext_ns[$ns]['uri'] =  self::bio2rdf_uri.$ns.':';
-			$this->ext_ns[$ns.'_vocabulary']['uri'] =  self::bio2rdf_uri.$ns.'_vocabulary:';
-			$this->ext_ns[$ns.'_resource']['uri'] =  self::bio2rdf_uri.$ns.'_resource:';
+			$this->ext_ns[$ns]['uri'] =  self::base_uri.$ns.':';
+			$this->ext_ns[$ns.'_vocabulary']['uri'] =  self::base_uri.$ns.'_vocabulary:';
+			$this->ext_ns[$ns.'_resource']['uri'] =  self::base_uri.$ns.'_resource:';
+			
+			// generate the namespace map
+			if(isset($obj['synonyms'])) {
+				if(is_array($obj['synonyms'])) {
+					foreach($obj['synonyms'] AS $s) {
+						$this->ns_map[$s] = self::base_uri.$ns;
+					}
+				} else {
+					$this->ns_map[$obj['synonyms']] = self::base_uri.$ns;
+				}
+				
+			}
 		}
-		$this->all_ns = array_merge($this->base_ns,$this->ext_ns);		
+		$this->all_ns = array_merge($this->base_ns,$this->ext_ns);
    }
    
 	function isNS($ns)
 	{
 		if(!isset($this->all_ns[$ns])) return false;
+		return TRUE;
+	}
+	
+	function addNS($ns)
+	{
+		if(!isset($this->all_ns[$ns])) {
+			$this->all_ns = self::base_uri.$ns;
+		}
 		return TRUE;
 	}
 	
@@ -230,11 +279,35 @@ class CNamespace
 		return TRUE;
 	}
 	
+	function MapQName($qname,$ns,$id,$delimiter=':')
+	{
+		$this->ParsePrefixedName($qname,$ns,$id,$delimiter);
+		if($this->isNS($ns) === FALSE) {
+			// try to map the namespace
+			if(isset($this->ns_map[$ns])) {
+				$ns = $this->ns_map[$ns];
+			} else {
+				// no match
+				trigger_error("Invalid qname ".$ns. " for $qname", E_USER_ERROR); 
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
+	
 	function getFQURI($prefixed_name) 
 	{
 		$this->ParsePrefixedName($prefixed_name,$ns,$id);		
-		if(!$this->isNS($ns)) {trigger_error("Invalid qname ".$ns. " for $prefixed_name", E_USER_ERROR); exit;}
+		if(!$this->isNS($ns)) {
+			trigger_error("Invalid qname ".$ns. " for $prefixed_name", E_USER_ERROR);
+			exit;
+		}
 		return $this->getNSURI($ns).$id;
+	}
+	
+	function getFQURI_TTL($qname)
+	{
+		return "<".$this->getFQURI($qname).">";
 	}
 	
 	function GetTTLPrefix($ns)
