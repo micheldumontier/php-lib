@@ -30,8 +30,9 @@ SOFTWARE.
 
 class CNamespace
 {
-  const bio2rdf_uri = "http://bio2rdf.org/";
+  const base_uri = "http://bio2rdf.org/";
   private $all_ns = '';
+  private $ns_map = null;
   
   private $base_ns = array(
 	'xsd'  => array('name'=>'XML Schema', 'uri' => 'http://www.w3.org/2001/XMLSchema#'),
@@ -49,17 +50,18 @@ class CNamespace
 	'alfred'	=> array('name' => 'Allele Frequency Database','url'=>'http://alfred.med.yale.edu/'),
 	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
     'bio2rdf'   => array('name' => 'Bio2RDF', 'url'=>'http://bio2rdf.org'),
+	'biomodels' => array('name' => 'Biomodels database'),
 	'biopaxl2'  => array('name' => 'BioPAX level 2','url'=>'http://www.biopax.org'),
 	'biopaxl3'  => array('name' => 'BioPAX level 3','url'=>'http://www.biopax.org'),
 	'brenda'    => array('name' => 'BRENDA Enzyme database', 'url'=>'http://www.brenda-enzymes.info/'),
-	'ahfs'		=> array('name' => 'Pharmacologic-Therapeutic Classification System', 'url'=> 'http://www.ahfsdruginformation.com/class/index.aspx', 'type' => 'classification'),
+
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
-	'apo'       => array('name' => 'Ascomycetes Phenotype Ontology', 'url'=>'http://purl.bioontology.org/ontology/APO','type'=>'classification'),
-	'atc'       => array('name' => 'Anatomical Therapeutic Chemical Classification', 'url'=>'http://www.whocc.no/atc_ddd_index/','type' => 'classification'),
+
 	'bind'      => array('name' => 'Biomolecular Interaction Database'),
 	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
 	'biogrid'   => array('name' => 'BioGrid Interaction Database','url'=>'http://thebiogrid.org/', 'synonyms'=> array('grid')),
 	'cabri'     => array('name' => 'Common Access to Biotechnological Resources and Information', 'description' => 'an online service where users can search a number of European Biological Resource Centre catalogues', 'url'=> 'http://www.cabri.org/'),
+	'camjedb'   => array('name' => 'Camjedb is a comprehensive database for information on the genome of Campylobacter jejuni','url'=> 'http://www.sanger.ac.uk/Projects/C_jejuni/'),
 	'candida'   => array('name' => 'Candida Genome Database','url'=>'http://www.candidagenome.org/'),
 	'cas'       => array('name' => 'Chemical Abstracts Service','url'=>'http://www.cas.org/','synonyms'=>array('CHEMICALABSTRACTS')),
 	'chebi'     => array('name' => 'Chemical Entities of Biological Interest','part-of'=>'ebi','url'=>'http://www.ebi.ac.uk/chebi/'),
@@ -96,6 +98,7 @@ class CNamespace
 	'go'        => array('name' => 'Gene Ontology'),
 	'gp'        => array('name' => 'NCBI Genome database','part-of'=>'ncbi'),
 	'gtp'		=> array('name' => 'Guide to Pharmacology'),
+	'hamap'		=> array('name'=>'hapmap project'),
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
@@ -104,6 +107,7 @@ class CNamespace
 	'humancyc'  => array('name' => 'Human CYC database'),
 	'icd9'      => array('name' => 'International Classification of Disease v9'),
 	'icd10'     => array('name' => 'International Classification of Disease v10'),
+	
 	'innatedb'  => array('name' => ''),
 	'intact'    => array('name' => 'Intact Interaction Database'),
 	'interpro'  => array('name' => 'InterPro', 'url'=>'http://www.ebi.ac.uk/interpro/'),
@@ -121,6 +125,7 @@ class CNamespace
 	'iupharreceptor' => array('name' => 'iuphar receptor', 'part-of' => 'iuphar'),
 	'iupharligand' => array('name' => '','part-of'=>'iuphar'),
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
+	'lipidmaps' => array('name'=>'LIPIDMAPS database of lipds'),
 	'matrixdb'  => array('name' => ''),
 	'mesh' => array('name' => 'Medical Subject Headings'),
 	'metacyc' => array('name' => 'Encyclopedia of Metabolic Pathways'),
@@ -132,7 +137,9 @@ class CNamespace
 	'mpact' => array('name' => ''),
 	'mpi' => array('name' => ''),
 	'mutdb' => array('name'=> 'MutDB contains annotations on human variation','url'=>'http://mutdb.org/'),
+	'narcis' => array('name' => 'NARCIS gateway to scholarly information in The Netherlands','url'=>'http://www.narcis.nl/'),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
+	'ncbo' => array('name' => 'National Center for Biomedical Ontology','url'=>'http://www.bioontology.org/'),
 	'ncit' => array('name' => 'National Cancer Institute Thesaurus'),
 	'ndc' => array('name' => 'National Drug Code Directory'),
 	'newt' => array('name' => 'UniProt taxonomy', 'url'=>'http://www.uniprot.org/help/taxonomy'),
@@ -143,12 +150,13 @@ class CNamespace
 	'orphanet'=>array('name'=> 'Orphanet : The portal for rare diseases and orphan drugs'),
 	'ordr'=> array('name'=>'Office of Rare Disease Research'),
 	'patternscan' => array('name' => ''),
-	'pato' => array('name' => 'Phenotypic Quality Ontology'),
 	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System'),
 	'pdb'=> array('name' => 'Protein Databank'),
+	'peroxibase' => array('name' => 'Peroxidase database','url'=>'http://peroxibase.isb-sib.ch/'),
 	'pfam' => array('name' => 'Protein Families'),
 	'pharmgkb' => array('name' => 'PharmGKB knowledge base'),
 	'pir'=> array('name' => 'Protein Information Resource'),
+	'pirsf' => array('name' => 'Protein Information Resource SuperFamily','url'=>'http://pir.georgetown.edu/pirsf/'),
 	'prf'=> array('name' => 'Protein Research Foundation'),
 	'prodom'=> array('name' => 'Protein Domain Families'),
 	'profilescan'=> array('name' => ''),
@@ -171,7 +179,7 @@ class CNamespace
 	'superfamily'=> array('name' => ''),
 	'swissprot'=> array('name' => 'SwissProt', 'part-of' => 'uniprot'),
 	'symbol' => array('name' => 'Gene Symbols'),
-	'taxon'=> array('name' => 'NCBI Taxonomy','synonyms'=>array('taxon','ncbitaxon'),'part-of' => 'irefindex'),
+	'taxon'=> array('name' => 'NCBI Taxonomy','synonyms'=>array('taxid','ncbitaxon'),'part-of' => 'irefindex'),
 	'tcdb'=> array('name' => 'Transporter Classification Database'),
 	'tigr'=> array('name' => 'TIGR'),
 	'tpg'=> array('name' => ''),
@@ -182,26 +190,86 @@ class CNamespace
 	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/'),
 	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
-	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot'),
+	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot', 'synonyms'=>'uniprotkb'),
+	'uniprotkb_var' => array('name'=>'UniProt variant'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
+	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
+	'unigene'=> array('name' => 'UniGene', 'url' => 'http://www.ncbi.nlm.nih.gov/unigene/'),
 	'uo'=> array('name' => 'Unit Ontology'),
+	'uspatent'=>array('name'=> 'US Patent'),
+	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
+	'wikipedia'=>array('name'=>'Wikipedia'),
 	'wormbase' => array('name'=>'WormBase'),
-	'zfin'=>array('name'=>'Zebrafish')
+	'zfin'=>array('name'=>'Zebrafish'),
+	'id-validation-regexp' => array('name' => 'Regular Expression for identifier syntax'),
+	'search-url' => array('name' => 'Pattern for placing an identifier into a URI'),
+	'fbdv' => array('name'=>'Drosophila Development Ontology'),
+	'fbdv_root' => array('name'=>'Drosophila Development Root Ontology'),
+	'span' => array('name'=>'Basic Formal Ontology SPAN'),
+	'snap' => array('name'=>'Basic Formal Ontology SNAP'),
+	
+	
+	'doi' => array('name'=>'Digital Object Identifier'),
+	'isbn' => array('name'=>'International standard book number'),
+	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
+	'chemidplus' => array('name'=>'chemidplus identifier for chemical compounds'),
+	'gmelin' => array('name'=>'German handbook/encyclopedia of inorganic compounds initiated by Leopold Gmelin'),
+	'nistchemistrywebbook' => array('name'=>'nist chemistry webbook'),
+	
+	'nif_subcellular'=>array('name'=>'Neuroinformatics subcellular ontology'),
+	
+	// terminologies, ontologies
+	'aeo' => array('name'=>'Anatomical Entity ontology'),
+	'ahfs' => array('name' => 'Pharmacologic-Therapeutic Classification System', 'url'=> 'http://www.ahfsdruginformation.com/class/index.aspx', 'type' => 'classification'),
+	'apo' => array('name' => 'Ascomycetes Phenotype Ontology', 'url'=>'http://purl.bioontology.org/ontology/APO','type'=>'classification'),
+	'atc' => array('name' => 'Anatomical Therapeutic Chemical Classification', 'url'=>'http://www.whocc.no/atc_ddd_index/','type' => 'classification'),
+	'atm' => array('name'=>'African Traditional Medicine Ontology'),
+	'bto' => array('name' => 'BRENDA tissue ontology'),
+	'cco' => array('name' => 'Cell cycle ontology'),
+	'cto' => array('name' => 'Cell type ontology'),
+	'do' => array('name' => 'Human Disease Ontology'),
+	'fma' => array('name'=>'Foundational Model of Anatomy'),
+	'lsm' => array('name'=>'Leukocyte surface markers ontology'),
+	'obi' => array('name'=>'Ontology for biomedical investigation'),
+	'pato' => array('name'=>'Phenotype and Trait Ontology'),
+	'ma' => array('name'=>'mouse anatomy ontology'),
+	'pr' => array('name'=>'Protein Ontology'),
+	'tads' => array('name'=>'tick gross anatomy ontology'),
 	);
 	
 	function __construct()
 	{
 		foreach($this->ext_ns AS $ns => $obj) {
-			$this->ext_ns[$ns]['uri'] =  self::bio2rdf_uri.$ns.':';
-			$this->ext_ns[$ns.'_vocabulary']['uri'] =  self::bio2rdf_uri.$ns.'_vocabulary:';
-			$this->ext_ns[$ns.'_resource']['uri'] =  self::bio2rdf_uri.$ns.'_resource:';
+			$this->ext_ns[$ns]['uri'] =  self::base_uri.$ns.':';
+			$this->ext_ns[$ns.'_vocabulary']['uri'] =  self::base_uri.$ns.'_vocabulary:';
+			$this->ext_ns[$ns.'_resource']['uri'] =  self::base_uri.$ns.'_resource:';
+			
+			// generate the namespace map
+			if(isset($obj['synonyms'])) {
+				if(is_array($obj['synonyms'])) {
+					foreach($obj['synonyms'] AS $s) {
+						$this->ns_map[$s] = self::base_uri.$ns;
+					}
+				} else {
+					$this->ns_map[$obj['synonyms']] = self::base_uri.$ns;
+				}
+				
+			}
 		}
-		$this->all_ns = array_merge($this->base_ns,$this->ext_ns);		
+		$this->all_ns = array_merge($this->base_ns,$this->ext_ns);
    }
    
 	function isNS($ns)
 	{
 		if(!isset($this->all_ns[$ns])) return false;
+		return TRUE;
+	}
+	
+	function addNS($ns)
+	{
+		if(!isset($this->all_ns[$ns])) {
+			$this->all_ns = self::base_uri.$ns;
+		}
 		return TRUE;
 	}
 	
@@ -227,11 +295,35 @@ class CNamespace
 		return TRUE;
 	}
 	
+	function MapQName($qname,$ns,$id,$delimiter=':')
+	{
+		$this->ParsePrefixedName($qname,$ns,$id,$delimiter);
+		if($this->isNS($ns) === FALSE) {
+			// try to map the namespace
+			if(isset($this->ns_map[$ns])) {
+				$ns = $this->ns_map[$ns];
+			} else {
+				// no match
+				trigger_error("Invalid qname ".$ns. " for $qname", E_USER_ERROR); 
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
+	
 	function getFQURI($prefixed_name) 
 	{
 		$this->ParsePrefixedName($prefixed_name,$ns,$id);		
-		if(!$this->isNS($ns)) {trigger_error("Invalid qname ".$ns. " for $prefixed_name", E_USER_ERROR); exit;}
+		if(!$this->isNS($ns)) {
+			trigger_error("Invalid qname ".$ns. " for $prefixed_name", E_USER_ERROR);
+			exit;
+		}
 		return $this->getNSURI($ns).$id;
+	}
+	
+	function getFQURI_TTL($qname)
+	{
+		return "<".$this->getFQURI($qname).">";
 	}
 	
 	function GetTTLPrefix($ns)
