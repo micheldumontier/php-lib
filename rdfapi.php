@@ -37,7 +37,8 @@ class RDFFactory extends Application
 	private $types = null;
 	private $read_file=null;
 	private $write_file=null;
-	private $release_file_uri = null;
+	private $graph_uri = null;
+	private $dataset_uri = null;
 	
 	function __construct()
 	{
@@ -51,6 +52,8 @@ class RDFFactory extends Application
 	function AddRDF($buf) {$this->buf .= $buf;return TRUE;}
 	function DeleteRDF() {$this->buf = '';return TRUE;}
 
+	function SetGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
+	function GetGraphURI() {return $this->graph_uri;}
 	
 	function SetReadFile($file,$gzcompress=false)
 	{
@@ -84,29 +87,41 @@ class RDFFactory extends Application
 		$this->GetWriteFile()->Write($this->buf);
 		$this->DeleteRDF();
 		return TRUE;
-	}	
+	}
 	
 	function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
-		return "<$s_uri> <$p_uri> <$o_uri> ".(isset($g_uri)?"<$g_uri>":"")." .".PHP_EOL;
+		$graph_uri = '';
+		if(isset($g_uri)) $graph_uri = "<$g_uri>";
+		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		
+		return "<$s_uri> <$p_uri> <$o_uri> $graph_uri .".PHP_EOL;
 	}
 
 	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
+		$graph_uri = '';
+		if(isset($g_uri)) $graph_uri = "<$g_uri>";
+		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+
 		if(isset($lang) && isset($lt_uri)) {
 			trigger_error("Literal can only hold a language tag *or* datatype", E_USER_ERROR);
 			return FALSE;
 		}
-		return "<$s_uri> <$p_uri> \"$literal\"".(isset($lang)?"@$lang ":'').(isset($lt_uri)?"^^<$lt_uri>":'').(isset($g_uri)?" <$g_uri>":'')." .".PHP_EOL;
+		return "<$s_uri> <$p_uri> \"$literal\"".(isset($lang)?"@$lang ":'').(isset($lt_uri)?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
 	}
 	
 	function QuadText($s_uri, $p_uri, $text, $lang = null, $g_uri = null)
 	{
+		$graph_uri = '';
+		if(isset($g_uri)) $graph_uri = "<$g_uri>";
+		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		
 		if(isset($lang) && isset($lt_uri)) {
 			trigger_error("Literal can only hold a language tag *or* datatype", E_USER_ERROR);
 			return FALSE;
 		}
-		return "<$s_uri> <$p_uri> \"\"\"$text\"\"\"".(isset($lang)?"@$lang ":'').(isset($g_uri)?" <$g_uri>":'')." .".PHP_EOL;
+		return "<$s_uri> <$p_uri> \"\"\"$text\"\"\"".(isset($lang)?"@$lang ":'')." $graph_uri .".PHP_EOL;
 	}
 	
 	
@@ -162,29 +177,76 @@ class RDFFactory extends Application
 		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
 	}
 	
-	function SetReleaseFileURI($name)
+	function GetBio2RDFDatasetFile($dataset)
 	{
-		$date = date("d-m-y");
-		$this->release_file_uri = 'http://bio2rdf.org/release:'.$name."-bio2rdf-release-".$date.".ttl";
-	}
-	function GetReleaseFileURI()
-	{
-		return $this->release_file_uri;
+		$date = date("Ymd");
+		$name = "bio2rdf-$dataset-$date";
+		$this->SetDatasetURI("bio2rdf_dataset:$name");
+		return $name.".ttl";
 	}
 	
-	function GenerateReleaseFile($file,$dataset,$creator,$comment)
+	function SetDatasetURI($dataset_uri)
+	{		
+		$this->dataset_uri = $dataset_uri;
+	}
+	function GetDatasetURI()
 	{
-		$release_file_uri = 'unnamed-bio2rdf-release.ttl';
-		if(isset($this->release_file_uri)) $release_file_uri = $this->release_file_uri;
-		
-		$date = date("D M j G:i:s T Y");
-		$this->AddRDF($this->QQuad($release_file_uri,"rdf:type","sio:Document"));
-		$this->AddRDF($this->QQuadL($release_file_uri,"rdfs:label", "$dataset by Bio2RDF"));
-		$this->AddRDF($this->QQuadL($release_file_uri,"dc:creator", $creator));
-		$this->AddRDF($this->QQuadL($release_file_uri,"dc:comment", $comment));
-		$this->AddRDF($this->QQuadO_URL($release_file_uri,"dc:provider", "http://bio2rdf.org"));
-		$this->AddRDF($this->QQuadL($release_file_uri,"dc:date", $date));	
+		return $this->dataset_uri;
 	}
 	
+	function GetDatasetDescription($dataset_uri, $dataset_name, $publisher_name, $creator_uri, 
+				$publisher_uri, $data_url = null, $sparql_endpoint = null, 
+				$source_homepage, $source_rights, $source_license = null)
+	{
+		$rdf = '';
+		$date = date("Y-m-d");
+		//$datetime = date("D M j G:i:s T Y");
+
+		$rdf .= $this->QQuadL($dataset_uri,"rdfs:label","$dataset_name dataset by $publisher_name [$dataset_uri]");
+		$rdf .= $this->QQuad($dataset_uri,"rdf:type","void:Dataset");
+		$rdf .= $this->QQuadL($dataset_uri,"dc:created",$date,null,"xsd:date");
+		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:creator",$creator_uri);
+		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:publisher",$publisher_uri);
+		if(isset($data_url)) $rdf .= $this->QQuadO_URL($dataset_uri,"void:dataDump",$data_url);
+		if(isset($sparql_endpoint)) $rdf .= $this->QQuadO_URL($dataset_uri,"void:sparqlEndpoint",$sparql_endpoint);
+  
+		// source description
+		$source_uri = "bio2rdf_dataset:$dataset_name";
+		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:source",$source_uri);
+		$rdf .= $this->QQuadL($source_uri,"rdfs:label","$dataset_name dataset [$source_uri]");
+		$rdf .= $this->QQuad($source_uri,"rdf:type","void:Dataset");
+		$rdf .= $this->QQuadO_URL($source_uri,"foaf:homepage",$source_homepage);
+		$rights = $source_rights;
+		if(!is_array($rights)) $rights = array($source_rights);
+		foreach($rights AS $right) {
+			$rdf .= $this->QQuadL($source_uri,"dc:rights",$this->GetRightsDescription($right));
+		}
+		if(isset($source_license)) $rdf .= $this->QQuadO_URL($source_uri,"dc:license",$source_license);
+
+		return $rdf;
+	}
+	
+	function GetBio2RDFDatasetDescription($namespace, $script_url, $filename, $source_homepage, $source_rights, $source_license = null)
+	{
+		return $this->GetDatasetDescription(				
+				$this->GetDatasetURI(), $namespace, "Bio2RDF.org", $script_url, 
+				"http://bio2rdf.org", "http://download.bio2rdf.org/rdf/$namespace/$filename", "http://$namespace.bio2rdf.org/sparql", 
+				$source_homepage, $source_rights, $source_license);
+	}
+	
+	function GetRightsDescription($right)
+	{
+		$rights = array(
+			"use" => "free to use"
+			"use-share" => "free to use and share, no derivatives",
+			"use-share-modify" => "free to use, share, modify",			
+			"no-commercial" => "commercial use requires licensing",
+		);
+		if(!isset($rights[$right])) {
+			trigger_error("Unable to find $right in ".implode(",",keys($rights))." of rights");
+			return FALSE;
+		}
+		return $rights[$right];
+	}
 }
 
