@@ -194,9 +194,10 @@ class RDFFactory extends Application
 		return $this->dataset_uri;
 	}
 	
-	function GetDatasetDescription($dataset_uri, $dataset_name, $publisher_name, $creator_uri, 
+	function GetDatasetDescription(
+				$dataset_name, $dataset_uri, $publisher_name, $creator_uri, 
 				$publisher_uri, $data_url = null, $sparql_endpoint = null, 
-				$source_homepage, $source_rights, $source_license = null)
+				$source_homepage, $source_rights, $source_license = null, $source_location = null, $source_version = null)
 	{
 		$rdf = '';
 		$date = date("Y-m-d");
@@ -212,7 +213,11 @@ class RDFFactory extends Application
   
 		// source description
 		$source_uri = "bio2rdf_dataset:$dataset_name";
+		
+		// link dataset to source
 		$rdf .= $this->QQuad($dataset_uri,"dc:source",$source_uri);
+		$rdf .= $this->QQuad($dataset_uri,"prov:wasDerivedFrom",$source_uri);
+		
 		$rdf .= $this->QQuadL($source_uri,"rdfs:label","$dataset_name dataset [$source_uri]");
 		$rdf .= $this->QQuad($source_uri,"rdf:type","void:Dataset");
 		$rdf .= $this->QQuadO_URL($source_uri,"foaf:homepage",$source_homepage);
@@ -222,25 +227,29 @@ class RDFFactory extends Application
 			$rdf .= $this->QQuadL($source_uri,"dc:rights",$this->GetRightsDescription($right));
 		}
 		if(isset($source_license)) $rdf .= $this->QQuadO_URL($source_uri,"dc:license",$source_license);
+		if(isset($source_location)) $rdf .= $this->QQuadO_URL($source_location,"rdfs:seeAlso",$source_location);
+		if(isset($source_version)) $rdf .= $this->QQuadL($source_location,"biositemap:version",$source_version);
 
 		return $rdf;
 	}
 	
-	function GetBio2RDFDatasetDescription($namespace, $script_url, $filename, $source_homepage, $source_rights, $source_license = null)
+	function GetBio2RDFDatasetDescription($namespace, $script_url, $filename, $source_homepage, $source_rights, $source_license = null, $source_location = null, $source_version = null)
 	{
 		return $this->GetDatasetDescription(				
-				$this->GetDatasetURI(), $namespace, "Bio2RDF.org", $script_url, 
+				$namespace, $this->GetDatasetURI(), "Bio2RDF.org", $script_url, 
 				"http://bio2rdf.org", "http://download.bio2rdf.org/rdf/$namespace/$filename", "http://$namespace.bio2rdf.org/sparql", 
-				$source_homepage, $source_rights, $source_license);
+				$source_homepage, $source_rights, $source_license, $source_location, $source_version);
 	}
 	
 	function GetRightsDescription($right)
 	{
 		$rights = array(
-			"use" => "free to use"
-			"use-share" => "free to use and share, no derivatives",
+			"use" => "free to use",
+			"use-share" => "free to use and share as is",
 			"use-share-modify" => "free to use, share, modify",			
 			"no-commercial" => "commercial use requires licensing",
+			"no-derivative" => "no derivatives allowed without permission",
+			"attribution" => "requires attribution"
 		);
 		if(!isset($rights[$right])) {
 			trigger_error("Unable to find $right in ".implode(",",keys($rights))." of rights");
