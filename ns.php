@@ -42,6 +42,8 @@ class CNamespace
 	'dc'   => array('name'=>'Dublin Core','uri' =>'http://purl.org/dc/terms/'),
 	'skos' => array('name'=>'SKOS','uri'=>'http://www.w3.org/2004/02/skos/core#'),
 	'foaf' => array('name'=>'FOAF','uri'=>'http://xmlns.com/foaf/0.1/'),
+	'void' => array('name'=>'Vocabulary of Interlinked Datasets (VOID)','uri'=>'http://rdfs.org/ns/void#'),
+	'prov' => array('name'=>'Provenance Ontology','uri'=>'http://www.w3.org/ns/prov#'),
 	'sio'  => array('name'=>'Semanticscience Integrated Ontology','uri'=>'http://semanticscience.org/resource/'),
   );
 
@@ -51,6 +53,7 @@ class CNamespace
 	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
     'bio2rdf'   => array('name' => 'Bio2RDF', 'url'=>'http://bio2rdf.org'),
 	'biomodels' => array('name' => 'Biomodels database'),
+	'bio2rdf_dataset'   => array('name' => 'Bio2RDF datasets'), // for provenance
 	'biopaxl2'  => array('name' => 'BioPAX level 2','url'=>'http://www.biopax.org'),
 	'biopaxl3'  => array('name' => 'BioPAX level 3','url'=>'http://www.biopax.org'),
 	'brenda'    => array('name' => 'BRENDA Enzyme database', 'url'=>'http://www.brenda-enzymes.info/'),
@@ -228,6 +231,7 @@ class CNamespace
 	'apo' => array('name' => 'Ascomycetes Phenotype Ontology', 'url'=>'http://purl.bioontology.org/ontology/APO','type'=>'classification'),
 	'atc' => array('name' => 'Anatomical Therapeutic Chemical Classification', 'url'=>'http://www.whocc.no/atc_ddd_index/','type' => 'classification'),
 	'atm' => array('name'=>'African Traditional Medicine Ontology'),
+	'biositemap' => array('name'=>'BioSiteMap', 'uri'=>'http://bioontology.org/ontologies/biositemap.owl#'),
 	'bto' => array('name' => 'BRENDA tissue ontology'),
 	'cco' => array('name' => 'Cell cycle ontology'),
 	'cto' => array('name' => 'Cell type ontology'),
