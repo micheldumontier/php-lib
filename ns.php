@@ -43,6 +43,7 @@ class CNamespace
 	'skos' => array('name'=>'SKOS','uri'=>'http://www.w3.org/2004/02/skos/core#'),
 	'foaf' => array('name'=>'FOAF','uri'=>'http://xmlns.com/foaf/0.1/'),
 	'void' => array('name'=>'Vocabulary of Interlinked Datasets (VOID)','uri'=>'http://rdfs.org/ns/void#'),
+	'prov' => array('name'=>'Provenance Ontology','uri'=>'http://www.w3.org/ns/prov#'),
 	'sio'  => array('name'=>'Semanticscience Integrated Ontology','uri'=>'http://semanticscience.org/resource/'),
   );
 
@@ -226,6 +227,7 @@ class CNamespace
 	'apo' => array('name' => 'Ascomycetes Phenotype Ontology', 'url'=>'http://purl.bioontology.org/ontology/APO','type'=>'classification'),
 	'atc' => array('name' => 'Anatomical Therapeutic Chemical Classification', 'url'=>'http://www.whocc.no/atc_ddd_index/','type' => 'classification'),
 	'atm' => array('name'=>'African Traditional Medicine Ontology'),
+	'biositemap' => array('name'=>'BioSiteMap', 'uri'=>'http://bioontology.org/ontologies/biositemap.owl#'),
 	'bto' => array('name' => 'BRENDA tissue ontology'),
 	'cco' => array('name' => 'Cell cycle ontology'),
 	'cto' => array('name' => 'Cell type ontology'),
