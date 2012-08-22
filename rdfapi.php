@@ -212,7 +212,7 @@ class RDFFactory extends Application
   
 		// source description
 		$source_uri = "bio2rdf_dataset:$dataset_name";
-		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:source",$source_uri);
+		$rdf .= $this->QQuad($dataset_uri,"dc:source",$source_uri);
 		$rdf .= $this->QQuadL($source_uri,"rdfs:label","$dataset_name dataset [$source_uri]");
 		$rdf .= $this->QQuad($source_uri,"rdf:type","void:Dataset");
 		$rdf .= $this->QQuadO_URL($source_uri,"foaf:homepage",$source_homepage);
