@@ -138,13 +138,17 @@ class Utils
 			echo "$dir not a directory".PHP_EOL;
 			return 1;
 		}
+		$files = array();
 
 		$dh = opendir($dir);
 		while (($file = readdir($dh)) !== false) {
 			if($file == '.' || $file == '..') continue;
 			if(isset($pattern)) {
-				if(strstr($file,$pattern)) {
-					$files[] = $file;
+				preg_match($pattern,$file,$m);
+				if(isset($m[0])) {
+					foreach($m AS $file) {
+						$files[] = $file;
+					}
 				}
 			} else {
 				$files[] = $file;
