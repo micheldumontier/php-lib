@@ -21,18 +21,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
+require('application.php');
+require('ns.php');
+
 /**
  * An RDF API for PHP
+ *
+ * @author Michel Dumontier 
  * @version 1.0
- * @author Michel Dumontier
- * @description 
 */
-require_once('application.php');
-require_once('ns.php');
-
 class RDFFactory extends Application
 {
 	private $buf = '';
+	private $default_namespace = null;
 	private $ns = null;
 	private $types = null;
 	private $read_file=null;
@@ -46,13 +48,42 @@ class RDFFactory extends Application
 		$this->ns = new CNamespace();
 	}
 	
+	/** Get the namespace object
+	 * @return object the namespace object
+	 */
 	function GetNS() {return $this->ns;}
+	
+	/** Set the default namespace for the RDF application
+	 * @param string $ns the namespace to set as default
+	 */
+	function SetDefaultNamespace($ns) 
+	{
+		if($this->GetNS()->isNS($ns)) {
+			$this->default_namespace = $ns;
+		} else {
+			trigger_error("Unable to find $ns in namespace registry",E_USER_ERROR);
+			exit;
+		}
+		$this->default_namespace = $ns;
+		
+		$date = date("Ymd");
+		$this->SetDatasetURI("bio2rdf_dataset:bio2rdf-$ns-$date");
+	}
+	function GetNamespace() {return $this->default_namespace;}
+	function GetResourceNamespace() {return $this->default_namespace."_resource";}
+	function GetVocabularyNamespace() {return $this->default_namespace."_vocabulary";}
 	
 	function GetRDF() {return $this->buf;}
 	function AddRDF($buf) {$this->buf .= $buf;return TRUE;}
 	function DeleteRDF() {$this->buf = '';return TRUE;}
 
+	/** Set the default graph URI in order to generate quads
+	 * @param string $graph_uri The Graph URI to set
+	 */
 	function SetGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
+	/** Get the default graph URI
+	 * @return string the default graph uri
+	 */
 	function GetGraphURI() {return $this->graph_uri;}
 	
 	function SetReadFile($file,$gzcompress=false)
@@ -177,13 +208,6 @@ class RDFFactory extends Application
 		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
 	}
 	
-	function GetBio2RDFDatasetFile($dataset)
-	{
-		$date = date("Ymd");
-		$name = "bio2rdf-$dataset-$date";
-		$this->SetDatasetURI("bio2rdf_dataset:$name");
-		return $name.".ttl";
-	}
 	
 	function SetDatasetURI($dataset_uri)
 	{		
@@ -195,9 +219,18 @@ class RDFFactory extends Application
 	}
 	
 	function GetDatasetDescription(
-				$dataset_name, $dataset_uri, $publisher_name, $creator_uri, 
-				$publisher_uri, $data_url = null, $sparql_endpoint = null, 
-				$source_homepage, $source_rights, $source_license = null, $source_location = null, $source_version = null)
+				$dataset_name, 
+				$dataset_uri, 
+				$creator_uri, 
+				$publisher_name, 
+				$publisher_uri, 
+				$data_urls = null, 
+				$sparql_endpoint = null, 
+				$source_homepage, 
+				$source_rights, 
+				$source_license = null, 
+				$source_location = null, 
+				$source_version = null)
 	{
 		$rdf = '';
 		$date = date("Y-m-d");
@@ -208,14 +241,24 @@ class RDFFactory extends Application
 		$rdf .= $this->QQuadL($dataset_uri,"dc:created",$date,null,"xsd:date");
 		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:creator",$creator_uri);
 		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:publisher",$publisher_uri);
-		if(isset($data_url)) $rdf .= $this->QQuadO_URL($dataset_uri,"void:dataDump",$data_url);
+		$rights = array("use-share-modify","by-attribution","restricted-by-source-license");
+		foreach($rights AS $right) {
+			$rdf .= $this->QQuadL($dataset_uri,"dc:rights",$right);
+		}
+		if(isset($source_license)) $rdf .= $this->QQuadO_URL($dataset_uri,"dc:license","http://creativecommons.org/by-attribution"); // @todo check
+		if(isset($data_urls)) {
+			if(!is_array($data_urls)) $data_urls = array($data_urls);
+			foreach($data_urls AS $u) {
+				$rdf .= $this->QQuadO_URL($dataset_uri,"void:dataDump",$u);
+			}
+		}
 		if(isset($sparql_endpoint)) $rdf .= $this->QQuadO_URL($dataset_uri,"void:sparqlEndpoint",$sparql_endpoint);
-  
+		
 		// source description
 		$source_uri = "bio2rdf_dataset:$dataset_name";
 		
 		// link dataset to source
-		$rdf .= $this->QQuad($dataset_uri,"dc:source",$source_uri);
+		// $rdf .= $this->QQuad($dataset_uri,"dc:source",$source_uri);
 		$rdf .= $this->QQuad($dataset_uri,"prov:wasDerivedFrom",$source_uri);
 		
 		$rdf .= $this->QQuadL($source_uri,"rdfs:label","$dataset_name dataset [$source_uri]");
@@ -227,18 +270,55 @@ class RDFFactory extends Application
 			$rdf .= $this->QQuadL($source_uri,"dc:rights",$this->GetRightsDescription($right));
 		}
 		if(isset($source_license)) $rdf .= $this->QQuadO_URL($source_uri,"dc:license",$source_license);
-		if(isset($source_location)) $rdf .= $this->QQuadO_URL($source_location,"rdfs:seeAlso",$source_location);
-		if(isset($source_version)) $rdf .= $this->QQuadL($source_location,"biositemap:version",$source_version);
+		if(isset($source_location)) $rdf .= $this->QQuadO_URL($source_uri,"rdfs:seeAlso",$source_location);
+		if(isset($source_version)) $rdf .= $this->QQuadL($source_uri,"biositemap:version",$source_version);
 
 		return $rdf;
 	}
 	
-	function GetBio2RDFDatasetDescription($namespace, $script_url, $filename, $source_homepage, $source_rights, $source_license = null, $source_location = null, $source_version = null)
+	function GetBio2RDFReleaseFile($dataset)
+	{
+		$date = date("Ymd");
+		return "bio2rdf-$dataset-$date.nt";
+	}
+	
+	function DeleteBio2RDFReleaseFiles($dir)
+	{
+		$files = Utils::GetDirFiles($dir,"/bio2rdf\-.*\.ttl/");
+		foreach($files AS $file) {
+			unlink($dir.$file);
+		}
+		
+	}
+	
+	function GetBio2RDFDownloadURL($namespace)
+	{
+		return "http://download.bio2rdf.org/rdf/$namespace/";
+	}
+	
+	function GetBio2RDFDatasetDescription(
+		$namespace, 
+		$script_url, 
+		$download_files,
+		$source_homepage, 
+		$source_rights, 
+		$source_license = null, 
+		$source_location = null, 
+		$source_version = null)
 	{
 		return $this->GetDatasetDescription(				
-				$namespace, $this->GetDatasetURI(), "Bio2RDF.org", $script_url, 
-				"http://bio2rdf.org", "http://download.bio2rdf.org/rdf/$namespace/$filename", "http://$namespace.bio2rdf.org/sparql", 
-				$source_homepage, $source_rights, $source_license, $source_location, $source_version);
+				$namespace, 
+				$this->GetDatasetURI(), 
+				$script_url, 
+				"Bio2RDF", 
+				"http://bio2rdf.org", 
+				$download_files,
+				"http://$namespace.bio2rdf.org/sparql", 
+				$source_homepage, 
+				$source_rights, 
+				$source_license, 
+				$source_location, 
+				$source_version);
 	}
 	
 	function GetRightsDescription($right)
@@ -249,7 +329,8 @@ class RDFFactory extends Application
 			"use-share-modify" => "free to use, share, modify",			
 			"no-commercial" => "commercial use requires licensing",
 			"no-derivative" => "no derivatives allowed without permission",
-			"attribution" => "requires attribution"
+			"attribution" => "requires attribution",
+			"restricted-by-source-license" => "check source for further restrictions"
 		);
 		if(!isset($rights[$right])) {
 			trigger_error("Unable to find $right in ".implode(",",keys($rights))." of rights");
