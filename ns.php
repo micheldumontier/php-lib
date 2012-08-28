@@ -44,6 +44,7 @@ class CNamespace
 	'search-url' => array('name' => 'Pattern for placing an identifier into a URI'),
 	
 	// terminologies, ontologies
+	'biopax'    => array('name' => 'synthetic BioPAX vocabulary','url'=>'http://www.biopax.org'),
 	'biopaxl2'  => array('name' => 'BioPAX level 2','uri'=>'http://www.biopax.org/release/biopax-level2.owl#','url'=>'http://www.biopax.org'),
 	'biopaxl3'  => array('name' => 'BioPAX level 3','uri'=>'http://www.biopax.org/release/biopax-level3.owl#','url'=>'http://www.biopax.org'),
 	'dc'   => array('name'=>'Dublin Core Metatdata','uri' =>'http://purl.org/dc/terms/'),
