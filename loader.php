@@ -142,7 +142,7 @@ foreach($files AS $file) {
  }
 
  // unzip if necessary
- $f = $file;
+ $f = str_replace('\\','/',$file);
  $fcmd = 'file_to_string_output';
  if(strstr($file,".gz")) {
    $gzfile = $file;
