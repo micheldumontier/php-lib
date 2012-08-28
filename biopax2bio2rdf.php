@@ -75,9 +75,9 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			$this->biopax['xref'] = $this->biopax_ns.'xref';
 			$this->biopax['name'] = $this->biopax_ns."displayName";
 			$this->biopax['term'] = $this->biopax_ns."term";
-			$this->biopax['unificationXref'] = $this->biopax_ns."unificationXref";
-			$this->biopax['relationshipXref'] = $this->biopax_ns."relationshipXref";
-			$this->biopax['publicationXref'] = $this->biopax_ns."publicationXref";
+			$this->biopax['unificationXref'] = $this->biopax_ns."UnificationXref";
+			$this->biopax['relationshipXref'] = $this->biopax_ns."RelationshipXref";
+			$this->biopax['publicationXref'] = $this->biopax_ns."PublicationXref";
 		}
 		return $this;
 	}
@@ -136,7 +136,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			} else {
 				$s_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$s);
 			}
-			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->Quad($s,$nso->GetFQURI("owl:sameAs"),$s_uri);
+			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->Quad($s_uri,$nso->GetFQURI("owl:sameAs"),$s);
 		
 			if(isset($p_list[$this->biopax['db']]) && isset($p_list[$this->biopax['id']])) {		
 				$db = $p_list[$this->biopax['db']][0]['value'];
@@ -151,6 +151,8 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				$qname = $nso->MapQName("$db:$id");
 				$o_uri = $nso->getFQURI($qname);
 				
+				echo $qname.PHP_EOL;
+				
 				// $rdf .= $this->Quad($s_uri,$url,$o_uri);				
 				if(isset($p_list[$rdf_type][0]['value'])) {
 					$type = $p_list[$rdf_type][0]['value'];
@@ -160,6 +162,8 @@ Class BioPAX2Bio2RDF extends RDFFactory
 						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:related-to"),$o_uri);
 					} elseif($type == $this->biopax['publicationXref']) {
 						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:identical-to"),$o_uri);
+					} elseif($type == $this->biopax['Xref']) {
+						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:related-to"),$o_uri);
 					}
 				} 
 			} // isset

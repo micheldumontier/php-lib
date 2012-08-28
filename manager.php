@@ -1,17 +1,18 @@
 <?php
-$base_dir    = "/base/path";
+$base_dir    = "/sparql";
 $instance_dir  = $base_dir."/virtuoso";
 $instance_file = $base_dir."/instances.tab";
 $apache_config_file   = $base_dir."/virtuoso-apache.conf";
-$virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.5";
+$virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.6";
 
 if($argc <= 2 || (isset($argv[2]) && !in_array($argv[2],array("create","refresh","start","stop","apacheconfig")))) {
- echo "$argv[0] [all|ns] [create|start|stop|refresh|apacheconfig]".PHP_EOL;
+ echo "$argv[0] [all|ns] [create|start|stop|refresh|apacheconfig] [GB memory to use]".PHP_EOL;
  exit;
 }
 $ns = $argv[1];
 $fnx = $argv[2];
-
+$opt = '';
+if(isset($argv[3])) $opt = $argv[3];
 
 $instances = GetInstancesFromFile($instance_file);
 if($ns != "all") {
@@ -32,7 +33,11 @@ foreach($list AS $n => $i)
 	CreateVirtuosoINI($i,$instance_dir,$virtuoso_dir);
 	StartInstance($i,$instance_dir);
   }
-  else if($fnx == "start") StartInstance($i,$instance_dir);
+  else if($fnx == "start") {
+	if($ns != 'all' || ($ns == 'all' && $i['default_start'] == true)) {
+		 StartInstance($i,$instance_dir);
+	}
+  }
   else if($fnx == "stop") StopInstance($i);
   else if($fnx == "refresh") CreateVirtuosoINI($i,$instance_dir,$virtuoso_dir);
   else if($fnx == "apacheconfig") $buf .= CreateApacheConfig($i);
@@ -56,9 +61,9 @@ function CreateInstance($instance,$instance_dir,$virtuoso_dir)
  // copy the executable and the config file
  system("cp -f ".$virtuoso_dir."/bin/virtuoso-t ".$this_instance_dir."/p-$ns");
  // copy the database
- $vdb = $virtuoso_dir."/bin/virtuoso.db";
+ $vdb = $virtuoso_dir."/var/lib/virtuoso/db/virtuoso.db";
  if(!file_exists($vdb)) {
-   trigger_error("cannot find $vdb");
+   trigger_error("unable to find $vdb. you must create a default virtuoso instance. Remember to change the dba password and add the facet package");
    exit;
  } 
  system("cp ".$vdb." $this_instance_dir/$ns.virtuoso.db");
@@ -67,9 +72,14 @@ function CreateInstance($instance,$instance_dir,$virtuoso_dir)
 function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 {
  $ns = $instance['ns'];
-
-  // now read in the virtuoso file and modify the db, www port and isql port
- $inifile = $virtuoso_dir."/bin/virtuoso.ini"; 
+ global $opt;
+ if(!$opt) $opt = 5;
+ else $opt *= 1.5;
+ $buffers = $opt * 85000;
+ $dirtybuffers = $opt * 65000;
+ 
+ // now read in the virtuoso file and modify the db, www port and isql port
+ $inifile = $virtuoso_dir."/var/lib/virtuoso/db/virtuoso.ini"; 
  $this_instance_dir = $instance_dir."/$ns";
 
  $ini = ReadVirtuosoINI($inifile);
@@ -89,19 +99,22 @@ function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 	),	
 	"Parameters" => array(
 		"ServerPort" => $instance['isql_port'],
+		"VADInstallDir" => $virtuoso_dir."/share/virtuoso/vad/",
 		"DirsAllowed" => "., /usr/local/, /opt, /home, /media, /data ",
-		"NumberOfBuffers" => "1250000",
-		"MaxDirtyBuffers" => "1000000"
+		"NumberOfBuffers" => "$buffers",
+		"MaxDirtyBuffers" => "$dirtybuffers",
+		"TempDBSize" => "100000000"
 	),
 	"HTTPServer" => array(
-		"ServerPort" => $instance['www_port']
+		"ServerPort" => $instance['www_port'],
+		"ServerRoot" => $virtuoso_dir."/var/lib/virtuoso/vsp"
 	),
 	"SPARQL" => array(
 		"MaxQueryCostEstimationTime" => "20000",
 		"MaxQueryExecutionTime" => "10000",
-		"DefaultQuery" => "SELECT distinct ?graph ?type WHERE {graph ?graph {?x a ?type} FILTER (?graph != <b3sifp> && ?graph != <http://www.openlinksw.com/schemas/virtrdf#> && ?graph != <http://www.w3.org/2002/07/owl#> && ?graph != <virtrdf-label>)} ORDER BY ASC(?graph) ASC(?type) LIMIT 100")
-  
+		"DefaultQuery" => "SELECT distinct ?graph ?type (count(?x) AS ?count) WHERE {graph ?graph {?x a ?type} FILTER (?graph != <b3sifp> && ?graph != <http://www.openlinksw.com/schemas/virtrdf#> && ?graph != <http://www.w3.org/2002/07/owl#> && ?graph != <virtrdf-label> && ?graph != <http://localhost:8890/sparql>)} ORDER BY ASC(?graph) ASC(?type) LIMIT 100")  
  ));
+unset($ini["Plugins"]);
  WriteVirtuosoINI($ini,"$this_instance_dir/virtuoso.ini");
  echo "done.".PHP_EOL;
  return 0;
@@ -178,6 +191,8 @@ function GetInstancesFromFile($instance_file)
   $i["isql_port"] = $a[0];
   $i["www_port"] = $a[1];
   $i["ns"] = $a[2];
+  if(isset($a[3]) && $a[3] == 'default_start') $i['default_start'] = true;
+  else $i['default_start'] = false;
 
   if($a[2] == '') continue;
   $instances[$i['ns']] = $i;
