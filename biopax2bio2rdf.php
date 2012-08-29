@@ -36,6 +36,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 	private $biopax = null;
 	private $base_ns = null;
 	private $bio2rdf_ns = null;
+	private $declared = null;
 	
 	function __construct()
 	{
@@ -66,18 +67,24 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			$this->biopax['xref'] = $this->biopax_ns."XREF";
 			$this->biopax['name'] = $this->biopax_ns."DISPLAY-NAME";
 			$this->biopax['term'] = $this->biopax_ns."TERM";
+			$this->biopax['comment'] = $this->biopax_ns."COMMENT";
 			$this->biopax['unificationXref'] = $this->biopax_ns."UnificationXref";
 			$this->biopax['relationshipXref'] = $this->biopax_ns."RelationshipXref";
 			$this->biopax['publicationXref'] = $this->biopax_ns."PublicationXref";
+			$this->biopax['Xref'] = $this->biopax_ns."Xref";
 		} else if($version == 3) {
+			// relations
 			$this->biopax['db'] = $this->biopax_ns."db";
 			$this->biopax['id'] = $this->biopax_ns."id";
 			$this->biopax['xref'] = $this->biopax_ns.'xref';
 			$this->biopax['name'] = $this->biopax_ns."displayName";
 			$this->biopax['term'] = $this->biopax_ns."term";
+			$this->biopax['comment'] = $this->biopax_ns."comment";
+			// types
 			$this->biopax['unificationXref'] = $this->biopax_ns."UnificationXref";
 			$this->biopax['relationshipXref'] = $this->biopax_ns."RelationshipXref";
 			$this->biopax['publicationXref'] = $this->biopax_ns."PublicationXref";
+			$this->biopax['Xref'] = $this->biopax_ns."Xref";
 		}
 		return $this;
 	}
@@ -95,6 +102,8 @@ Class BioPAX2Bio2RDF extends RDFFactory
 	
 	function Parse()
 	{
+		$this->declared = null;
+		
 		$parser = ARC2::getRDFXMLParser();
 		
 		if(isset($this->file)) {
@@ -118,8 +127,93 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			$index[$a['s']][$a['p']][] = $o;
 		}
 		
-		$rdf = '';
+		// generate the bio2rdf / identifiers.org xrefs
 		foreach($index AS $s => $p_list) {
+			foreach($p_list AS $p => $o_list) {
+
+				// find and reformat xrefs
+				if($p == $this->biopax['xref']) {
+					foreach($o_list AS $i => $o) {
+						$o_uri = $o['value'];
+						
+						// check if we have the normalized id
+						if(isset($xrefs[$o_uri])) {
+							$new_uri = $xrefs[$o_uri];
+						} else {
+							$xref_obj = $index[$o_uri];
+						
+							// generate the id
+							if(!isset($xrefs[$o_uri])) {
+								$id_string = $xref_obj[$this->biopax['id']][0]['value'];
+								$nso->ParseQName($id_string,$db,$id);
+								if(!$db) {
+									if(isset($xref_obj[$this->biopax['db']][0]['value'])) {
+										$db =  $xref_obj[$this->biopax['db']][0]['value'];
+									} else {
+										// badly formed biopax
+										continue;
+									}
+								}
+								$qname = $nso->MapQName("$db:$id");
+								$nso->ParseQName($qname,$db,$id);
+								$new_uri = $nso->getFQURI($qname);
+								
+								// set the new uri
+								$xrefs[$o_uri] = $new_uri;
+
+								// add to the index
+								$o = '';
+								$o['value'] = $db;
+								$o['type'] = 'literal';
+								$o['datatype'] = '';
+								$index[$new_uri][$this->biopax['db']][] = $o;
+								
+								$o = '';
+								$o['value'] = $id;
+								$o['type'] = 'literal';
+								$o['datatype'] = 'http://www.w3.org/2001/XMLSchema#string';
+								$index[$new_uri][$this->biopax['id']][] = $o;
+								
+								$o = '';
+								$o['value'] = "$db:$id";
+								$o['type'] = 'literal';
+								$o['datatype'] = 'http://www.w3.org/2001/XMLSchema#string';
+								$index[$new_uri][$nso->GetFQURI("dc:identifier")][] = $o;
+								
+							} else $new_uri = $xrefs[$o_uri];
+						
+							// now determine the nature of the relation
+							$type = $xref_obj[$rdf_type][0]['value'];
+							if($type == $this->biopax['unificationXref']) {
+								$rel = $nso->GetFQURI("biopax_vocabulary:identical-to");
+							} elseif($type == $this->biopax['relationshipXref']) {
+								$rel = $nso->GetFQURI("biopax_vocabulary:related-to");
+							} elseif($type == $this->biopax['publicationXref']) {
+								$rel = $nso->GetFQURI("biopax_vocabulary:publication");
+							} elseif($type == $this->biopax['Xref']) {
+								$rel = $nso->GetFQURI("biopax_vocabulary:related-to");
+							}						
+							 
+							// unset the old ref and put in the new one
+							unset($index[$o_uri]);
+							unset($index[$s][$p][$i]);
+							if(count($index[$s][$p]) == 0) {
+								unset($index[$s][$p]);
+							}
+							$o = '';
+							$o['value'] = $new_uri;
+							$o['type'] = 'uri';
+							$o['datatype'] = '';
+							$index[$s][$rel][] = $o;
+						} // if
+					} // foreach o_list
+				} // if
+			} // foreach p_list
+		} // foreach index
+
+		$rdf = '';
+		foreach($index AS $s => $p_list) {	
+		
 			preg_match("/http\:\/\/identifiers\.org\/([^\/]+)\/(.*)/",$s,$m);
 			if(isset($m[1])) {
 				$ns = $m[1];
@@ -135,45 +229,19 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				$s_uri = $nso->GetFQURI($nso->MapQName("$ns:$id"));
 			} else {
 				$s_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$s);
+				if(!$s_uri) continue;
 			}
+			
 			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->Quad($s_uri,$nso->GetFQURI("owl:sameAs"),$s);
-		
-			if(isset($p_list[$this->biopax['db']]) && isset($p_list[$this->biopax['id']])) {		
-				$db = $p_list[$this->biopax['db']][0]['value'];
-				$id = $p_list[$this->biopax['id']][0]['value'];
-				if(!$db || !$id) continue;
-		
-				// get rid of additional prefix in the identifiers
-				$nso->ParseQName($id,$ns2,$id2);
-				if($ns2) $id = $id2;
-				
-				// map the db to the registry
-				$qname = $nso->MapQName("$db:$id");
-				$o_uri = $nso->getFQURI($qname);
-				
-				echo $qname.PHP_EOL;
-				
-				// $rdf .= $this->Quad($s_uri,$url,$o_uri);				
-				if(isset($p_list[$rdf_type][0]['value'])) {
-					$type = $p_list[$rdf_type][0]['value'];
-					if($type == $this->biopax['unificationXref']) {
-						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:identical-to"),$o_uri);
-					} elseif($type == $this->biopax['relationshipXref']) {
-						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:related-to"),$o_uri);
-					} elseif($type == $this->biopax['publicationXref']) {
-						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:identical-to"),$o_uri);
-					} elseif($type == $this->biopax['Xref']) {
-						$rdf .= $this->Quad($s_uri,$nso->GetFQURI("biopax_vocabulary:related-to"),$o_uri);
-					}
-				} 
-			} // isset
 			
 			// add an rdfs:label
-			if(isset($p_list[$this->biopax['name']])) {
-				$rdf .= $this->QuadL($s_uri,$nso->GetFQURI("rdfs:label"),$p_list[$this->biopax['name']][0]['value']);
+			if(isset($p_list[$this->biopax['name']][0]['value'])) {
+				$label = $p_list[$this->biopax['name']][0]['value'];
+				if($label) $rdf .= $this->QuadL($s_uri,$nso->GetFQURI("rdfs:label"),$label);
 			}
-			if(isset($p_list[$this->biopax['term']])) {
-				$rdf .= $this->QuadL($s_uri,$nso->GetFQURI("rdfs:label"),$p_list[$this->biopax['term']][0]['value']);
+			if(isset($p_list[$this->biopax['term']][0]['value'])) {
+				$label = $p_list[$this->biopax['term']][0]['value'];
+				if($label) $rdf .= $this->QuadL($s_uri,$nso->GetFQURI("rdfs:label"),$label);
 			}
 			
 			foreach($p_list AS $p => $o_list) {
@@ -182,9 +250,27 @@ Class BioPAX2Bio2RDF extends RDFFactory
 					if($o['type'] == 'uri') {
 						$o_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$o['value']);				
 						$rdf .= $this->Quad($s_uri,$p ,$o_uri);
-					} else {
-						// literal
+						if(!isset($this->declared[$p])) {
+							$this->declared[$p] = '';
+							$rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:ObjectProperty"));
+						}
+					} elseif($o['type'] == 'bnode') {
+						$rdf .= $this->Quad($s_uri,$p ,$o['value']);
+						if(!isset($this->declared[$p])) {
+							$this->declared[$p] = '';
+							$rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:ObjectProperty"));
+						}						
+					} else if($o['type'] == 'literal') {
 						$literal = $this->SafeLiteral($o['value']);
+						if($literal == '') continue;
+						
+						if(!isset($this->declared[$p])) {
+							$this->declared[$p] = '';
+							if($p == $this->biopax['comment'] || $p == $nso->GetFQURI("dc:identifier")) {
+								$rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:AnnotationProperty"));
+							} else $rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:DatatypeProperty"));
+						}
+						
 						$datatype = null;
 						if(isset($o['datatype']) && $o['datatype'] != '') {
 							if(strstr($o['datatype'],"http://")) {
