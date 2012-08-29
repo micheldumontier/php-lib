@@ -236,12 +236,12 @@ class RDFFactory extends Application
 		$date = date("Y-m-d");
 		//$datetime = date("D M j G:i:s T Y");
 
-		$rdf .= $this->QQuadL($dataset_uri,"rdfs:label","$dataset_name dataset by $publisher_name [$dataset_uri]");
+		$rdf .= $this->QQuadL($dataset_uri,"rdfs:label","$dataset_name dataset by $publisher_name on $date [$dataset_uri]");
 		$rdf .= $this->QQuad($dataset_uri,"rdf:type","void:Dataset");
 		$rdf .= $this->QQuadL($dataset_uri,"dc:created",$date,null,"xsd:date");
 		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:creator",$creator_uri);
 		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:publisher",$publisher_uri);
-		$rights = array("use-share-modify","by-attribution","restricted-by-source-license");
+		$rights = array("use-share-modify","attribution","restricted-by-source-license");
 		foreach($rights AS $right) {
 			$rdf .= $this->QQuadL($dataset_uri,"dc:rights",$right);
 		}
