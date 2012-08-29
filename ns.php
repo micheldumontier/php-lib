@@ -74,7 +74,7 @@ class CNamespace
 	'chebi' => array('name' => 'Chemical Entities of Biological Interest','part-of'=>'ebi','url'=>'http://www.ebi.ac.uk/chebi/'),	
 	'clo' => array('name' => 'Cell line ontology'),
 	'cto' => array('name' => 'Cell type ontology','synonyms'=>'cell type ontology'),
-	'do' => array('name' => 'Human Disease Ontology','synonyms'=>'human disease ontology'),
+	'do' => array('name' => 'Human Disease Ontology','synonyms'=>array('human disease ontology','doid')),
 	'eco'       => array('name' => 'Evidence Code Ontology','synonyms'=>'evidence codes ontology'),
 	'fbdv' => array('name'=>'Drosophila Development Ontology'),
 	'fbdv_root' => array('name'=>'Drosophila Development Root Ontology'),
@@ -84,8 +84,15 @@ class CNamespace
 	'lsm' => array('name'=>'Leukocyte surface markers ontology'),
 	'obi' => array('name'=>'Ontology for biomedical investigation'),
 	'pato' => array('name'=>'Phenotype and Trait Ontology'),
-	'psi-mi'=>array('name'=>'Protein Standards Initiative - Molecular Interactions','synonyms'=> array('mi','obo.psi-mod','obo.mi')),
-	'psi-mod'=>array('name'=>'Protein Standards Initiative - Modifications','synonyms'=>'protein modification ontology'),
+	'psi-mi'=>array(
+		'name'=>'Protein Standards Initiative - Molecular Interactions',
+		'synonyms'=> array('mi','obo.mi'),
+		'identifiers.org'=>'obo.psi-mi'
+		),
+	'psi-mod'=>array(
+		'name'=>'Protein Standards Initiative - Modifications',
+		'synonyms'=>array('protein modification ontology','obo.psi-mod','mod'),
+		'identifiers.org'=>'obo.psi-mod'),
 	'ma' => array('name'=>'mouse anatomy ontology'),
 	'nif_subcellular'=>array('name'=>'Neuroinformatics subcellular ontology'),
 	'pr' => array('name'=>'Protein Ontology'),
@@ -94,7 +101,10 @@ class CNamespace
 	'snap' => array('name'=>'Basic Formal Ontology SNAP'),
 	'so'=> array('name' => 'Sequence Ontology'),	
 	'tads' => array('name'=>'tick gross anatomy ontology'),
-	'taxon'=> array('name' => 'NCBI Taxonomy','synonyms'=>array('taxid','ncbitaxon','ncbitaxonomy','ncbi_taxonomy','taxonomy')),
+	'taxon'=> array(
+		'name' => 'NCBI Taxonomy',
+		'synonyms'=>array('taxid','ncbitaxon','ncbitaxonomy','ncbi_taxonomy','taxonomy'),
+		'identifiers.org'=>'taxon'),
 	'uo'=> array('name' => 'Unit Ontology')
   );
 
@@ -108,7 +118,10 @@ class CNamespace
 	'biocyc'    => array('name' => 'CYC genome database'),
 	'bio2rdf'   => array('name' => 'Bio2RDF', 'url'=>'http://bio2rdf.org'),
 	'bio2rdf_dataset' => array('name' => 'Bio2RDF datasets'), // for provenance
-	'biomodels' => array('name' => 'Biomodels database', 'identifiers.org'=>'biomodels.db','synonyms'=>array('biomodelsdatabase','biomodels.db')),
+	'biomodels' => array(
+		'name' => 'Biomodels database', 
+		'identifiers.org'=>'biomodels.db',
+		'synonyms'=>array('biomodelsdatabase','biomodels.db')),
 	'bind'      => array('name' => 'Biomolecular Interaction Database','synonyms'=>'bind_translation'),
 	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
 	'biogrid'   => array('name' => 'BioGrid Interaction Database','url'=>'http://thebiogrid.org/', 'synonyms'=> array('grid')),
@@ -130,21 +143,26 @@ class CNamespace
 	'dbsnp'     => array('name' => 'dbSNP short genetic variation database','part-of'=>'ncbi','url'=>'http://www.ncbi.nlm.nih.gov/projects/SNP/'),
 	'dip'       => array('name' => 'Database of Interacting Proteins','url'=>'http://dip.doe-mbi.ucla.edu/dip/Main.cgi'),
 	'ddbj'      => array('name' => 'DDBJ sequence database'),
-	'doi' => array('name'=>'Digital Object Identifier'),
+	'doi' => array(
+		'name'=>'Digital Object Identifier',
+		'identifiers.org'=>'doi'),
 	'dpd'		=> array('name' => 'Health Canada Drug Product Database','url'=>'http://www.hc-sc.gc.ca/dhp-mps/prodpharma/databasdon/index-eng.php'),
 	'drugbank'  => array('name' => 'DrugBank','url'=>'http://drugbank.ca'),
 	'drugbank_target'  => array('name' => 'DrugBank targets'),
-	'ec'        => array('name' => 'Enzyme Classification', 'synonyms'=>array('enzymeconsortrium','enzyme consortium','enzyme nomenclature','ec-code','ecnumber')),
+	'ec' => array(
+		'name' => 'Enzyme Classification', 
+		'synonyms'=>array('enzymeconsortrium','enzyme consortium','enzyme nomenclature','ec-code','ecnumber'),
+		'identifiers.org'=>'ec-code'),
 	'embl'      => array('name' => 'EMBL sequence database'),
-	'ensembl'   => array('name' => 'EnsEMBL genomic database'),
+	'ensembl'   => array(
+		'name' => 'EnsEMBL genomic database',
+		'identifiers.org'=>'ensembl'),
 	'ensemblgenomes' => array('name' => 'EnsEMBL genomes'),
 	'ecocyc'    => array('name' => 'E.coli CYC database'),
 	'ensembl'   => array('name' => 'ENSEMBL'),
 	'euroscarf' => array('name' => 'European Saccharomyces Cerevisiae Archive for Functional Analysis', 'url' => 'http://web.uni-frankfurt.de/fb15/mikro/euroscarf/'),
 	'flybase'   => array('name' => 'FlyBase','url'=>'http://flybase.org/'),
 	'fprintscan' => array('name' => ''),
-	'kegg'      => array('name' => 'KEGG','synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction')),
-	'knapsack'  => array('name' => 'KnapSack'),
 	'genatlas'	=> array('name' => 'GenAtlas'),
 	'genbank'	=> array('name' => 'GenBank','synonyms'=>array('genbank_nucl_gi','genbank_protein_gi')),
 	'gi'        => array('name' => 'NCBI GI'),
@@ -159,11 +177,18 @@ class CNamespace
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
-	'huge'		=> array('name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed','ur'=>'http://www.kazusa.or.jp/huge/'),
+	'huge'		=> array(
+		'name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed',
+		'url'=>'http://www.kazusa.or.jp/huge/'),
 	'humancyc'  => array('name' => 'Human CYC database'),	
 	'innatedb'  => array('name' => ''),
-	'intact'    => array('name' => 'Intact Interaction Database'),
-	'interpro'  => array('name' => 'InterPro', 'url'=>'http://www.ebi.ac.uk/interpro/'),
+	'intact'    => array(
+		'name' => 'Intact Interaction Database',
+		'identifiers.org'=>'intact'),
+	'interpro'  => array(
+		'name' => 'InterPro', 
+		'url'=>'http://www.ebi.ac.uk/interpro/',
+		'identifiers.org'=>'interpro'),
 	'insdc'     => array('ddbj/embl/genbank', 'synonyms'=>'"ddbj/embl/genbank'),
 	'ipi'       => array('name' => 'International Protein Index'),
 	'irefindex'         => array('name' => 'iRefIndex'),
@@ -179,6 +204,9 @@ class CNamespace
 	'iuphar'		=> array('name' => 'iuphar'),
 	'iupharreceptor' => array('name' => 'iuphar receptor', 'part-of' => 'iuphar'),
 	'iupharligand' => array('name' => '','part-of'=>'iuphar'),
+	'kegg' => array(
+		'name' => 'KEGG',
+		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction')),
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
 	'lipidmaps' => array('name'=>'LIPIDMAPS database of lipds'),
 	'maizegdb' => array('name'=>''),
@@ -192,7 +220,10 @@ class CNamespace
 	'mpact' => array('name' => ''),
 	'mpi' => array('name' => ''),
 	'mutdb' => array('name'=> 'MutDB contains annotations on human variation','url'=>'http://mutdb.org/'),
-	'narcis' => array('name' => 'NARCIS gateway to scholarly information in The Netherlands','url'=>'http://www.narcis.nl/'),
+	'narcis' => array(
+		'name' => 'NARCIS gateway to scholarly information in The Netherlands',
+		'url'=>'http://www.narcis.nl/',
+		'identifiers.org'=>'narcis'),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
 	'ncbo' => array('name' => 'National Center for Biomedical Ontology','url'=>'http://www.bioontology.org/'),
 	'ncit' => array('name' => 'National Cancer Institute Thesaurus','synonyms'=>'nci'),
@@ -200,7 +231,9 @@ class CNamespace
 	'newt' => array('name' => 'UniProt taxonomy', 'url'=>'http://www.uniprot.org/help/taxonomy'),
 	'nistchemistrywebbook' => array('name'=>'nist chemistry webbook'),
 	'offsides' => array('name' => 'Off-label side effects','url'=>'http://pharmgkb.org'),
-	'omim' => array('name' => 'Online Mendelian Inheritance in Man'),
+	'omim' => array(
+		'name' => 'Online Mendelian Inheritance in Man',
+		'identifiers.org'=>'omim'),
 	'ophid' => array('name' => 'Online predicted human interaction database'),
 	'orphanet'=>array('name'=> 'Orphanet : The portal for rare diseases and orphan drugs'),
 	'ordr'=> array('name'=>'Office of Rare Disease Research'),
@@ -211,16 +244,24 @@ class CNamespace
 	'pfam' => array('name' => 'Protein Families'),
 	'pharmgkb' => array('name' => 'PharmGKB knowledge base'),
 	'pir'=> array('name' => 'Protein Information Resource'),
-	'pirsf' => array('name' => 'Protein Information Resource SuperFamily','url'=>'http://pir.georgetown.edu/pirsf/'),
+	'pirsf' => array(
+		'name' => 'Protein Information Resource SuperFamily',
+		'url'=>'http://pir.georgetown.edu/pirsf/',
+		'identifiers.org'=>'pirsf'),
 	'prf'=> array('name' => 'Protein Research Foundation'),
 	'pride'=>array('name'=> 'PRIDE'),
 	'prodom'=> array('name' => 'Protein Domain Families'),
 	'profilescan'=> array('name' => ''),
-	'pubmed'=> array('name' => 'PubMed'),
+	'pubmed'=> array(
+		'name' => 'PubMed',
+		'identifiers.org'=>'pubmed'),
 	'pmc'=>array('name'=>'PubMed Central'),
 	'pubchemcompound'=> array('name' => '', 'synonyms' => array('PubChem Compound')),
 	'pubchemsubstance'=> array('name' => '', 'synonyms' => array('PubChem Substance')),
-	'reactome'=> array('name' => 'REACTOME','synonyms'=>array('reactome database identifier')),
+	'reactome'=> array(
+		'name' => 'REACTOME',
+		'synonyms'=>array('reactome database identifier'),
+		'identifiers.org'=>'reactome'),
 	'refseq' => array('name' => 'NCBI Reference Sequence Database (RefSeq)','part-of' => 'ncbi','synonyms'=>'ref_seq'),
 	'registry'=> array('name' => 'Bio2RDF Namespace Registry'),
 	'registry_dataset'=> array('name' => 'Bio2RDF Dataset Registry'),
@@ -244,7 +285,11 @@ class CNamespace
 	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/', 'synonyms'=>'umbbd-compounds'),
 	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
-	'uniprot'=> array('name' => 'UniProt','part-of' => 'uniprot', 'synonyms'=>'uniprotkb'),
+	'uniprot'=> array(
+		'name' => 'UniProt',
+		'part-of' => 'uniprot', 
+		'synonyms'=>'uniprotkb',
+		'identifiers.org'=>'uniprot'),
 	'uniprotkb_var' => array('name'=>'UniProt variant'),
 	'uniref'=> array('name' => 'UniRef','part-of' => 'uniprot'),
 	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
@@ -288,6 +333,10 @@ class CNamespace
 				if($b == "obo") {
 					$this->all_ns[$ns]['uri'] = "http://purl.obolibrary.org/$ns/";
 					$this->ns_map["obo$ns"][] = $ns; 
+					
+					if(!isset($obj['identifiers.org'])) 
+						$this->all_ns[$ns]['identifiers.org'] = "http://identifiers.org/obo.$ns/";
+					else $this->all_ns[$ns]['identifiers.org'] = $obj['identifiers.org'];
 				}
 				
 			} //foreach
