@@ -333,7 +333,7 @@ class RDFFactory extends Application
 			"restricted-by-source-license" => "check source for further restrictions"
 		);
 		if(!isset($rights[$right])) {
-			trigger_error("Unable to find $right in ".implode(",",keys($rights))." of rights");
+			trigger_error("Unable to find $right in ".implode(",",array_keys($rights))." of rights");
 			return FALSE;
 		}
 		return $rights[$right];
