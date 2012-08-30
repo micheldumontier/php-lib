@@ -126,6 +126,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			$o['datatype'] = $a['o_datatype'];
 			$index[$a['s']][$a['p']][] = $o;
 		}
+		if(!isset($index)) return '';
 		
 		// generate the bio2rdf / identifiers.org xrefs
 		foreach($index AS $s => $p_list) {
@@ -154,6 +155,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 										continue;
 									}
 								}
+								if($db == "ICD") $db = "icd9";
 								$qname = $nso->MapQName("$db:$id");
 								$nso->ParseQName($qname,$db,$id);
 								$new_uri = $nso->getFQURI($qname);
