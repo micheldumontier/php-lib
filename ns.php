@@ -72,7 +72,7 @@ class CNamespace
 	'bto' => array('name' => 'BRENDA tissue ontology','synonyms'=>'brendatissueontology'),
 	'cco' => array('name' => 'Cell cycle ontology','synonyms'=>'cell cycle ontology'),
 	'chebi' => array('name' => 'Chemical Entities of Biological Interest','part-of'=>'ebi','url'=>'http://www.ebi.ac.uk/chebi/'),	
-	'clo' => array('name' => 'Cell line ontology'),
+	'clo' => array('name' => 'Cell line ontology','synonyms'=>'cl'),
 	'cto' => array('name' => 'Cell type ontology','synonyms'=>'cell type ontology'),
 	'do' => array('name' => 'Human Disease Ontology','synonyms'=>array('human disease ontology','doid')),
 	'eco'       => array('name' => 'Evidence Code Ontology','synonyms'=>'evidence codes ontology'),
@@ -113,6 +113,9 @@ class CNamespace
 	'3dmet'	=> array('name'=>'3Dmet'),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
 	'alfred'	=> array('name' => 'Allele Frequency Database','url'=>'http://alfred.med.yale.edu/'),
+	'ath' => array(
+		'name' => 'Arabidopsis Hormone Database',
+		'url' => 'http://ahd.cbi.pku.edu.cn/'),
 	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
 	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
 	'biocyc'    => array('name' => 'CYC genome database'),
@@ -207,6 +210,8 @@ class CNamespace
 	'kegg' => array(
 		'name' => 'KEGG',
 		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction')),
+	'kegg:hsa' => array('synonyms'=>'hsa'),
+
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
 	'lipidmaps' => array('name'=>'LIPIDMAPS database of lipds'),
 	'maizegdb' => array('name'=>''),
@@ -223,6 +228,7 @@ class CNamespace
 	'narcis' => array(
 		'name' => 'NARCIS gateway to scholarly information in The Netherlands',
 		'url'=>'http://www.narcis.nl/',
+		'synonyms'=>'oai',
 		'identifiers.org'=>'narcis'),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
 	'ncbo' => array('name' => 'National Center for Biomedical Ontology','url'=>'http://www.bioontology.org/'),
