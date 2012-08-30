@@ -200,6 +200,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 							if(count($index[$s][$p]) == 0) {
 								unset($index[$s][$p]);
 							}
+							
 							$o = '';
 							$o['value'] = $new_uri;
 							$o['type'] = 'uri';
@@ -249,7 +250,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				foreach($o_list AS $o) {
 					if($o['type'] == 'uri') {
 						$o_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$o['value']);				
-						$rdf .= $this->Quad($s_uri,$p ,$o_uri);
+						$rdf .= $this->Quad($s_uri,$p,$o_uri);
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
 							$rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:ObjectProperty"));
@@ -259,7 +260,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
 							$rdf .= $this->Quad($p,$nso->GetFQURI("rdf:type"), $nso->GetFQURI("owl:ObjectProperty"));
-						}						
+						}
 					} else if($o['type'] == 'literal') {
 						$literal = $this->SafeLiteral($o['value']);
 						if($literal == '') continue;
@@ -280,7 +281,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 							}
 						}
 						$rdf .= $this->QuadL($s_uri,$p,$literal,null,$datatype);
-					}
+					}				
 				} // foreach o_list
 			} // foreach p_list
 		} // foreach index
