@@ -264,6 +264,7 @@ class CNamespace
 	'pmc'=>array('name'=>'PubMed Central'),
 	'pubchemcompound'=> array('name' => '', 'synonyms' => array('PubChem Compound')),
 	'pubchemsubstance'=> array('name' => '', 'synonyms' => array('PubChem Substance')),
+	'pubchembioactivity'=> array('name' => '', 'synonyms' => array('PubChem Bioactivity')),
 	'reactome'=> array(
 		'name' => 'REACTOME',
 		'synonyms'=>array('reactome database identifier'),
