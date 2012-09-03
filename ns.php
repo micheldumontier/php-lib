@@ -215,6 +215,7 @@ class CNamespace
 	'mgi' => array('name'=>'Mouse Genome Informatics'),
 	'mint' => array('name' => 'Molecular INTeraction database'),
 	'mips' => array('name' => '','synonyms'=>'mppi'),
+	'miriam' => array('name' => 'MIRIAM namespace registry'),
 	'mirbase' => array('name'=> ''),
 	'modbase' => array('name' => 'ModBase: Database of Comparative Protein Structure Models','url'=>'http://modbase.compbio.ucsf.edu/'),
 	'mpact' => array('name' => ''),
