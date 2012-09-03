@@ -284,7 +284,7 @@ class RDFFactory extends Application
 	
 	function DeleteBio2RDFReleaseFiles($dir)
 	{
-		$files = Utils::GetDirFiles($dir,"/bio2rdf\-.*\.ttl/");
+		$files = Utils::GetDirFiles($dir,"/bio2rdf\-.*\.nt/");
 		foreach($files AS $file) {
 			unlink($dir.$file);
 		}
