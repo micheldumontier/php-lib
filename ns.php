@@ -180,6 +180,7 @@ class CNamespace
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
+	'homologene' => array('name' => 'homologene'),
 	'huge'		=> array(
 		'name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed',
 		'url'=>'http://www.kazusa.or.jp/huge/'),
@@ -245,6 +246,7 @@ class CNamespace
 	'ordr'=> array('name'=>'Office of Rare Disease Research'),
 	'patternscan' => array('name' => ''),
 	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System'),
+	'pathwaycommons'=> array('name' => '', 'synonyms' => array('Pathway commons')),
 	'pdb'=> array('name' => 'Protein Databank','synonyms'=>array('wwpdb','pdbe','rcsb pdb')),
 	'peroxibase' => array('name' => 'Peroxidase database','url'=>'http://peroxibase.isb-sib.ch/'),
 	'pfam' => array('name' => 'Protein Families'),
