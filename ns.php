@@ -180,6 +180,7 @@ class CNamespace
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
+	'homologene' => array('name' => 'homologene'),
 	'huge'		=> array(
 		'name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed',
 		'url'=>'http://www.kazusa.or.jp/huge/'),
