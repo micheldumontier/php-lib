@@ -150,6 +150,9 @@ Class BioPAX2Bio2RDF extends RDFFactory
 						
 							// generate the id
 							if(!isset($xrefs[$o_uri])) {
+								if(!isset($xref_obj[$this->biopax['id']][0]['value'])) {
+									continue;
+								}
 								$id_string = $xref_obj[$this->biopax['id']][0]['value'];
 								$nso->ParseQName($id_string,$db,$id);
 								if(!$db) {
