@@ -113,6 +113,7 @@ class CNamespace
 	'3dmet'	=> array('name'=>'3Dmet'),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
 	'alfred'	=> array('name' => 'Allele Frequency Database','url'=>'http://alfred.med.yale.edu/'),
+	'aspgd' => array('name'=>'aspergillus genome database','url'=>'http://www.aspgd.org/'),
 	'ath' => array(
 		'name' => 'Arabidopsis Hormone Database',
 		'url' => 'http://ahd.cbi.pku.edu.cn/'),
