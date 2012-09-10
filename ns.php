@@ -290,6 +290,9 @@ class CNamespace
 	'3dmet'	=> array('name'=>'3Dmet'),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
 	'alfred'	=> array('name' => 'Allele Frequency Database','url'=>'http://alfred.med.yale.edu/'),
+	'ath' => array(
+		'name' => 'Arabidopsis Hormone Database',
+		'url' => 'http://ahd.cbi.pku.edu.cn/'),
 	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
 	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
 	'biocyc'    => array('name' => 'CYC genome database'),
@@ -355,6 +358,7 @@ class CNamespace
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
+	'homologene' => array('name' => 'homologene'),
 	'huge'		=> array(
 		'name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed',
 		'url'=>'http://www.kazusa.or.jp/huge/'),
@@ -370,6 +374,7 @@ class CNamespace
 		'identifiers.org'=>'interpro'),
 	'insdc'     => array('ddbj/embl/genbank', 'synonyms'=>'"ddbj/embl/genbank'),
 	'ipi'       => array('name' => 'International Protein Index'),
+	'iproclass' => array('name' => 'iProClass Protein Information Resource'),
 	'irefindex'         => array('name' => 'iRefIndex'),
 	'irefindex_rogid'   => array('name' => 'iRefIndex','part-of' => 'irefindex','synonyms'=>'rogid'),
 	'irefindex_irogid'  => array('name' => 'iRefIndex','part-of' => 'irefindex','synonyms'=>'irogid'),
@@ -386,6 +391,7 @@ class CNamespace
 	'kegg' => array(
 		'name' => 'KEGG',
 		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction','kegg:ecj')),
+	'kegg:hsa' => array('synonyms'=>'hsa'),
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
 	'lipidmaps' => array('name'=>'LIPIDMAPS database of lipds'),
 	'maizegdb' => array('name'=>''),
@@ -403,6 +409,7 @@ class CNamespace
 	'narcis' => array(
 		'name' => 'NARCIS gateway to scholarly information in The Netherlands',
 		'url'=>'http://www.narcis.nl/',
+		'synonyms'=>'oai',
 		'identifiers.org'=>'narcis'),
 	'ncbi' => array('name' => 'National Center for Biotechnology Information'),
 	'ncbo' => array('name' => 'National Center for Biomedical Ontology','url'=>'http://www.bioontology.org/'),
@@ -437,6 +444,7 @@ class CNamespace
 	'pmc'=>array('name'=>'PubMed Central'),
 	'pubchemcompound'=> array('name' => '', 'synonyms' => array('PubChem Compound','pubchem')),
 	'pubchemsubstance'=> array('name' => '', 'synonyms' => array('PubChem Substance')),
+	'pubchembioactivity'=> array('name' => '', 'synonyms' => array('PubChem Bioactivity')),
 	'reactome'=> array(
 		'name' => 'REACTOME',
 		'synonyms'=>array('reactome database identifier'),
@@ -461,6 +469,7 @@ class CNamespace
 	'trembl'=> array('name' => 'TrEMBL'),
 	'ttd'=>array('name'=>'Therapeutic Targets Database', 'url'=>'http://bidd.nus.edu.sg/group/ttd/'),
 	'twosides'=>array('name'=>'Drug-Drug Associations','url'=>'http://pharmgkb.org'),
+	'ucsc' => array('name' => 'UCSC Genome Browser', 'url'=>'http://genome.ucsc.edu/'),
 	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/', 'synonyms'=>'umbbd-compounds'),
 	'unigene'=> array('name'=>'UniGene'),
 	'uniparc'=> array('name' => 'UniParc','part-of' => 'uniprot'),
