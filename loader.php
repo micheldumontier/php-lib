@@ -3,7 +3,7 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $isql = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql = "/virtuoso-opensource/bin/isql";
+$isql = "/virtuoso-opensource/bin/isql";
 
 $options = array(
  "file" => "filename",
@@ -147,7 +147,7 @@ foreach($files AS $file) {
 	}
 
 	// unzip if necessary
-	$f = $file;
+	$f = str_replace('\\','/',$file);;
 	$fcmd = 'file_to_string_output';
 	if(strstr($file,".gz")) {
 		$gzfile = $file;
