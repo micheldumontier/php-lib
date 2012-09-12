@@ -120,6 +120,7 @@ class CNamespace
 	'camjedb'   => array('name' => 'Camjedb is a comprehensive database for information on the genome of Campylobacter jejuni','url'=> 'http://www.sanger.ac.uk/Projects/C_jejuni/'),
 	'candida'   => array('name' => 'Candida Genome Database','url'=>'http://www.candidagenome.org/'),
 	'cas'       => array('name' => 'Chemical Abstracts Service','url'=>'http://www.cas.org/','synonyms'=>array('chemicalabstracts')),
+	'ccd'		=> array('name' => 'NCBI Consensus CDS (CCDS) project', 'url' => 'http://www.ncbi.nlm.nih.gov/CCDS/'),
 	'cgd'		=> array('name' => 'Candida Genome Database', 'url' => 'http://www.candidagenome.org/'),
 	'chembl'    => array('name' => 'ChEMBL compound bioassay data'),
 	'chemblcompound' => array('name' => 'ChEMBL compound','synonyms'=>'chembl.compound'),
