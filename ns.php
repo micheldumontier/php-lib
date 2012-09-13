@@ -287,18 +287,46 @@ class CNamespace
 
   private $datasets = array(
   //'id' => array('name' => '','description' => '','uri' => '', 'url'=>'', 'synonyms' => array(), 'type' => 'dataset','terminology','part-of' => 'ns'),
+	'2dbaseecoli' => array(
+		'name' => '2D-PAGE Database of Escherichia coli',
+		'url' => 'http://2dbase.techfak.uni-bielefeld.de/',
+		'synonyms' => array('2dbase-ecoli'),
+	),
 	'3dmet'	=> array('name'=>'3Dmet'),
-	'aarhus_ghent_2dpage' => array('name' => 'Human keratinocyte 2D gel protein database from Aarhus and Ghent universities'),
+	'aarhus_ghent_2dpage' => array(
+		'name' => 'Human keratinocyte 2D gel protein database from Aarhus and Ghent universities',
+		'synonyms' => array('aarhus-ghent-2dpage', 'database/Aarhus'),
+	),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
 	'agd' => array('name'=>'Ashbya genome database', 'url' => 'http://agd.vital-it.ch/index.html'),
 	'alfred'	=> array('name' => 'Allele Frequency Database','url'=>'http://alfred.med.yale.edu/'),
 	'allergome' => array('name' => 'Allergome; a platform for allergen knowledge', 'url' => 'http://www.allergome.org/'),
+	'anu2dpage' => array(
+		'name' => 'Australian National University 2-DE database',
+		'url' => 'http://semele.anu.edu.au',
+		'synonyms' => array('anu-2dpage'),
+	),
+	'aracxyls' => array(
+		'name' => 'AraC-XylS; a database on a family of Helix-Turn-Helix transcription factors from bacteria',
+		'url' => 'http://www.eez.csic.es/arac-xyls/',
+		'synonyms' => array('arac-xyls')
+	),
 	'arachnoserver' => array('name' => 'ArachnoServer: Spider toxin database', 'url' => 'http://arachnoserver.org'),
+	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
+	'arrayexpress' => array(
+		'name' => 'ArrayExpress repository for microarray data',
+		'url' => 'http://www.ebi.ac.uk/arrayexpress/',
+	),
 	'ath' => array(
 		'name' => 'Arabidopsis Hormone Database',
 		'url' => 'http://ahd.cbi.pku.edu.cn/'),
-	'aracyc'    => array('name' => 'Aradopsis CYC genome database','url'=>'http://www.arabidopsis.org/biocyc/'),
+	'bgee' => array(
+		'name' => ' Bgee dataBase for Gene Expression Evolution',
+		'url' => 'http://bgee.unil.ch'
+	),
 	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
+	'bind'      => array('name' => 'Biomolecular Interaction Database','synonyms'=>'bind_translation'),
+	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
 	'biocyc'    => array('name' => 'CYC genome database'),
 	'bioportal' => array('name' => 'BioPortal'),
 	'bio2rdf'   => array('name' => 'Bio2RDF', 'url'=>'http://bio2rdf.org'),
@@ -307,14 +335,17 @@ class CNamespace
 		'name' => 'Biomodels database', 
 		'identifiers.org'=>'biomodels.db',
 		'synonyms'=>array('biomodelsdatabase','biomodels.db')),
-	'bind'      => array('name' => 'Biomolecular Interaction Database','synonyms'=>'bind_translation'),
-	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
 	'biogrid'   => array('name' => 'BioGrid Interaction Database','url'=>'http://thebiogrid.org/', 'synonyms'=> array('grid')),
 	'brenda'    => array('name' => 'BRENDA Enzyme database', 'url'=>'http://www.brenda-enzymes.info/'),
 	'cabri'     => array('name' => 'Common Access to Biotechnological Resources and Information', 'description' => 'an online service where users can search a number of European Biological Resource Centre catalogues', 'url'=> 'http://www.cabri.org/'),
 	'camjedb'   => array('name' => 'Camjedb is a comprehensive database for information on the genome of Campylobacter jejuni','url'=> 'http://www.sanger.ac.uk/Projects/C_jejuni/'),
 	'candida'   => array('name' => 'Candida Genome Database','url'=>'http://www.candidagenome.org/'),
 	'cas'       => array('name' => 'Chemical Abstracts Service','url'=>'http://www.cas.org/','synonyms'=>array('chemicalabstracts')),
+	'cazy'		=> array(
+		'name' => 'Carbohydrate-Active enZymes',
+		'url' => 'http://www.cazy.org/',
+	),
+	'ccd'		=> array('name' => 'NCBI Consensus CDS (CCDS) project', 'url' => 'http://www.ncbi.nlm.nih.gov/CCDS/'),
 	'cgd'		=> array('name' => 'Candida Genome Database', 'url' => 'http://www.candidagenome.org/'),
 	'chembl'    => array('name' => 'ChEMBL compound bioassay data'),
 	'chemblcompound' => array('name' => 'ChEMBL compound','synonyms'=>'chembl.compound'),
@@ -322,7 +353,17 @@ class CNamespace
 	'chemspider' => array('name' => 'ChemSpider','url'=>'http://www.chemspider.com/'),
 	'cleanex'	=> array('name' => 'CleanEx database of gene expression profiles', 'url' => 'http://www.cleanex.isb-sib.ch/'),
 	'coil'      => array('name' => 'Database of parallel two-stranded coiled-coils','url'=>'http://www.ch.embnet.org/software/coils/COILS_doc.html'),
+	'compluyeast2dpage' => array(
+		'name' => '2-DE database at Universidad Complutense de Madrid',
+		'url' => 'http://compluyeast2dpage.dacya.ucm.es/',
+		'synonyms' => array('compluyeast-2dpage'),
+	),
 	'conoserver' => array('name' => 'ConoServer: Cone snail toxin database', 'url' => 'http://www.conoserver.org/'),
+	'cornea2dpage' => array(
+		'name' => 'Human Cornea 2-DE database',
+		'url' => 'http://www.cornea-proteomics.com/',
+		'synonyms' => array('cornea-2dpage'),
+	),
 	'corum'     => array('name' => 'Comprehensive Resource of Mammalian protein Complexes', 'url'=>'http://mips.helmholtz-muenchen.de/genre/proj/corum/'),
 	'cpath'     => array('name' => 'CPATH - pathwaycommons resources'),
 	'ctd'       => array('name' => 'Comparative Toxicogenomics Database','url'=>'http://ctdbase.org/'),
@@ -338,28 +379,41 @@ class CNamespace
 	'doi' => array(
 		'name'=>'Digital Object Identifier',
 		'identifiers.org'=>'doi'),
+	'dosaccobs2dpage' => array(
+		'name' => 'DOSAC-COBS 2D-PAGE database',
+		'url' => 'http://www.dosac.unipa.it/2d/',
+		'synonyms' => array('dosac-cobs-2dpage'),
+	),
 	'dpd'		=> array('name' => 'Health Canada Drug Product Database','url'=>'http://www.hc-sc.gc.ca/dhp-mps/prodpharma/databasdon/index-eng.php'),
 	'drugbank'  => array('name' => 'DrugBank','url'=>'http://drugbank.ca'),
 	'drugbank_target'  => array('name' => 'DrugBank targets'),
 	'ec' => array(
 		'name' => 'Enzyme Classification', 
-		'synonyms'=>array('enzymeconsortrium','enzyme consortium','enzyme nomenclature','ec-code','ecnumber'),
+		'synonyms'=>array('enzymeconsortrium','enzyme consortium','enzyme nomenclature','ec-code','ecnumber', 'enzyme'),
 		'identifiers.org'=>'ec-code'),
 	'echobase'	=> array('name' => 'EchoBASE - an integrated post-genomic database for E. coli', 'url' => 'http://www.york.ac.uk/res/thomas/'),
 	'eco2dbase' => array('name' => 'Escherichia coli gene-protein database; a 2-DE gel database'),
 	'ecocyc'    => array('name' => 'E.coli CYC database'),
 	'ecogene' 	=> array('name' => 'Escherichia coli strain K12 genome database', 'url' => 'http://www.ecogene.org/'),
 	'eggnog'	=> array('name' => 'evolutionary genealogy of genes: Non-supervised Orthologous Groups', 'url' => 'http://eggnog.embl.de/'),
-	'embl'      => array('name' => 'EMBL sequence database','synonyms'=>'emb'),
+	'embl'      => array('name' => 'EMBL sequence database','synonyms'=> array('emb', 'embl-cds', 'embl_con', 'embl_tpa', 'emblwgs')),
 	'ensembl'   => array(
 		'name' => 'EnsEMBL genomic database',
 		'identifiers.org'=>'ensembl'),
 	'ensemblgenomes' => array('name' => 'EnsEMBL genomes'),
-	'ensembl'   => array('name' => 'ENSEMBL'),
-	'epo_prt'	=> array('name' => 'Protein sequences extracted from European Patent Office (EPO) patents', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+51qsJ1gu6Ab+-lib+EPO_PRT'),
+	'ensembl'   => array(
+		'name' => 'Ensembl eukaryotic genome annotation project',
+		'url' => 'http://www.ensembl.org/',
+		'synonyms' => array('ensemblbacteria', 'ensemblfungi', 'ensemblmetazoa', 'ensemblplants', 'ensemblprotists'),
+	),
+	'epo_prt'	=> array('name' => 'Protein sequences extracted from European Patent Office (EPO) patents', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+51qsJ1gu6Ab+-lib+EPO_PRT', 'synonyms' => 'epo'),
 	'euhcvdb'	=> array('name' => 'European Hepatitis C Virus database', 'url' => 'http://euhcvdb.ibcp.fr/euHCVdb/'),
 	'eupathdb'  => array('name' => 'Eukaryotic Pathogen Database Resources', 'url' => 'http://www.eupathdb.org/'),
 	'euroscarf' => array('name' => 'European Saccharomyces Cerevisiae Archive for Functional Analysis', 'url' => 'http://web.uni-frankfurt.de/fb15/mikro/euroscarf/'),
+	'evolutionarytrace' => array(
+		'name' => 'Relative evolutionary importance of amino acids within a protein sequence',
+		'url' => 'http://mammoth.bcm.tmc.edu/ETserver.html',
+	),
 	'flybase'   => array('name' => 'FlyBase','url'=>'http://flybase.org/'),
 	'fprintscan' => array('name' => ''),
 	'genatlas'	=> array('name' => 'GenAtlas'),
@@ -370,19 +424,40 @@ class CNamespace
 	'genefarm'	=> array('name' => 'Structural and functional annotation of Arabidopsis thaliana gene and protein families', 'url' => 'http://urgi.versailles.inra.fr/Genefarm/index.html'),
 	'geneid'    => array('name' => 'NCBI Gene', 'synonyms' => array('ncbigene','entrez gene','ENTREZ_GENE','ENTREZGENE/LOCUSLINK','entrez gene/locuslink'), 'url'=>'http://www.ncbi.nlm.nih.gov/gene/'),
 	'genetree'	=> array('name' => 'GeneTree', 'url' => 'http://ensemblgenomes.org'),
+	'genevestigator' => array(
+		'name' => 'Genevestigator',
+		'url' => 'http://www.genevestigator.com',
+	),
 	'genolist'	=> array('name' => 'GenoList Integrated Environment for the Analysis of Microbial Genomes', 'url' => 'http://genodb.pasteur.fr/cgi-bin/WebObjects/GenoList.woa/'),
 	'genomereviews' => array('name' => 'Genome Reviews; an annotated view of completely sequenced genomes', 'url' => 'http://www.ebi.ac.uk/GenomeReviews/'),
+	'genomernai' => array(
+		'name' => 'Database of phenotypes from RNA interference screens in Drosophila and Homo sapiens',
+		'url' => 'http://genomernai.de/GenomeRNAi/',
+	),
 	'germonline' => array('name' => 'GermOnline','url'=>'http://www.germonline.org'),
 	'gi'        => array('name' => 'NCBI GI'),
+	'glycosuitedb' => array(
+		'name' => 'GlycoSuiteDB; an annotated and curated relational database of glycan structures',
+		'url' => 'http://glycosuitedb.expasy.org/',
+	),
 	'gmelin'	=> array('name'=>'German handbook/encyclopedia of inorganic compounds initiated by Leopold Gmelin'),
-	'goa'		=> array('name' => 'Gene Ontology Annotation (UniProt-GOA) Database', 'url' => 'http://www.ebi.ac.uk/GOA/'),
+	'goa'		=> array('name' => 'Gene Ontology Annotation (UniProt-GOA) Database', 'url' => 'http://www.ebi.ac.uk/GOA/', 'synonyms' => 'goa-projects'),
 	'gp'        => array('name' => 'NCBI Genome database','part-of'=>'ncbi'),
+	'gpcrdb' => array(
+		'name' => 'Information system for G protein-coupled receptors (GPCRs)',
+		'url' => 'http://www.gpcr.org/7tm/',
+	),
+	'gramene' => array(
+		'name' => 'Gramene; a comparative mapping resource for grains',
+		'url' => 'http://www.gramene.org/',
+	),
 	'gtp'		=> array('name' => 'Guide to Pharmacology'),
-	'hamap'		=> array('name'=>'hapmap project'),
+	'hamap'		=> array('name' => 'High-quality Automated and Manual Annotation of microbial Proteomes', 'url' => 'http://hamap.expasy.org/'),
+	'hapmap'	=> array('name'=>'International HapMap Project', 'url' => 'http://hapmap.ncbi.nlm.nih.gov/'),
 	'het'       => array('name' => 'PDB heteratom vocabulary', 'url'=>'http://www.ebi.ac.uk/pdbsum/'),
 	'hprd'      => array('name' => 'Human Protein Reference Database'),
 	'hgnc'		=> array('name' => 'HUGO Gene Nomenclature Committee (HGNC)'),
-	'hinvdb'	=> array('name' => 'H-Invitational Database, human transcriptome db', 'url' => 'http://www.h-invitational.jp/'),
+	'hinvdb'	=> array('name' => 'H-Invitational Database, human transcriptome db', 'url' => 'http://www.h-invitational.jp/', 'synonyms' => array('h_inv', 'h-invdb')),
 	'hogenom'	=> array('name' => 'The HOGENOM Database of Homologous Genes from Fully Sequenced Organisms', 'url' => 'http://pbil.univ-lyon1.fr/databases/hogenom.php'),
 	'homologene'	=> array('name' => 'NCBI Homologene', 'url'=>'http://www.ncbi.nlm.nih.gov/homologene', 'part-of' => 'ncbi'),
 	'hovergen'	=> array('name' => 'The HOVERGEN Database of Homologous Vertebrate Genes', 'url' => 'http://pbil.univ-lyon1.fr/databases/hovergen.html'),
@@ -392,10 +467,19 @@ class CNamespace
 		'name' => 'Database of Human Unidentified Gene-Encoded Large Proteins Analyzed',
 		'url'=>'http://www.kazusa.or.jp/huge/'),
 	'humancyc'  => array('name' => 'Human CYC database'),
+	'imgt' => array(
+		'name' => 'ImMunoGeneTics db',
+		'url' => 'http://imgt.cines.fr/'
+	),
 	'inchi' => array('name'=>'InChI chemical identifier'),
 	'innatedb'  => array('name' => ''),
+	'inparanoid' => array(
+		'name' => 'InParanoid: Eukaryotic Ortholog Groups',
+		'url' => 'http://inparanoid.sbc.su.se/',
+	),
 	'intact'    => array(
 		'name' => 'Intact Interaction Database',
+		'url' => 'http://www.ebi.ac.uk/intact/',
 		'identifiers.org'=>'intact'),
 	'interpro'  => array(
 		'name' => 'InterPro', 
@@ -417,12 +501,12 @@ class CNamespace
 	'iuphar'		=> array('name' => 'iuphar'),
 	'iupharreceptor' => array('name' => 'iuphar receptor', 'part-of' => 'iuphar'),
 	'iupharligand' => array('name' => '','part-of'=>'iuphar'),
-	'jpo_prt' 	=> array('name' => 'Protein sequences extracted from patent applications to the Japanese Patent Office (JPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG2g+-lib+JPO_PRT'),
+	'jpo_prt' 	=> array('name' => 'Protein sequences extracted from patent applications to the Japanese Patent Office (JPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG2g+-lib+JPO_PRT', 'synonyms' => 'jpo'),
 	'kegg' => array(
 		'name' => 'KEGG',
 		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction','kegg:ecj')),
 	'kegg:hsa' => array('synonyms'=>'hsa'),
-	'kipo_prt'	=> array('name' => 'Protein sequences extracted from patent applications to the Korean Intellectual Property Office (KIPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG99+-lib+KIPO_PRT'),
+	'kipo_prt'	=> array('name' => 'Protein sequences extracted from patent applications to the Korean Intellectual Property Office (KIPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG99+-lib+KIPO_PRT', 'synonyms' => 'kipo'),
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
 	'ko' => array('name' => 'KEGG Orthology', 'url' => 'http://www.genome.jp/kegg/'),
 	'legiolist' => array('name' => 'Legionella pneumophila genome database', 'url' => 'http://genolist.pasteur.fr/LegioList/'),
@@ -433,6 +517,10 @@ class CNamespace
 	'merops'	=> array('name' => 'MEROPS protease database', 'url' => 'http://merops.sanger.ac.uk/'),
 	'metacyc' => array('name' => 'Encyclopedia of Metabolic Pathways'),
 	'mgi' => array('name'=>'Mouse Genome Informatics'),
+	'micado' => array(
+		'name' => 'Microbial advanced database',
+		'url' => 'http://genome.jouy.inra.fr/cgi-bin/micado/index.cgi'
+	),
 	'mint' => array('name' => 'Molecular INTeraction database'),
 	'mips' => array('name' => '','synonyms'=>'mppi'),
 	'miriam' => array('name' => 'MIRIAM namespace registry'),
@@ -454,10 +542,16 @@ class CNamespace
 	'nextprot' => array('name' => 'neXtProt; the human protein knowledge platform', 'url' => 'http://www.nextprot.org/'),
 	'nistchemistrywebbook' => array('name'=>'nist chemistry webbook'),
 	'offsides' => array('name' => 'Off-label side effects','url'=>'http://pharmgkb.org'),
+	'ogp' => array(
+		'name' => 'Oxford GlycoProteomics 2-DE database',
+		'url' => 'http://proteomewww.bioch.ox.ac.uk/2d/2d.html'
+	),
 	'oma' => array('name' => 'Identification of Orthologs from Complete Genome Data', 'url' => 'http://www.omabrowser.org'),
 	'omim' => array(
 		'name' => 'Online Mendelian Inheritance in Man',
-		'identifiers.org'=>'omim'),
+		'identifiers.org'=>'omim',
+		'synonyms' => 'mim'
+	),
 	'ophid' => array('name' => 'Online predicted human interaction database'),
 	'orphanet'=>array('name'=> 'Orphanet : The portal for rare diseases and orphan drugs'),
 	'ordr'=> array('name'=>'Office of Rare Disease Research'),
@@ -465,32 +559,84 @@ class CNamespace
 	'patric' => array('name' => 'Pathosystems Resource Integration Center (PATRIC)', 'url' => 'http://www.patricbrc.org/'),
 	'patternscan' => array('name' => ''),
 	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System'),
-	'pdb'=> array('name' => 'Protein Databank','synonyms'=>array('wwpdb','pdbe','rcsb pdb','proteindatabank')),
+	'pdb'=> array('name' => 'Protein Databank','synonyms'=>array('wwpdb','pdbe','rcsb pdb','proteindatabank', 'pdbj', 'pdbsum')),
+	'peptideatlas' => array(
+		'name' => 'PeptideAtlas',
+		'url' => 'http://www.peptideatlas.org'
+	),
 	'peroxibase' => array('name' => 'Peroxidase database','url'=>'http://peroxibase.isb-sib.ch/'),
 	'pfam' => array('name' => 'Protein Families'),
 	'pharmgkb' => array('name' => 'PharmGKB knowledge base'),
+	'phci2dpage' => array(
+		'name' => 'Parasite host cell interaction 2D-PAGE database',
+		'url' => 'http://www.gram.au.dk/2d/2d.html',
+		'synonyms' => 'phci-2dpage'
+	),
+	'phosphosite' => array(
+		'name' => 'Phosphorylation site database',
+		'url' => 'http://www.phosphosite.org'
+	),
 	'phossite' => array('name' => 'Phosphorylation site database for Archaea and Bacteria', 'url' => 'http://www.phosphorylation.biochem.vt.edu/'),
+	'phylomedb' => array(
+		'name' => 'Database for complete collections of gene phylogenies',
+		'url' => 'http://phylomedb.org/'
+	),
 	'pir'=> array('name' => 'Protein Information Resource'),
-
 	'pirsf' => array(
 		'name' => 'Protein Information Resource SuperFamily',
 		'url'=>'http://pir.georgetown.edu/pirsf/',
 		'identifiers.org'=>'pirsf'),
+	'pmapcutdb' => array(
+		'name' => 'CutDB - Proteolytic event database',
+		'url' => 'http://www.proteolysis.org/',
+		'synonyms' => 'pmap-cutdb'
+	),
+	'pmma2dpage' => array(
+		'name' => 'Purkyne Military Medical Academy 2D-PAGE database',
+		'url' => 'http://www.pmma.pmfhk.cz/2d/2d.html',
+		'synonyms' => 'pmma-2dpage'
+	),
 	'pombase' => array('name' => 'Schizosaccharomyces pombe database', 'url' => 'http://www.pombase.org/'),
 	'pptasedb' => array('name' => 'Prokaryotic Protein Phosphatase Database', 'url' => 'http://www.phosphatase.biochem.vt.edu'),
 	'prf'=> array('name' => 'Protein Research Foundation', 'url' => 'http://www.prf.or.jp'),
 	'pride'=>array('name'=> 'PRIDE'),
+	"prints" => array(
+		'name' => 'Protein Motif fingerprint database; a protein domain database',
+		'url' => 'http://umber.sbs.man.ac.uk/dbbrowser/PRINTS/'
+	),
 	'prodom'=> array('name' => 'Protein Domain Families'),
 	'profilescan'=> array('name' => ''),
+	'promex' => array(
+		'name' => 'Protein Mass spectra EXtraction',
+		'url' => 'http://www.promexdb.org/'
+	),
+	'prosite' => array(
+		'name' => 'PROSITE; a protein domain and family database',
+		'url' => 'http://prosite.expasy.org/',
+	),
 	'protclustdb' => array('name' => 'Entrez Protein Clusters', 'url' => 'http://www.ncbi.nlm.nih.gov/sites/entrez?db=proteinclusters'),
+	'proteinmodelportal' => array(
+		'name' => 'Protein Model Portal of the PSI-Nature Structural Biology Knowledgebase',
+		'url' => 'http://www.proteinmodelportal.org/'
+	),
+	'protonet' => array(
+		'name' => 'ProtoNet; Automatic hierarchical classification of proteins',
+		'url' => 'http://www.protonet.cs.huji.ac.il/'
+	),
 	'pseudocap' => array('Pseudomonas genome database', 'url' => 'http://www.pseudomonas.com/'),
 	'pubmed'=> array(
 		'name' => 'PubMed',
-		'identifiers.org'=>'pubmed'),
+		'identifiers.org'=>'pubmed',
+		'synonyms' => 'medline'),
 	'pmc'=>array('name'=>'PubMed Central'),
 	'pubchemcompound'=> array('name' => '', 'synonyms' => array('PubChem Compound','pubchem')),
 	'pubchemsubstance'=> array('name' => '', 'synonyms' => array('PubChem Substance')),
 	'pubchembioactivity'=> array('name' => '', 'synonyms' => array('PubChem Bioactivity')),
+	'ratheart2dpage' => array(
+		'name' => '2-DE database of rat heart, at German Heart Institute Berlin, Germany',
+		'url' => 'http://www.mpiib-berlin.mpg.de/2D-PAGE/RAT-HEART/2d/',
+		'synonyms' => 'rat-heart-2dpage'
+	),
 	'reactome'=> array(
 		'name' => 'REACTOME',
 		'synonyms'=>array('reactome database identifier'),
@@ -499,18 +645,61 @@ class CNamespace
 	'refseq' => array('name' => 'NCBI Reference Sequence Database (RefSeq)','part-of' => 'ncbi','synonyms'=>'ref_seq'),
 	'registry'=> array('name' => 'Bio2RDF Namespace Registry'),
 	'registry_dataset'=> array('name' => 'Bio2RDF Dataset Registry'),
+	'reproduction2dpage' => array(
+		'name' => 'REPRODUCTION-2DPAGE',
+		'url' => 'http://reprod.njmu.edu.cn/cgi-bin/2d/2d.cgi',
+		'synonyms' => 'reproduction-2dpage'
+	),
 	'resid' => array('name' => 'RESID database of protein modifications','url'=>'http://www.ebi.ac.uk/RESID/'),
 	'rgd' => array('name' => 'Rat Genome Database', 'url' => 'http://rgd.mcw.edu/'),
+	'rouge' => array(
+		'name' => 'Rodent Unidentified Gene-Encoded large proteins database',
+		'url' => 'http://www.kazusa.or.jp/rouge/'
+	),
 	'sabiork' => array('name' => 'SABIO-RK database of biochemical reaction','uri'=>'http://sabio.h-its.org/biopax#'),
 	'sabiorkcompound' => array('name'=>'SABIO-RK compounds','synonyms'=>'SABIO-RK Compound'),
+	'sbkb' => array(
+		'name' => 'The Structural Biology Knowledgebase',
+		'url' => 'http://sbkb.org/'
+	),
 	'sbpax' => array('name' => 'Systems Biology & BioPAX','uri'=>'http://vcell.org/sbpax3#'),
 	'seg'=> array('name' => ''),
 	'sgd'=> array('name' => 'Saccharomyces Genome Database'),
+	'siena2dpage' => array(
+		'name' => '2D-PAGE database from the Department of Molecular Biology, University of Siena, Italy',
+		'url' => 'http://www.bio-mol.unisi.it/cgi-bin/2d/2d.cgi',
+		'synonyms' => 'siena-2dpage'
+	),
 	'smart'=> array('name' => 'SMART'),
-	'superfamily'=> array('name' => ''),
+	'smr' => array(
+		'name' => 'SWISS-MODEL Repository - a database of annotated 3D protein structure models',
+		'url' => 'http://swissmodel.expasy.org/repository/'
+	),
+	'source' => array(
+		'name' => 'The Stanford Online Universal Resource for Clones and ESTs',
+		'url' => 'http://smd.stanford.edu/cgi-bin/source/sourceSearch',
+	),
+	'string' => array(
+		'name' => 'STRING: functional protein association networks',
+		'url' => 'http://string-db.org'
+	),
+	'superfamily'=> array(
+		'name' => 'Superfamily database of structural and functional annotation',
+		'url' => 'http://supfam.org',
+		'synonyms' => 'supfam'
+	),
+	'swiss2dpage' => array(
+		'name' => 'Two-dimensional polyacrylamide gel electrophoresis database from the Geneva University Hospital',
+		'url' => 'http://world-2dpage.expasy.org/swiss-2dpage/',
+		'synonyms' => 'swiss-2dpage'
+	),
 	'swissprot'=> array('name' => 'SwissProt', 'part-of' => 'uniprot'),
 	'symbol' => array('name' => 'Gene Symbols'),
-	'tair' => array('name' => 'The Arabidopsis Information Resource'),
+	'tair' => array(
+		'name' => 'The Arabidopsis Information Resource',
+		'url' => 'http://www.arabidopsis.org/',
+		'synonyms' => 'tair_arabidopsis'
+	),
 	'tcdb'=> array('name' => 'Transporter Classification Database'),
 	'tigr'=> array('name' => 'The bacterial database(s) of The Institute of Genome Research', 'url' => 'http://cmr.jcvi.org/'),
 	'tigrfams' => array('name' => 'TIGRFAMs; a protein family database', 'url' => 'http://www.jcvi.org/cms/research/projects/tigrfams/overview/'),
@@ -520,6 +709,11 @@ class CNamespace
 	'ttd' => array('name'=>'Therapeutic Targets Database', 'url'=>'http://bidd.nus.edu.sg/group/ttd/'),
 	'tuberculist' => array('name' => 'Mycobacterium tuberculosis strain H37Rv genome database', 'url' => 'http://tuberculist.epfl.ch'),
 	'twosides' => array('name'=>'Drug-Drug Associations','url'=>'http://pharmgkb.org'),
+	'ucd2dpage' => array(
+		'name' => 'University College Dublin 2-DE Proteome Database',
+		'url' => 'http://proteomics-portal.ucd.ie:8082/cgi-bin/2d/2d.cgi',
+		'synonyms' => 'ucd-2dpage'
+	),
 	'ucsc' => array('name' => 'UCSC Genome Browser', 'url'=>'http://genome.ucsc.edu/'),
 	'umbbd'=> array('name' => 'umbbd biocatalysis/biodegredation database', 'url'=>'http://umbbd.ethz.ch/', 'synonyms'=>'umbbd-compounds'),
 	'unigene'=> array('name'=>'UniGene'),
@@ -536,11 +730,11 @@ class CNamespace
 	'unists'=> array('name' => 'UniSTS', 'url' => 'http://www.ncbi.nlm.nih.gov/unists/'),
 	'unigene'=> array('name' => 'UniGene', 'url' => 'http://www.ncbi.nlm.nih.gov/unigene/'),
 	'uspatent'=>array('name'=> 'US Patent'),
-	'uspto_prt' => array('name' => 'Protein sequences extracted from patent applications to the US Patent and Trademark Office (USPTO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtIUv+-lib+USPO_PRT'),
+	'uspto_prt' => array('name' => 'Protein sequences extracted from patent applications to the US Patent and Trademark Office (USPTO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtIUv+-lib+USPO_PRT', 'synonyms' => 'uspto'),
 	'vectorbase' => array('name' => 'Invertebrate Vectors of Human Pathogens', 'url' => 'http://www.vectorbase.org/'),
 	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
 	'wikipedia'=>array('name'=>'Wikipedia'),
-	'world2dpage' => array('name' => 'The World-2DPAGE database', 'url' => 'http://world-2dpage.expasy.org/repository/'),
+	'world2dpage' => array('name' => 'The World-2DPAGE database', 'url' => 'http://world-2dpage.expasy.org/repository/', 'synonyms' => 'world-2dpage'),
 	'wormbase' => array('name'=>'WormBase'),
 	'xenbase' => array('name' => 'Xenopus laevis and tropicalis biology and genomics resource', 'url' => 'http://www.xenbase.org/'),
 	'zfin'=>array('name'=>'Zebrafish Information Network genome database', 'url' => 'http://zfin.org/'),
