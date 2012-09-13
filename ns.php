@@ -294,7 +294,7 @@ class CNamespace
 	),
 	'3dmet'	=> array('name'=>'3Dmet'),
 	'aarhus_ghent_2dpage' => array(
-		'name' => 'Human keratinocyte 2D gel protein database from Aarhus and Ghent universities'
+		'name' => 'Human keratinocyte 2D gel protein database from Aarhus and Ghent universities',
 		'synonyms' => array('aarhus-ghent-2dpage', 'database/Aarhus'),
 	),
 	'afcs'      => array('name' => 'UCSD Signaling Gateway','url'=>'http://www.signaling-gateway.org/'),
@@ -479,7 +479,7 @@ class CNamespace
 	),
 	'intact'    => array(
 		'name' => 'Intact Interaction Database',
-		'url' => 'http://www.ebi.ac.uk/intact/'
+		'url' => 'http://www.ebi.ac.uk/intact/',
 		'identifiers.org'=>'intact'),
 	'interpro'  => array(
 		'name' => 'InterPro', 
@@ -549,7 +549,7 @@ class CNamespace
 	'oma' => array('name' => 'Identification of Orthologs from Complete Genome Data', 'url' => 'http://www.omabrowser.org'),
 	'omim' => array(
 		'name' => 'Online Mendelian Inheritance in Man',
-		'identifiers.org'=>'omim'
+		'identifiers.org'=>'omim',
 		'synonyms' => 'mim'
 	),
 	'ophid' => array('name' => 'Online predicted human interaction database'),
@@ -588,7 +588,7 @@ class CNamespace
 		'identifiers.org'=>'pirsf'),
 	'pmapcutdb' => array(
 		'name' => 'CutDB - Proteolytic event database',
-		'url' => 'http://www.proteolysis.org/'
+		'url' => 'http://www.proteolysis.org/',
 		'synonyms' => 'pmap-cutdb'
 	),
 	'pmma2dpage' => array(
@@ -685,7 +685,7 @@ class CNamespace
 	),
 	'superfamily'=> array(
 		'name' => 'Superfamily database of structural and functional annotation',
-		'url' => 'http://supfam.org'
+		'url' => 'http://supfam.org',
 		'synonyms' => 'supfam'
 	),
 	'swiss2dpage' => array(
