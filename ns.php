@@ -72,6 +72,7 @@ class CNamespace
 	'dip'       => array('name' => 'Database of Interacting Proteins','url'=>'http://dip.doe-mbi.ucla.edu/dip/Main.cgi'),
 	'ddbj'      => array('name' => 'DDBJ sequence database'),
 	'dpd'		=> array('name' => 'Health Canada Drug Product Database','url'=>'http://www.hc-sc.gc.ca/dhp-mps/prodpharma/databasdon/index-eng.php'),
+	'dbpedia'	=> array('name' => 'DBPedia', 'url'=>'http://dbpedia.org'),
 	'drugbank'  => array('name' => 'DrugBank','url'=>'http://drugbank.ca'),
 	'drugbank_target'  => array('name' => 'DrugBank targets'),
 	'ec'        => array('name' => 'Enzyme Classification'),
