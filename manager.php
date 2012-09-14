@@ -185,7 +185,7 @@ function GetInstancesFromFile($instance_file)
  $fp = fopen($instance_file,"r");
  while($l = fgets($fp)) {
   $a = explode("\t",trim($l));
-  if(count($a) == 1) continue;
+  if($a[0][0] == '#') continue;
   unset($i);
   $i = '';
   $i["isql_port"] = $a[0];
