@@ -41,6 +41,7 @@ class RDFFactory extends Application
 	private $write_file=null;
 	private $graph_uri = null;
 	private $dataset_uri = null;
+	private $declared = null;
 	
 	function __construct()
 	{
@@ -202,7 +203,52 @@ class RDFFactory extends Application
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
-	
+
+	function DeclareURI($uri)
+	{	
+		$this->declared[$uri] = '';
+	}
+	function IsDeclared($uri)
+	{
+		if(isset($this->declared[$uri])) return TRUE;
+		return FALSE;
+	}
+	function GetDeclared()
+	{
+		return $this->declared;
+	}
+	function ClearDeclared()
+	{
+		$this->declared = null;
+	}
+
+	function QDeclare($qname,$label)
+	{
+		if(!isset($this->declared[$qname])) {
+			$this->declared[$qname] = $label;
+			return $this->QQuad($qname,"rdfs:label",$this->SafeLiteral($label));
+		}
+		return '';
+	}	
+	function QDeclareClass($qname,$label) 
+	{
+		$d = $this->QDeclare($qname,$label);
+		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:Class");
+		return '';
+	}
+	function QDeclareObjectProperty($qname,$label) 
+	{
+		$d = $this->QDeclare($qname,$label);
+		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:ObjectProperty");
+		return '';
+	}
+	function QDeclareDatatypeProperty($qname,$label) 
+	{
+		$d = $this->QDeclare($qname,$label);
+		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:DatatypeProperty");
+		return '';
+	}
+
 	function SafeLiteral($s)
 	{
 		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
@@ -278,8 +324,7 @@ class RDFFactory extends Application
 	
 	function GetBio2RDFReleaseFile($dataset)
 	{
-		$date = date("Ymd");
-		return "bio2rdf-$dataset-$date.nt";
+		return "bio2rdf-$dataset.nt";
 	}
 	
 	function DeleteBio2RDFReleaseFiles($dir)
