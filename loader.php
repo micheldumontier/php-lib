@@ -3,7 +3,7 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $isql = "/usr/local/virtuoso-opensource/bin/isql";
-$isql = "/virtuoso-opensource/bin/isql";
+//$isql = "/virtuoso/bin/isql";
 
 $options = array(
  "file" => "filename",
@@ -21,6 +21,7 @@ $options = array(
  "deleteonly" => "false",
  "initialize" => "false",
  "setns" => "false",
+ "setpassword" => "",
  "format" => "n3",
  "ignoreerror" => "true",
  "startat" => ""
@@ -81,6 +82,12 @@ if($options['setns'] == 'true') {
   $cmd .= "DB.DBA.XML_SET_NS_DECL ('$prefix', '$base_uri', 2);"; 
  }
   echo $out = shell_exec($cmd_pre.$cmd.$cmd_post);
+  exit;
+}
+if($options['setpassword'] != '') {
+  echo "resetting password".PHP_EOL;
+  $cmd = 'set password "'.$options['pass'].'" "'.$options['setpassword'].'"; checkpoint;';
+  echo $out = shell_exec($cmd_pre.$cmd.$cmd_post); 
   exit;
 }
 
