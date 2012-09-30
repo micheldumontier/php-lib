@@ -73,10 +73,9 @@ function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 {
  $ns = $instance['ns'];
  global $opt;
- if(!$opt) $opt = 5;
- else $opt *= 1.5;
- $buffers = $opt * 85000;
- $dirtybuffers = $opt * 65000;
+ if(!$opt) $opt = 2;
+ $buffers = floor($opt * 85000);
+ $dirtybuffers = floor($opt * 62500);
  
  // now read in the virtuoso file and modify the db, www port and isql port
  $inifile = $virtuoso_dir."/var/lib/virtuoso/db/virtuoso.ini"; 
@@ -185,7 +184,7 @@ function GetInstancesFromFile($instance_file)
  $fp = fopen($instance_file,"r");
  while($l = fgets($fp)) {
   $a = explode("\t",trim($l));
-  if(count($a) == 1) continue;
+  if(!isset($a[0][0]) || (isset($a[0][0]) && $a[0][0] == '#')) continue;
   unset($i);
   $i = '';
   $i["isql_port"] = $a[0];
