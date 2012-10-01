@@ -43,7 +43,9 @@ class CNamespace
 	//
 	'id-validation-regexp' => array('name' => 'Regular Expression for identifier syntax'),
 	'search-url' => array('name' => 'Pattern for placing an identifier into a URI'),
-	
+	'pathwaycommons' => array(),
+	'affymetrix' => array('synonyms'=>'affx'),
+	'sanger' => array(),
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
 	'aba' => array('name'=>'ABA Adult Mouse Brain','uri'=>'http://mouse.brain-map.org/atlas/index.html#','example-id'=>'ENTm2'),
@@ -955,7 +957,7 @@ class CNamespace
 				$ns = $this->ns_map[$ns][0];
 			} else {
 				// no match
-				trigger_error("Invalid namespace $ns in $qname".PHP_EOL, E_USER_WARNING); 
+				trigger_error("Invalid namespace $ns in $qname".PHP_EOL, E_USER_WARNING);
 				return "$ns:$id";
 			}
 		}
