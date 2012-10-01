@@ -46,6 +46,17 @@ class CNamespace
 	'pathwaycommons' => array(),
 	'affymetrix' => array('synonyms'=>'affx'),
 	'sanger' => array(),
+	'profile' => array(),
+	'pandit'=>array(),
+	'msdsite'=>array(),
+	'blocks'=>array(),
+	'prositedoc'=>array(),
+	'cath'=>array(),
+	'scop'=>array(),
+	'come'=>array('example-id'=>'PRX001296'),
+	'priam'=>array('example-id'=>'PRI002274'),
+	
+	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
 	'aba' => array('name'=>'ABA Adult Mouse Brain','uri'=>'http://mouse.brain-map.org/atlas/index.html#','example-id'=>'ENTm2'),
@@ -696,7 +707,7 @@ class CNamespace
 		'url' => 'http://world-2dpage.expasy.org/swiss-2dpage/',
 		'synonyms' => 'swiss-2dpage'
 	),
-	'swissprot'=> array('name' => 'SwissProt', 'part-of' => 'uniprot'),
+	
 	'symbol' => array('name' => 'Gene Symbols'),
 	'tair' => array(
 		'name' => 'The Arabidopsis Information Resource',
