@@ -77,6 +77,47 @@ class Utils
 		return TRUE;
 	} 
 	
+	public static function FTPDownload($host,$files,$ldir, $user='anonymous',$pass='myemail@email.com',$passive_mode = true)
+	{
+		$ftp = ftp_connect($host);
+		if(!$ftp) {
+			trigger_error("Unable to connect to $host");
+			return FALSE;
+		}
+		$login = ftp_login($ftp, $user, $pass);
+		if ((!$ftp) || (!$login)) { 
+			trigger_error("Unable to login to $host with user:$user and pass:$pass");
+			return FALSE;
+		} else {
+			echo "Connected to $host ...";
+		}
+		ftp_pasv ($ftp, $passive_mode) ;				
+				
+		// download
+		foreach($files AS $filepath) {
+			if(($pos = strrpos($filepath,'/')) === FALSE) {
+				$rdir = '';
+				$file = $filepath;
+			} else {
+				$rdir = substr($filepath,0,$pos);
+				ftp_chdir($ftp,$rdir);
+				$file = substr($filepath,$pos+1);
+			}
+
+			echo "Downloading $file ...";
+			$ret = ftp_nb_get($ftp, $ldir.$file, $file , FTP_BINARY);
+//			while(($ret=ftp_nb_continue($ftp))==FTP_MOREDATA){}
+//			while(($ret=ftp_nb_continue($ftp))==FTP_MOREDATA){}
+//			while(($ret=ftp_nb_continue($ftp))==FTP_MOREDATA){}
+			if ($ret != FTP_FINISHED) {
+			   echo "Error in downloading $file...";
+				return FALSE;
+			}
+		}
+		if(isset($ftp)) ftp_close($ftp);
+		echo "success!".PHP_EOL;
+	}
+	
 	public static function BreakPath($path,&$dir,&$file)
 	{
 		$rpos = strrpos($path,'/');
@@ -97,13 +138,17 @@ class Utils
 			echo "$dir not a directory".PHP_EOL;
 			return 1;
 		}
+		$files = array();
 
 		$dh = opendir($dir);
 		while (($file = readdir($dh)) !== false) {
 			if($file == '.' || $file == '..') continue;
 			if(isset($pattern)) {
-				if(strstr($file,$pattern)) {
-					$files[] = $file;
+				preg_match($pattern,$file,$m);
+				if(isset($m[0])) {
+					foreach($m AS $file) {
+						$files[] = $file;
+					}
 				}
 			} else {
 				$files[] = $file;

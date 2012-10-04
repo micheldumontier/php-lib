@@ -3,12 +3,13 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $isql = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql = "/virtuoso-opensource/bin/isql";
+//$isql = "/virtuoso/bin/isql";
 
 $options = array(
  "file" => "filename",
  "dir" => "dirname",
  "graph" => "graphname",
+ "gprefix" => "graphprefix",
  "instance" => "instancename",
  "port" => "1111",
  "user" => "dba",
@@ -20,6 +21,7 @@ $options = array(
  "deleteonly" => "false",
  "initialize" => "false",
  "setns" => "false",
+ "setpassword" => "",
  "format" => "n3",
  "ignoreerror" => "true",
  "startat" => ""
@@ -46,7 +48,7 @@ if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
  $instance_file = "instances.tab";
- if(!file_exists($file)) {
+ if(!file_exists($instance_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
  }
@@ -80,6 +82,12 @@ if($options['setns'] == 'true') {
   $cmd .= "DB.DBA.XML_SET_NS_DECL ('$prefix', '$base_uri', 2);"; 
  }
   echo $out = shell_exec($cmd_pre.$cmd.$cmd_post);
+  exit;
+}
+if($options['setpassword'] != '') {
+  echo "resetting password".PHP_EOL;
+  $cmd = 'set password "'.$options['pass'].'" "'.$options['setpassword'].'"; checkpoint;';
+  echo $out = shell_exec($cmd_pre.$cmd.$cmd_post); 
   exit;
 }
 
@@ -122,7 +130,11 @@ foreach($files AS $file) {
 		if($pos !== FALSE) {
 			$graph = substr($graph,0,$pos);
 		}
-		$graph = "http://bio2rdf.org/graph/".$graph;
+		if($options['gprefix'] != 'graphprefix') {
+			$graph = "http://bio2rdf.org/".$options['gprefix']."_".$graph;
+		} else { 
+			$graph = "http://bio2rdf.org/".$graph;
+		}
 	}
  
 	// do delete graph option, but only once 
@@ -135,92 +147,99 @@ foreach($files AS $file) {
 	}
 
 
- $path = '';
- $pos = strrpos($file,"/");
- if($pos !== FALSE) {
-   $path = substr($file,0, $pos+1);
- }
+	$path = '';
+	$pos = strrpos($file,"/");
+	if($pos !== FALSE) {
+		$path = substr($file,0, $pos+1);
+	}
 
- // unzip if necessary
- $f = $file;
- $fcmd = 'file_to_string_output';
- if(strstr($file,".gz")) {
-   $gzfile = $file;
-   $un = substr($file,0,-3);
+	// unzip if necessary
+	$f = str_replace('\\','/',$file);;
+	$fcmd = 'file_to_string_output';
+	if(strstr($file,".gz")) {
+		$gzfile = $file;
+		$un = substr($file,0,-3);
    
-   $out = fopen($un,"w");
-   $in = gzopen($file,"r");
-   while($l = gzgets($in)) {
-       fwrite($out,$l);
-   }
-   fclose($out);
-   gzclose($in);
+		$out = fopen($un,"w");
+		$in = gzopen($file,"r");
+		while($l = gzgets($in)) {
+			fwrite($out,$l);
+		}
+		fclose($out);
+		gzclose($in);
    
-   $f = $un;
- } elseif(strstr($file,".zip")) {
-   $zfile = $file;
-   // get the unzipped file name
-   $un = $t = substr($file,0,-4);
-   $pos = strrpos($file,"/");
-   if($pos !== FALSE) {
-    $t = substr($file,strrpos($file,"/")+1,-4);
-   }
+		$f = $un;
+	} elseif(strstr($file,".zip")) {
+		$zfile = $file;
+		// get the unzipped file name
+		$un = $t = substr($file,0,-4);
+		$pos = strrpos($file,"/");
+		if($pos !== FALSE) {
+			$t = substr($file,strrpos($file,"/")+1,-4);
+		}
 
-   // open the file and put the contents in a file   
-   $out = fopen($un,"w");
-   $zin = new ZipArchive();
-   if ($zin->open($zfile) === FALSE) {
-     trigger_error("Unable to open $zfile");
-     exit;
-   }
-   $data = '';
-   $fpin = $zin->getStream($t);
-   while($l = fgets($fpin)) {
-     fwrite($out,$l);
-   }
-   fclose($fpin);
+		// open the file and put the contents in a file   
+		$out = fopen($un,"w");
+		$zin = new ZipArchive();
+		if($zin->open($zfile) === FALSE) {
+			trigger_error("Unable to open $zfile");
+    			exit;
+		}
+		$data = '';
+		$fpin = $zin->getStream($t);
+		while($l = fgets($fpin)) {
+			fwrite($out,$l);
+		}
+		fclose($fpin);
+		fclose($out);
+		$zin->Close();
 
-   fclose($out);
-   $zin->Close();
-   
-   $f = $un;
- } elseif(strstr($file,".bz")) {
-   $bzfile = $file;
-   $un = substr($file,0,-3);
-   $out = fopen($un,"w");
-   $in = bzopen($file,"r");
-   while($l = bzread($in)) {
-	fwrite($out,$l);
-   }
-   fclose($out);
-   bzclose($in);
-   $f = $un;
- }
+		$f = $un;	
+	} elseif(strstr($file,".bz")) {
+		$bzfile = $file;
+		$un = substr($file,0,-3);
+		$out = fopen($un,"w");
+		$in = bzopen($file,"r");
+		while($l = bzread($in)) {
+			fwrite($out,$l);
+		}
+		fclose($out);
+		bzclose($in);
+		$f = $un;	
+	}
  
+	// guess the loader
+	$fp = fopen($f,'r');
+	$l = fgets($fp);
+	$xml = false;
+	if(strstr($l,'<?xml')) $xml = true;
+	if($xml == true) $options['format'] = 'xml';
+	if($xml == false && $options['format'] == 'xml') {
+		// there's a problem
+		echo "$f is not an xml file... skipping";
+ 		continue;
+	}
+  	// guess the loader
+	fclose($fp);
 
-// guess the loader
-$fp = fopen($f,'r');
-$l = fgets($fp);
-if(strstr($l,"<?xml")) $options['format'] = 'xml';
-fclose($fp);
+	// http://docs.openlinksw.com/virtuoso/fn_ttlp_mt.html
+	if($options['format'] == 'n3') {
+		$program = "DB.DBA.TTLP_MT"; 
+		// $program = "DB.DBA.TTLP_MT_LOCAL_FILE";
+	} else {
+		// http://docs.openlinksw.com/virtuoso/fn_rdf_load_rdfxml_mt.html
+		$program = 'DB.DBA.RDF_LOAD_RDFXML_MT';
+	}
 
-if($options['format'] == 'n3') {
- // http://docs.openlinksw.com/virtuoso/fn_ttlp_mt.html
- $program = "DB.DBA.TTLP_MT"; 
-// $program = "DB.DBA.TTLP_MT_LOCAL_FILE";
-} else {
- // http://docs.openlinksw.com/virtuoso/fn_rdf_load_rdfxml_mt.html
- $program = 'DB.DBA.RDF_LOAD_RDFXML_MT';
-}
+	$t1 = $path."t1.txt"; // the source
+	$t2 = $path."t2.txt"; // the destination
+	if(file_exists($t1)) unlink($t1);
+	if(file_exists($t2)) unlink($t2);
 
-
-$t1 = $path."t1.txt"; // the source
-$t2 = $path."t2.txt"; // the destination
-if(file_exists($t1)) unlink($t1);
-if(file_exists($t2)) unlink($t2);
-
+$tries = 10;
  do { 
   echo "Loading $file into $graph ...".PHP_EOL; 
+
   $cmd = $program."($fcmd ('$f'), '', '".$graph."', ".$options['flags'].", ".$options['threads']."); checkpoint;";
 //   echo $cmd_pre.$cmd.$cmd_post;
   $out = shell_exec($cmd_pre.$cmd.$cmd_post);
@@ -231,7 +250,7 @@ if(file_exists($t2)) unlink($t2);
     if(!isset($m[1]) || (isset($m[1]) && $m[1] != '37000')) {
 	// some other error
 	echo $out;
-	exit;
+	break;
     } 
 
     preg_match("/line\s([0-9]+)\:/",$out,$m);
@@ -259,9 +278,14 @@ if(file_exists($t2)) unlink($t2);
     $i = 0;
     while($l = fgets($fp_in,4096)) {
       $i++;
-      if($i == $line) echo "Problem in: $l\n";
-      if($l[0] == '@' || $i > $line) {
-	fwrite($fp_out,$l);
+      if($i == $line) {
+	echo "Problem in: $l\n";
+	if(--$tries == 0) {echo "quitting after 10 tries";break;}
+
+      } else {
+	if($l[0] == '@' || $i > $line) {
+		fwrite($fp_out,$l);
+	}
       }
     }
     fclose($fp_in);
@@ -285,7 +309,12 @@ if(file_exists($t2)) unlink($t2);
 
 // Facet update : http://virtuoso.openlinksw.com/dataspace/dav/wiki/Main/VirtFacetBrowserInstallConfig
 if($options['updatefacet'] == "true") {
-	$cmd = "RDF_OBJ_FT_RULE_ADD (null, null, 'All');VT_INC_INDEX_DB_DBA_RDF_OBJ ();urilbl_ac_init_db();";
+	UpdateFacet($cmd_pre,$cmd_post);
+}
+
+function UpdateFacet($cmd_pre,$cmd_post)
+{
+	$cmd = "RDF_OBJ_FT_RULE_ADD (null, null, 'All');VT_INC_INDEX_DB_DBA_RDF_OBJ ();urilbl_ac_init_db();s_rank();";
 	echo "Updating facet";
 	echo $out = shell_exec($cmd_pre.$cmd.$cmd_post);
 }

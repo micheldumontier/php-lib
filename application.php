@@ -191,4 +191,12 @@ class Application
 		return TRUE;
 	}
 	
+	public function ProgressMeter($current,$total,$percent_interval, $fnx)
+	{
+		$check = round($percent_interval/100*$total);
+		if($current % $check == 0) {
+			$fnx();
+			echo round($check/$current*100)."% ...";
+		}
+	}
 }

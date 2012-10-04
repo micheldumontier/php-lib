@@ -97,6 +97,8 @@ class FileFactory
 		}
 		return $ret;
 	}
-	
+	function GetFileName(){
+			return (string) $this->filename;
+	}
 }
 ?>
