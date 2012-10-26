@@ -251,9 +251,13 @@ class RDFFactory extends Application
 
 	function SafeLiteral($s)
 	{
-		return str_replace(array("\r","\n",'"'),array('','\n','\"'), $s);
+		return specialEscape($s);
 	}
 	
+	function specialEscape($str){
+		$s_noslash = stripslashes($str);
+		return addcslashes($s_noslash, "\\\'\"\n\r\t");
+	}
 	
 	function SetDatasetURI($dataset_uri)
 	{		
@@ -265,18 +269,18 @@ class RDFFactory extends Application
 	}
 	
 	function GetDatasetDescription(
-				$dataset_name, 
-				$dataset_uri, 
-				$creator_uri, 
-				$publisher_name, 
-				$publisher_uri, 
-				$data_urls = null, 
-				$sparql_endpoint = null, 
-				$source_homepage, 
-				$source_rights, 
-				$source_license = null, 
-				$source_location = null, 
-				$source_version = null)
+		$dataset_name, 
+		$dataset_uri, 
+		$creator_uri, 
+		$publisher_name, 
+		$publisher_uri, 
+		$data_urls = null, 
+		$sparql_endpoint = null, 
+		$source_homepage, 
+		$source_rights, 
+		$source_license = null, 
+		$source_location = null, 
+		$source_version = null)
 	{
 		$rdf = '';
 		$date = date("Y-m-d");
@@ -352,18 +356,18 @@ class RDFFactory extends Application
 		$source_version = null)
 	{
 		return $this->GetDatasetDescription(				
-				$namespace, 
-				$this->GetDatasetURI(), 
-				$script_url, 
-				"Bio2RDF", 
-				"http://bio2rdf.org", 
-				$download_files,
-				"http://$namespace.bio2rdf.org/sparql", 
-				$source_homepage, 
-				$source_rights, 
-				$source_license, 
-				$source_location, 
-				$source_version);
+			$namespace, 
+			$this->GetDatasetURI(), 
+			$script_url, 
+			"Bio2RDF", 
+			"http://bio2rdf.org", 
+			$download_files,
+			"http://$namespace.bio2rdf.org/sparql", 
+			$source_homepage, 
+			$source_rights, 
+			$source_license, 
+			$source_location, 
+			$source_version);
 	}
 	
 	function GetRightsDescription($right)
@@ -376,7 +380,7 @@ class RDFFactory extends Application
 			"no-derivative" => "no derivatives allowed without permission",
 			"attribution" => "requires attribution",
 			"restricted-by-source-license" => "check source for further restrictions"
-		);
+			);
 		if(!isset($rights[$right])) {
 			trigger_error("Unable to find $right in ".implode(",",array_keys($rights))." of rights");
 			return FALSE;
