@@ -251,7 +251,7 @@ class RDFFactory extends Application
 
 	function SafeLiteral($s)
 	{
-		return specialEscape($s);
+		return $this->specialEscape($s);
 	}
 	
 	function specialEscape($str){
