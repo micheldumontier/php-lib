@@ -44,7 +44,9 @@ class CNamespace
 	'id-validation-regexp' => array('name' => 'Regular Expression for identifier syntax'),
 	'search-url' => array('name' => 'Pattern for placing an identifier into a URI'),
 	'pathwaycommons' => array(),
+	'aspgd' => '',
 	'affymetrix' => array('synonyms'=>'affx'),
+	'agi'=>array(),
 	'sanger' => array(),
 	'profile' => array(),
 	'pandit'=>array(),
@@ -55,7 +57,11 @@ class CNamespace
 	'scop'=>array(),
 	'come'=>array('example-id'=>'PRX001296'),
 	'priam'=>array('example-id'=>'PRI002274'),
-	
+	'broad'=>array('example-id'=>'185008'),	
+	'pmrna'=>array('example-id'=>'pmrna9933'),
+	'jgi'=>array(),
+	'jgi.glyma'=>array('synonyms'=>'jgiglyma10'),
+	'tigr.plant'=>array('synonyms'=>'tigrplantta'),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
@@ -413,7 +419,8 @@ class CNamespace
 	'embl'      => array('name' => 'EMBL sequence database','synonyms'=> array('emb', 'embl-cds', 'embl_con', 'embl_tpa', 'emblwgs')),
 	'ensembl'   => array(
 		'name' => 'EnsEMBL genomic database',
-		'identifiers.org'=>'ensembl'),
+		'identifiers.org'=>'ensembl',
+		'synonyms'=>'ens'),
 	'ensemblgenomes' => array('name' => 'EnsEMBL genomes'),
 	'ensembl'   => array(
 		'name' => 'Ensembl eukaryotic genome annotation project',
@@ -428,11 +435,11 @@ class CNamespace
 		'name' => 'Relative evolutionary importance of amino acids within a protein sequence',
 		'url' => 'http://mammoth.bcm.tmc.edu/ETserver.html',
 	),
-	'flybase'   => array('name' => 'FlyBase','url'=>'http://flybase.org/'),
+	'flybase'   => array('name' => 'FlyBase','url'=>'http://flybase.org/','synonyms'=>'fb'),
 	'fprintscan' => array('name' => ''),
 	'genatlas'	=> array('name' => 'GenAtlas'),
-	'genbank'	=> array('name' => 'GenBank','synonyms'=>array('genbank_nucl_gi','genbank_protein_gi','gb','GenPept')),
-	'gi'        => array('name' => 'NCBI GI','synonyms'=>'genbank indentifier'),
+	'genbank'	=> array('name' => 'GenBank','synonyms'=>array('genbank_nucl_gi','genbank_protein_gi','gb','GenPept','gb_htc','ncbi_mito','ncbi_organelle','gbest','gbpathogens')),
+	'gi'        => array('name' => 'NCBI GI','synonyms'=>array('genbank indentifier')),
 	'genecards'	=> array('name' => 'GeneCards - human gene compendium','url'=>'http://www.genecards.org'),
 	'gene3d'    => array('name' => 'Gene3D','url'=>'http://gene3d.biochem.ucl.ac.uk/Gene3D/'),
 	'genefarm'	=> array('name' => 'Structural and functional annotation of Arabidopsis thaliana gene and protein families', 'url' => 'http://urgi.versailles.inra.fr/Genefarm/index.html'),
