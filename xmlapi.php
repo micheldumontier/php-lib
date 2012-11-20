@@ -46,6 +46,10 @@ class CXML
 			$this->fp = $z->getStream($nozip);
 		} else {
 			$this->fp = gzopen($dir.$file,"r");
+			if($this->fp === FALSE) {
+				trigger_error("unable to open $dir$file");
+				exit;
+			}
 		}
 	}
 	
@@ -85,7 +89,16 @@ class CXML
 				}
 			}
 		}
-		if($elementToParse == null) $this->xmlroot = simplexml_load_string($content);
+		
+		if($elementToParse == null) {
+			$this->xmlroot = simplexml_load_string($content);
+			if($this->xmlroot === FALSE) {
+				trigger_error("Error in loading XML");
+				foreach(libxml_get_errors() as $error) {
+					echo "\t", $error->message;
+				}	
+			}
+		}
 	}
 	
 	function GetXMLRoot()

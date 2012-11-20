@@ -34,7 +34,7 @@ class CNamespace
   private $all_uri = null;
   private $ns_map = null;
   
-  private $terminologies = array(
+  public $terminologies = array(
 	'xsd'  => array('name'=>'XML Schema',           'uri' => 'http://www.w3.org/2001/XMLSchema#'),
 	'rdf'  => array('name'=>'RDF',                  'uri'=>'http://www.w3.org/1999/02/22-rdf-syntax-ns#'),
 	'rdfs' => array('name'=>'RDF Schema',           'uri'=>'http://www.w3.org/2000/01/rdf-schema#'),
@@ -50,9 +50,9 @@ class CNamespace
 	'sanger' => array(),
 	'profile' => array(),
 	'pandit'=>array(),
-	'msdsite'=>array(),
+	'msd'=>array('synonyms'=>'msdsite'),
 	'blocks'=>array(),
-	'prositedoc'=>array(),
+	'prosite'=>array('synonyms'=>'prositedoc'),
 	'cath'=>array(),
 	'scop'=>array(),
 	'come'=>array('example-id'=>'PRX001296'),
@@ -62,6 +62,8 @@ class CNamespace
 	'jgi'=>array(),
 	'jgi.glyma'=>array('synonyms'=>'jgiglyma10'),
 	'tigr.plant'=>array('synonyms'=>'tigrplantta'),
+	'ena'=>array(),
+	'sider'=>array(),'stitch'=>array(),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
@@ -169,7 +171,7 @@ class CNamespace
 	'nif.agency'=>array('name'=>'NIF Granting Agency','uri'=>'http://ontology.neuinfo.org/NIF/DigitalEntities/NIF-Government-Granting-Agency.owl#'),
 	'nif.backend'=>array('name'=>'NIF backend','uri'=>'http://ontology.neuinfo.org/NIF/Backend/','alt-uri'=>'http://ontology.neuinfo.org/NIF/Backend/BIRNLex-OBO-UBO.owl#'),
 	'nif.cell' => array('name'=>'NIF Cell','uri'=>'http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-Cell.owl#','example-id'=>'birnlex_2'),
-	'nif_dysfunction' => array('name'=>'NIF Dysfunction','uri'=>'http://ontology.neuinfo.org/NIF/Dysfunction/NIF-Dysfunction.owl#','example-id'=>'birnlex_2098'),
+	'nif.dysfunction' => array('name'=>'NIF Dysfunction','uri'=>'http://ontology.neuinfo.org/NIF/Dysfunction/NIF-Dysfunction.owl#','example-id'=>'birnlex_2098'),
 	'nif.grossanatomy'=>array('name'=>'NIF Gross Anatomy ontology','uri'=>'http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-GrossAnatomy.owl#'),
 	'nif.investigation'=>array('name'=>'NIF investigation','uri'=>'http://ontology.neuinfo.org/NIF/DigitalEntities/NIF-Investigation.owl#'),
 	'nif.molecule'=>array('name'=>'NIF Molecule','uri'=>'http://ontology.neuinfo.org/NIF/BiomaterialEntities/NIF-Molecule.owl#'),
@@ -228,7 +230,7 @@ class CNamespace
 	);
 	
 	// obo
-	private $obo = array(
+	public $obo = array(
 	'aeo' => array('name'=>'Anatomical Entity ontology','alt-uri'=>'http://purl.obolibrary.org/obo/AEO#'),
 	'aero'=>array('name','alt-uri'=>'http://purl.obolibrary.org/obo/AERO/'),
 	'ahfs' => array('name' => 'Pharmacologic-Therapeutic Classification System', 'url'=> 'http://www.ahfsdruginformation.com/class/index.aspx', 'type' => 'classification'),
@@ -268,7 +270,7 @@ class CNamespace
 	'pato' => array('name'=>'Phenotype and Trait Ontology'),
 	'psi-mi'=>array(
 		'name'=>'Protein Standards Initiative - Molecular Interactions',
-		'synonyms'=> array('mi','obo.mi'),
+		'synonyms'=> array('mi','obo.mi','molecularinteractionsontology'),
 		'identifiers.org'=>'obo.psi-mi'
 		),
 	'psi-mod'=>array(
@@ -304,7 +306,7 @@ class CNamespace
 		'example-id'=>'_data'),
   );
 
-  private $datasets = array(
+  public $datasets = array(
   //'id' => array('name' => '','description' => '','uri' => '', 'url'=>'', 'synonyms' => array(), 'type' => 'dataset','terminology','part-of' => 'ns'),
 	'2dbaseecoli' => array(
 		'name' => '2D-PAGE Database of Escherichia coli',
@@ -439,7 +441,7 @@ class CNamespace
 	'fprintscan' => array('name' => ''),
 	'genatlas'	=> array('name' => 'GenAtlas'),
 	'genbank'	=> array('name' => 'GenBank','synonyms'=>array('genbank_nucl_gi','genbank_protein_gi','gb','GenPept','gb_htc','ncbi_mito','ncbi_organelle','gbest','gbpathogens')),
-	'gi'        => array('name' => 'NCBI GI','synonyms'=>array('genbank indentifier')),
+	'gi'        => array('name' => 'NCBI GI','synonyms'=>array('genbank indentifier','ncbigi')),
 	'genecards'	=> array('name' => 'GeneCards - human gene compendium','url'=>'http://www.genecards.org'),
 	'gene3d'    => array('name' => 'Gene3D','url'=>'http://gene3d.biochem.ucl.ac.uk/Gene3D/'),
 	'genefarm'	=> array('name' => 'Structural and functional annotation of Arabidopsis thaliana gene and protein families', 'url' => 'http://urgi.versailles.inra.fr/Genefarm/index.html'),
@@ -456,7 +458,6 @@ class CNamespace
 		'url' => 'http://genomernai.de/GenomeRNAi/',
 	),
 	'germonline' => array('name' => 'GermOnline','url'=>'http://www.germonline.org'),
-	'gi'        => array('name' => 'NCBI GI'),
 	'glycosuitedb' => array(
 		'name' => 'GlycoSuiteDB; an annotated and curated relational database of glycan structures',
 		'url' => 'http://glycosuitedb.expasy.org/',
@@ -525,7 +526,7 @@ class CNamespace
 	'jpo_prt' 	=> array('name' => 'Protein sequences extracted from patent applications to the Japanese Patent Office (JPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG2g+-lib+JPO_PRT', 'synonyms' => 'jpo'),
 	'kegg' => array(
 		'name' => 'KEGG',
-		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction','kegg:ecj')),
+		'synonyms' => array('compound','kegg.orthology','kegg.genes', 'KEGG Compound','KEGG Drug','kegg legacy','kegg pathway','kegg reaction','kegg:ecj','keggglycan')),
 	'kegg:hsa' => array('synonyms'=>'hsa'),
 	'kipo_prt'	=> array('name' => 'Protein sequences extracted from patent applications to the Korean Intellectual Property Office (KIPO)', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+1JCFK1gtG99+-lib+KIPO_PRT', 'synonyms' => 'kipo'),
 	'knapsack' => array('name' => 'KNApSAcK: A Comprehensive Species-Metabolite Relationship Database','url'=>'http://kanaya.naist.jp/KNApSAcK/'),
@@ -579,7 +580,7 @@ class CNamespace
 	'orthodb' => array('name' => 'Database of Orthologous Groups', 'url' => 'http://cegg.unige.ch/orthodb'),
 	'patric' => array('name' => 'Pathosystems Resource Integration Center (PATRIC)', 'url' => 'http://www.patricbrc.org/'),
 	'patternscan' => array('name' => ''),
-	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System'),
+	'panther' => array('name' => 'The PANTHER (Protein ANalysis THrough Evolutionary Relationships) Classification System','alt-uri'=>'http://www.pantherdb.org/pathways/biopax#'),
 	'pdb'=> array('name' => 'Protein Databank','synonyms'=>array('wwpdb','pdbe','rcsb pdb','proteindatabank', 'pdbj', 'pdbsum')),
 	'peptideatlas' => array(
 		'name' => 'PeptideAtlas',
@@ -660,8 +661,9 @@ class CNamespace
 	),
 	'reactome'=> array(
 		'name' => 'REACTOME',
-		'synonyms'=>array('reactome database identifier'),
-		'identifiers.org'=>'reactome'),
+		'synonyms'=>array('reactome database identifier','reactome database id'),
+		'identifiers.org'=>'reactome',
+		'alt-uri'=>'http://www.reactome.org/biopax/'),
 	'rebase' => array('name' => 'Restriction enzymes and methylases database', 'url' => 'http://rebase.neb.com/'),
 	'refseq' => array('name' => 'NCBI Reference Sequence Database (RefSeq)','part-of' => 'ncbi','synonyms'=>'ref_seq'),
 	'registry'=> array('name' => 'Bio2RDF Namespace Registry'),
@@ -792,7 +794,7 @@ class CNamespace
 					}
 					$this->all_ns[$ns]['synonyms'] = $obj['synonyms'];
 					foreach($obj['synonyms'] AS $syn) {
-						$syn = strtolower(str_replace(array(" ","-","_","."),"",$syn));
+						$syn = preg_replace("/[^a-z0-9]/","",strtolower($syn));
 						$this->ns_map[$syn][] = $ns;
 					}
 				}
@@ -968,8 +970,9 @@ class CNamespace
 	{
 		$ns = '';$id='';
 		$this->ParsePrefixedName($qname,$ns,$id,$delimiter);
-		if($this->isNS($ns) === FALSE) {		
-			$ns = str_replace(array(" ","-","_","."),"",$ns);
+		if($this->isNS($ns) === FALSE) {	
+			$ns = preg_replace("/[^a-z0-9]/","",strtolower($ns));
+			
 			// try to map the namespace
 			if(isset($this->ns_map[$ns])) {
 				$ns = $this->ns_map[$ns][0];

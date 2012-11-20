@@ -34,10 +34,10 @@ function error_handler($level, $message, $file, $line, $context) {
 	//Handle user errors, warnings, and notices ourself	
 	// if(_DEBUG_) {
 		if($level === E_USER_ERROR) {
-			debug_print_backtrace();
 			return(true); //And prevent the PHP error handler from continuing
 		} else if($level === E_USER_WARNING) {
 			echo "**Warning** $message";
+//			debug_print_backtrace();
 			return (true);
 		} else if($level === E_USER_NOTICE) {
 			echo $message.PHP_EOL;
