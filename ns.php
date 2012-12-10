@@ -56,7 +56,7 @@ class CNamespace
 	'come'=>array('example-id'=>'PRX001296'),
 	'priam'=>array('example-id'=>'PRI002274'),
 	'ena'=>array(),
-	'sider'=>array(),'stitch'=>array(),
+	'sider'=>array(),'stitch'=>array(),'clinicaltrials'=>array(),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
@@ -412,12 +412,10 @@ class CNamespace
 	'ecogene' 	=> array('name' => 'Escherichia coli strain K12 genome database', 'url' => 'http://www.ecogene.org/'),
 	'eggnog'	=> array('name' => 'evolutionary genealogy of genes: Non-supervised Orthologous Groups', 'url' => 'http://eggnog.embl.de/'),
 	'embl'      => array('name' => 'EMBL sequence database','synonyms'=> array('emb', 'embl-cds', 'embl_con', 'embl_tpa', 'emblwgs')),
-	'ensembl'   => array(
-		'name' => 'EnsEMBL genomic database',
-		'identifiers.org'=>'ensembl'),
 	'ensemblgenomes' => array('name' => 'EnsEMBL genomes'),
 	'ensembl'   => array(
 		'name' => 'Ensembl eukaryotic genome annotation project',
+		'identifiers.org'=>'ensembl',
 		'url' => 'http://www.ensembl.org/',
 		'synonyms' => array('ensemblbacteria', 'ensemblfungi', 'ensemblmetazoa', 'ensemblplants', 'ensemblprotists'),
 	),
