@@ -63,7 +63,7 @@ class CNamespace
 	'jgi.glyma'=>array('synonyms'=>'jgiglyma10'),
 	'tigr.plant'=>array('synonyms'=>'tigrplantta'),
 	'ena'=>array(),
-	'sider'=>array(),'stitch'=>array(),
+	'sider'=>array(),'stitch'=>array(),'clinicaltrials'=>array(),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
@@ -419,15 +419,12 @@ class CNamespace
 	'ecogene' 	=> array('name' => 'Escherichia coli strain K12 genome database', 'url' => 'http://www.ecogene.org/'),
 	'eggnog'	=> array('name' => 'evolutionary genealogy of genes: Non-supervised Orthologous Groups', 'url' => 'http://eggnog.embl.de/'),
 	'embl'      => array('name' => 'EMBL sequence database','synonyms'=> array('emb', 'embl-cds', 'embl_con', 'embl_tpa', 'emblwgs')),
-	'ensembl'   => array(
-		'name' => 'EnsEMBL genomic database',
-		'identifiers.org'=>'ensembl',
-		'synonyms'=>'ens'),
 	'ensemblgenomes' => array('name' => 'EnsEMBL genomes'),
 	'ensembl'   => array(
 		'name' => 'Ensembl eukaryotic genome annotation project',
+		'identifiers.org'=>'ensembl',
 		'url' => 'http://www.ensembl.org/',
-		'synonyms' => array('ensemblbacteria', 'ensemblfungi', 'ensemblmetazoa', 'ensemblplants', 'ensemblprotists'),
+		'synonyms' => array('ensemblbacteria', 'ensemblfungi', 'ensemblmetazoa', 'ensemblplants', 'ensemblprotists','ens'),
 	),
 	'epo_prt'	=> array('name' => 'Protein sequences extracted from European Patent Office (EPO) patents', 'url' => 'http://srs.ebi.ac.uk/srsbin/cgi-bin/wgetz?-page+LibInfo+-id+51qsJ1gu6Ab+-lib+EPO_PRT', 'synonyms' => 'epo'),
 	'euhcvdb'	=> array('name' => 'European Hepatitis C Virus database', 'url' => 'http://euhcvdb.ibcp.fr/euHCVdb/'),
