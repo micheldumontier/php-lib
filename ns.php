@@ -56,7 +56,7 @@ class CNamespace
 	'come'=>array('example-id'=>'PRX001296'),
 	'priam'=>array('example-id'=>'PRI002274'),
 	'ena'=>array(),
-	'sider'=>array(),'stitch'=>array(),'clinicaltrials'=>array(),
+	'sider'=>array(),'stitch'=>array(),'clinicaltrials'=>array(),'bind_translation' => array(),'pav'=>array(),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
@@ -340,7 +340,8 @@ class CNamespace
 		'url' => 'http://bgee.unil.ch'
 	),
 	'beilstein' => array('name'=>'Beilstein Registry Number for organic compounds'),
-	'bind'      => array('name' => 'Biomolecular Interaction Database','synonyms'=>'bind_translation'),
+	'bind'      => array('name' => 'Biomolecular Interaction Database'),
+	
 	'bindingdb' => array('name' => 'BindingDB','url'=>'http://www.bindingdb.org'),
 	'biocyc'    => array('name' => 'CYC genome database'),
 	'bioportal' => array('name' => 'BioPortal'),
