@@ -224,11 +224,22 @@ class RDFFactory extends Application
 
 	function QDeclare($qname,$label)
 	{
+		$buf = '';
 		if(!isset($this->declared[$qname])) {
 			$this->declared[$qname] = $label;
-			return $this->QQuad($qname,"rdfs:label",$this->SafeLiteral($label));
+			$a = explode(":",$qname,2);
+			$slabel = $this->SafeLiteral($label);
+			$buf  = $this->QQuadL($qname,"rdfs:label","$slabel [$qname]");
+			$buf .= $this->QQuadL($qname,"dc:identifier",$a[1]);
+			$buf .= $this->QQuadL($qname,"dc:source",$a[0]);
+			$buf .= $this->QQuadL($qname,"dc:title",$slabel);
+			
+			if(FALSE !== ($pos = strpos($a[0],"_resource"))) $type = substr($a[0],0,$pos)."_vocabulary";
+			else if(FALSE !== ($pos == strpos($a[0],"_vocabulary"))) $type = $a[0];
+			else $type = $a[0]."_vocabulary";
+			$buf .= $this->QQuad($qname,"rdf:type",$type.":Resource");
 		}
-		return '';
+		return $buf;
 	}	
 	function QDeclareClass($qname,$label) 
 	{
@@ -249,6 +260,25 @@ class RDFFactory extends Application
 		return '';
 	}
 
+	function TripleAndType($s,$p,$o,$o_type)
+	{
+		$buf  = $this->QQuad($s,$p,$o);
+		$buf .= $this->QQuad($o,"rdf:type",$o_type);
+		return $buf;		
+	}
+	
+	/**
+		XRef
+		This function asserts the spo triple and declares the object $o of type $type_vocabulary:Resource
+	*/
+	function XRef($s,$p,$o,$o_type = null, $o_label = null)
+	{
+		$buf = $this->QDeclareClass($o,$o_label);
+		$buf .= $this->QQuad($s,$p,$o);
+		if(isset($o_type)) $buf .= $this->QQuad($o,"rdf:type",$o_type);
+		return $buf;
+	}
+	
 	function SafeLiteral($s)
 	{
 		return $this->specialEscape($s);
@@ -321,7 +351,7 @@ class RDFFactory extends Application
 		}
 		if(isset($source_license)) $rdf .= $this->QQuadO_URL($source_uri,"dc:license",$source_license);
 		if(isset($source_location)) $rdf .= $this->QQuadO_URL($source_uri,"rdfs:seeAlso",$source_location);
-		if(isset($source_version)) $rdf .= $this->QQuadL($source_uri,"biositemap:version",$source_version);
+		if(isset($source_version)) $rdf .= $this->QQuadL($source_uri,"pav:version",$source_version);
 
 		return $rdf;
 	}
