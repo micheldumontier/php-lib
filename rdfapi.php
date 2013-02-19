@@ -286,7 +286,7 @@ class RDFFactory extends Application
 	
 	function specialEscape($str){
 		$s_noslash = stripslashes($str);
-		return addcslashes($s_noslash, "\\\'\"\n\r\t\\,\\.");
+		return addcslashes($s_noslash, "\\\"\n\r\t\\,\\.");
 	}
 	
 	function SetDatasetURI($dataset_uri)
