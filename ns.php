@@ -749,7 +749,7 @@ class CNamespace
 	'vega'=> array('name' => 'The Vertebrate Genome Annotation Database', 'url'=> 'http://www.sanger.ac.uk/resources/databases/vega/'),
 	'wikipedia'=>array('name'=>'Wikipedia'),
 	'world2dpage' => array('name' => 'The World-2DPAGE database', 'url' => 'http://world-2dpage.expasy.org/repository/', 'synonyms' => 'world-2dpage'),
-	'wormbase' => array('name'=>'WormBase'),
+	'wormbase' => array('name'=>'WormBase', 'url'=>'http://www.wormbase.org', 'identifiers.org'=>'wormbase'),
 	'xenbase' => array('name' => 'Xenopus laevis and tropicalis biology and genomics resource', 'url' => 'http://www.xenbase.org/'),
 	'zfin'=>array('name'=>'Zebrafish Information Network genome database', 'url' => 'http://zfin.org/'),
 	);
