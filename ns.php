@@ -57,6 +57,8 @@ class CNamespace
 	'priam'=>array('example-id'=>'PRI002274'),
 	'ena'=>array(),
 	'sider'=>array(),'stitch'=>array(),'clinicaltrials'=>array(),'bind_translation' => array(),'pav'=>array(),
+	'go_ref'=>array(),'rhea'=>array(),'nif_subcellular'=>array(),'um-bbd_pathwayid'=>array(),'um-bbd_enzymeid'=>array(),'um-bbd_reactionid'=>array(),'tc'=>array(),'po'=>array(),'phi'=>array(),'sabio-rk'=>array(),'vz'=>array(),'img'=>array(),
+	'mod'=>array(), 'bspo'=>array(), 'citeexplore'=>array(),'patent'=>array(),'pubechem'=>array(),'reaxis'=>array(),
 	
 	// terminologies, ontologies
 	'aa' => array('name'=>'Amino Acid Ontology','uri'=>'http://www.co-ode.org/ontologies/amino-acid/2006/05/18/amino-acid.owl#','alt-uri'=>'http://www.co-ode.org/ontologies/amino-acid/2005/10/11/amino-acid.owl#','example-id'=>'F'),
