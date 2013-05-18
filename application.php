@@ -30,20 +30,28 @@ SOFTWARE.
 require('utils.php');
 require('fileapi.php');
 
-function error_handler($level, $message, $file, $line, $context) {
-	//Handle user errors, warnings, and notices ourself	
-	// if(_DEBUG_) {
-		if($level === E_USER_ERROR) {
-			debug_print_backtrace();
-			return(true); //And prevent the PHP error handler from continuing
-		} else if($level === E_USER_WARNING) {
-			echo "**Warning** $message";
-			return (true);
-		} else if($level === E_USER_NOTICE) {
-			echo $message.PHP_EOL;
-			return(true);
-		}
-	//}
+$g_loglevel = E_USER_ERROR;
+function setLogLevel($level){global $g_loglevel; $g_loglevel = $level;}
+function getLogLevel() {global $g_loglevel; return $g_loglevel;}
+function setLogLevelFromString($level) {
+	if($level == "error") setLogLevel(E_USER_ERROR);
+	if($level == "warning") setLogLevel(E_USER_WARNING);
+	if($level == "notice") setLogLevel(E_USER_NOTICE);
+}
+
+/** Handle user errors, warnings, and notices */
+function error_handler($level, $message, $file, $line, $context) 
+{	
+	if($level === E_USER_ERROR) {
+		debug_print_backtrace();
+		return(true); //And prevent the PHP error handler from continuing
+	} else if($level === E_USER_WARNING) {
+		if(getLogLevel() >= E_USER_WARNING) echo "Warning: $message".PHP_EOL;
+		return (true);
+	} else if($level === E_USER_NOTICE) {
+		if(getLogLevel() >= E_USER_NOTICE) echo "NOTICE: $message".PHP_EOL;
+		return(true);
+	}
 	return(false); //Otherwise, use PHP's error handler
 }
 	
@@ -93,15 +101,21 @@ class Application
 	*/
 	public function SetParameters($argv)
 	{
+		global $g_loglevel;
+		$old_log_level = $g_loglevel;
+		$g_loglevel = E_USER_WARNING;
+		
 		// get rid of the script argument
 		$this->name = $argv[0];
 		array_shift ($argv);
-		
+	
+		if($argv[0] == "--help" || $argv[0] == "-help" || $argv[0] == "-") return FALSE;
+			
 		// build a new parameter - value array
 		foreach($argv AS $value) {
 			list($key,$value) = explode("=",$value);
 			if(!isset($this->parameters[$key])) {
-				trigger_error("Invalid parameter - $key", E_USER_WARNING);
+				echo PHP_EOL."ERROR: Invalid parameter - $key".PHP_EOL;
 				return FALSE;
 			}
 			if($value == '') {
@@ -137,6 +151,7 @@ class Application
 			if($this->parameters[$key]['value'] === 'true')  $this->parameters[$key]['value'] = true;
 			if($this->parameters[$key]['value'] === 'false') $this->parameters[$key]['value'] = false;
 		}
+		$g_loglevel = $old_log_level;
 		return TRUE;
 	}
 	
@@ -167,7 +182,8 @@ class Application
 	{
 		echo PHP_EOL;
 		echo "Usage: php ".$this->name.PHP_EOL;
-		echo "  Allowed or mandatory (*) parameters and their restricted and default values".PHP_EOL;
+		echo "  Allowed or mandatory (*) parameters and their restricted and default values.".PHP_EOL;
+		echo "  Use a comma to separate multiple values.".PHP_EOL;
 		foreach($this->parameters AS $key => $a) {
 			echo '  ';
 			if($a['mandatory'] == true) echo "*";
