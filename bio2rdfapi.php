@@ -150,7 +150,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('download',false,'true|false','false','set true to download files');
 		parent::addParameter('graph_uri',false,null,null,'provide the graph uri to generate n-quads instead of n-triples');
 		
-		parent::addParameter('module',false,null,null,'the Bio2RDF module');
+		parent::addParameter('parser',false,$this->getNamespace(),$this->getNamespace(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
 		parent::addParameter('registry_cache_time',false,null,'1','in days; 0 to force download');
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','provider-uri,bio2rdf-uri','uri scheme preference');
