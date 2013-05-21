@@ -45,8 +45,12 @@ class CRegistry
 	private $map = null;
 	/** the remote location of the registry */
 	private $remote_registry_url = 'https://docs.google.com/spreadsheet/pub?key=0AmzqhEUDpIPvdFR0UFhDUTZJdnNYdnJwdHdvNVlJR1E&single=true&gid=0&output=csv';
+	/** the local registry directory */
+	private $local_registry_dir = '';
 	/** the local version of the registry */
 	private $local_registry_file = 'registry.csv';
+	/** the local registry filepath */
+	private $local_registry_filepath = null;
 	/** the registry cache time in days */
 	private $cache_time = 1;
 	/** the action to take if registry doesn't contain namespace */
@@ -86,18 +90,21 @@ class CRegistry
 		return $this->remote_registry_url;
 	}
 	
-	/** set the location of the locally-cached registry file */
-	public function setLocalRegistryLocation($file)
+	/** set the filepath for the locally-cached registry */
+	public function setLocalRegistry($dir)
 	{
-		if($file != null && $file != '') $this->local_registry_file = $file;
+		if($dir != null && $dir != '') {
+			$this->local_registry_dir = $dir;
+			$this->local_registry_filepath = $dir.$this->local_registry_file;
+		}
 		else throw new InvalidArgumentException("null or empty local registry file location");
 		return $this;
 	}
 	
 	/** get the location of the locally-cached registry file */
-	public function getLocalRegistryLocation()
+	public function getLocalRegistryFilename()
 	{
-		return $this->local_registry_file;
+		return $this->local_registry_filepath;
 	}
 	
 	/** set the amount of time (in days) to use a local copy of the registry since its last update; 0 for no update */
@@ -292,6 +299,7 @@ class CRegistry
 		}
 	}
 
+	/** get the registry entry by namespace */
 	public function getEntry($ns)
 	{
 		if(!$this->isPrefix($ns)) {
@@ -301,11 +309,13 @@ class CRegistry
 		return $this->registry[$ns];
 	}
 	
+	/** normalize the prefix for the prefix map */
 	public static function normalizePrefix($prefix)
 	{
 		return preg_replace("/[^a-z0-9]/","",strtolower(trim($prefix)));
 	}
 	
+	/** ask whether the prefix is in the registry */
 	public function isPrefix($prefix)
 	{
 		$this->initialize();
@@ -315,7 +325,8 @@ class CRegistry
 		return FALSE;
 	}
 	
-	public function getPreferredPrefix($prefix, $scheme = null)
+	/** get the preferred prefix */
+	public function getPreferredPrefix($prefix)
 	{
 		$this->initialize();
 		if($this->isPrefix($prefix)) {
@@ -328,9 +339,9 @@ class CRegistry
 		}
 		
 		// record the non-match
-		$this->setNoMatch($prefix);
+		$this->addNoMatch($prefix);
 		// otherwise fail if need be
-		if($this->getNSFail()) {
+		if($this->getUnregisteredNSAction() == "fail") {
 			trigger_error("Unable to map $prefix in $qname; i was told to fail here.", E_USER_ERROR);
 			exit();
 		}	
@@ -381,12 +392,16 @@ class CRegistry
 			return "$prefix:$id";
 		}
 
-
 		// otherwise return the input
 		return "$ns:$id";		
 	}
 
-	
+	/** get the fully qualified URI for a qname and a uri scheme 
+	 * 
+	 * @param string $qname the qualified name
+	 * @param string $scheme the uri-scheme
+	 * @return string the fully qualified URI
+	 */
 	public function getFQURI($qname, $scheme = null)
 	{
 		$this->initialize();
@@ -404,16 +419,36 @@ class CRegistry
 			}
 		}
 		
-		// otherwise we have problem.
-		trigger_error("Unable to find a uri for $scheme",E_USER_ERROR);
-		return null;
+		// we have problem.
+		if($this->getUnregisteredNSAction() == "fail") {
+			trigger_error("Unable to find a uri for $scheme",E_USER_ERROR);
+			return null;
+		}
+		// use the bio2rdf uri
+		return $this->getBio2RDF_URI($qname);
 	}
 	
+	/** 
+	 * get a Bio2RDF for the given qname 
+	 * 
+	 * @param string $qname the qualified name
+	 * @return string The Bio2RDF URI
+	 */
 	public function getBio2RDF_URI($qname)
 	{
 		$this->initialize();
-		$qname = $this->mapQName($qname);
 		return "http://bio2rdf.org/$qname";
+	}
+	/** 
+	 * generate a Bio2RDF URI using the preferred qname
+	 * 
+	 * @param string $qname the qualified name
+	 * @return string The Bio2RDF URI
+	 */
+	public function getMappedBio2RDF_URI($qname)
+	{
+		$this->initialize();
+		return "http://bio2rdf.org/".$this->mapQName($qname);
 	}
 	
 	public function getIdentifiersDotOrg_URI($qname)
@@ -421,7 +456,11 @@ class CRegistry
 		$this->initialize();
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
-		$e = $this->getEntry($ns)->identi;
+		$e = $this->getEntry($ns);
+		if(isset($e->miriam) && ($e->miriam != '')) {
+			//@todo
+		}
+		
 	}
 }
 
