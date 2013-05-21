@@ -48,8 +48,8 @@ class RDFFactory extends Application
 		$this->registry = new CRegistry();
 	}
 	
-	
-	/** Get the namespace object
+	/** 
+	 * Get the namespace object
 	 * @return object the namespace object
 	 */
 	function getRegistry() 
@@ -57,43 +57,52 @@ class RDFFactory extends Application
 		return $this->registry;
 	}
 	
-	function GetRDF() {return $this->buf;}
-	function AddRDF($buf) {$this->buf .= $buf;return TRUE;}
-	function DeleteRDF() {$this->buf = '';return TRUE;}
+	/** get the RDF buffer */
+	function getRDF() {return $this->buf;}
+	/** add RDF to the string buffer */
+	function addRDF($buf) {$this->buf .= $buf;return TRUE;}
+	/** clear the RDF string buffer */
+	function deleteRDF() {$this->buf = '';return TRUE;}
 
 	/** Set the default graph URI in order to generate quads
 	 * @param string $graph_uri The Graph URI to set
 	 */
-	function SetGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
+	function setGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
 	/** Get the default graph URI
 	 * @return string the default graph uri
 	 */
-	function GetGraphURI() {return $this->graph_uri;}
+	function getGraphURI() {return $this->graph_uri;}
 	
-	function SetReadFile($file,$gzcompress=false)
+	/** Set the read file */
+	function setReadFile($file,$gzcompress=false)
 	{
 		$this->read_file = new FileFactory($file,$gzcompress);
 		return $this->read_file;
 	}
-	function GetReadFile()
+	/** get the read file */
+	function getReadFile()
 	{	
 		return $this->read_file;
 	}
-	function WriteFileExists()
+	/** ask if the write file is set */
+	function writeFileExists()
 	{
 		if(isset($this->write_file)) return TRUE;
 		return FALSE;
 	}
-	function SetWriteFile($file,$gzcompress=false)
+	/** set the write file and mode */
+	function setWriteFile($file,$gzcompress=false)
 	{
 		$this->write_file = new FileFactory($file,$gzcompress);
 		return $this->write_file;
 	}
-	function GetWriteFile()
+	/** get the write file */
+	function getWriteFile()
 	{
 		return $this->write_file;
 	}
-	function WriteRDFBufferToWriteFile() 
+	/** write the RDF buffer to the write file */
+	function writeRDFBufferToWriteFile() 
 	{
 		if($this->WriteFileExists() === FALSE) {
 			trigger_error("Write file not set!");
@@ -104,6 +113,7 @@ class RDFFactory extends Application
 		return TRUE;
 	}
 	
+	/** Generate a n-triple or n-quad */
 	function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
 		$graph_uri = '';
@@ -113,6 +123,7 @@ class RDFFactory extends Application
 		return "<$s_uri> <$p_uri> <$o_uri> $graph_uri .".PHP_EOL;
 	}
 
+	/** Generate a n-triple or n-quad with a literal value */
 	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
 		$graph_uri = '';
@@ -120,7 +131,8 @@ class RDFFactory extends Application
 		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
 		return "<$s_uri> <$p_uri> \"$literal\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
 	}
-		
+	
+	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
 	function QQuad($s,$p,$o,$g = null)
 	{
 		$s_uri = $this->getRegistry()->getFQURI($s);
@@ -132,6 +144,7 @@ class RDFFactory extends Application
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
 	
+	/** Generate a n-triple or n-quad with literal value using registry qualified names (qname) for the subject and predicate */
 	function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
 	{
 		$s_uri = $this->getRegistry()->getFQURI($s);
@@ -145,6 +158,7 @@ class RDFFactory extends Application
 		return $this->QuadL($s_uri,$p_uri,$l,$lang,$lt_uri,$g_uri);		
 	}
 	
+	/** Generate a n-triple or n-quad with a fully qualified uri as the object and a qname subject and predicate  */
 	function QQuadO_URL($s,$p,$o_uri,$g=null) 
 	{
 		$s_uri = $this->getRegistry()->getFQURI($s);
@@ -155,11 +169,13 @@ class RDFFactory extends Application
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
 
-	function SafeLiteral($s)
+	/** Generate a safe literal using a special escape */
+	function safeLiteral($s)
 	{
 		return $this->specialEscape($s);
 	}
 	
+	/** the special escape for n-triples */
 	function specialEscape($str){
 		$s_noslash = stripslashes($str);
 		return addcslashes($s_noslash, "\\\'\"\n\r\t");
