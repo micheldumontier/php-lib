@@ -77,7 +77,7 @@ class Application
 	 * @param		string	$description	A description of the parameter
 	 * @return      bool     Returns TRUE on success, FALSE on failure
 	*/
-	public function AddParameter($key, $mandatory = false, $list = '', $default = '', $description = '')
+	public function addParameter($key, $mandatory = false, $list = '', $default = '', $description = '')
 	{
 		if(!isset($key) || $key == '') {
 			trigger_error('Please specify a parameter name', E_USER_ERROR);
@@ -99,7 +99,7 @@ class Application
 	 * @param       object   $argv    The command line arguments
 	 * @return      bool     Returns TRUE on success, FALSE on failure
 	*/
-	public function SetParameters($argv)
+	public function setParameters($argv, $allow_any_key = false)
 	{
 		global $g_loglevel;
 		$old_log_level = $g_loglevel;
@@ -109,12 +109,12 @@ class Application
 		$this->name = $argv[0];
 		array_shift ($argv);
 	
-		if($argv[0] == "--help" || $argv[0] == "-help" || $argv[0] == "-") return FALSE;
+		if(isset($argv[0]) && ($argv[0] == "--help" || $argv[0] == "-help" || $argv[0] == "-")) return FALSE;
 			
 		// build a new parameter - value array
 		foreach($argv AS $value) {
 			list($key,$value) = explode("=",$value);
-			if(!isset($this->parameters[$key])) {
+			if(!isset($this->parameters[$key]) && ($allow_any_key == false)) {
 				echo PHP_EOL."ERROR: Invalid parameter - $key".PHP_EOL;
 				return FALSE;
 			}
@@ -155,12 +155,12 @@ class Application
 		return TRUE;
 	}
 	
-	public function SetParameterValue($key,$value)
+	public function setParameterValue($key,$value)
 	{
 		$this->parameters[$key]['value'] = $value;
 	}
 	
-	public function GetParameterValue($key) 
+	public function getParameterValue($key) 
 	{
 		if(!isset($this->parameters[$key])) {
 			trigger_error("Invalid parameter - $key", E_USER_ERROR);
@@ -169,7 +169,7 @@ class Application
 		return $this->parameters[$key]['value'];
 	}
 	
-	public function GetParameterList($key) 
+	public function getParameterList($key) 
 	{
 		if(!isset($this->parameters[$key])) {
 			trigger_error("Invalid parameter - $key", E_USER_ERROR);
@@ -178,7 +178,7 @@ class Application
 		return $this->parameters[$key]['list'];
 	}
 	
-	public function PrintParameters()
+	public function printParameters()
 	{
 		echo PHP_EOL;
 		echo "Usage: php ".$this->name.PHP_EOL;
@@ -196,7 +196,7 @@ class Application
 		return TRUE;
 	}
 	
-	public function CreateDirectory($dir)
+	public function createDirectory($dir)
 	{
 		if(!is_dir($dir)) {
 			if(@mkdir($dir,0777,true) === FALSE) {
@@ -207,7 +207,7 @@ class Application
 		return TRUE;
 	}
 	
-	public function ProgressMeter($current,$total,$percent_interval, $fnx)
+	public function progressMeter($current,$total,$percent_interval, $fnx)
 	{
 		$check = round($percent_interval/100*$total);
 		if($current % $check == 0) {
