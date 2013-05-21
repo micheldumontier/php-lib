@@ -181,9 +181,11 @@ class CRegistry
 		trigger_error("BEGIN",E_USER_NOTICE);
 		$download = true;
 
-		if(file_exists($this->local_registry_file)) {
+		if($this->getLocalRegistryFilename() == null) $this->setLocalRegistry("");
+		
+		if(file_exists($this->getLocalRegistryFilename())) {
 			// check whether the file is current
-			$file = new DateTime(date("Y-m-d",filemtime($this->local_registry_file)));
+			$file = new DateTime(date("Y-m-d",filemtime($this->getLocalRegistryFilename())));
 			$now = new DateTime(date("Y-m-d", time()));
 			$interval = date_diff($now,$file);
 			$days = $interval->format('%a');
@@ -204,14 +206,14 @@ class CRegistry
 		}
 		
 		if($download === true) {
-			trigger_error("Downloading dataset registry", E_USER_NOTICE);
+			echo("Downloading dataset registry").PHP_EOL;
 			$buf = file_get_contents($this->remote_registry_url);
 			if($buf === FALSE) {
 				trigger_error("Unable to get remote registry file", E_USER_ERROR);
 			}
-			$ret = file_put_contents($this->local_registry_file, $buf);
+			$ret = file_put_contents($this->getLocalRegistryFilename(), $buf);
 			if($ret === FALSE) {
-				trigger_error("Unable to save local registry file", E_USER_ERROR);
+				trigger_error("Unable to save local registry file ".this->getLocalRegistryFilename(), E_USER_ERROR);
 				return FALSE;
 			}
 			trigger_error("Download complete", E_USER_NOTICE);
@@ -255,8 +257,8 @@ class CRegistry
 "miriam_updates",  // [27] => updates
 );
 
-		if (($fp = fopen($this->local_registry_file, "r")) === FALSE) {
-			trigger_error("Unable to open $this->local_registry_file", E_USER_ERROR);
+		if (($fp = fopen($this->getLocalRegistryFilename(), "r")) === FALSE) {
+			trigger_error("Unable to open ".$this->getLocalRegistryFilename(), E_USER_ERROR);
 			return FALSE;
 		}
 		$header = fgetcsv($fp);
