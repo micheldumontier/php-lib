@@ -69,11 +69,6 @@ class Bio2RDFizer extends RDFFactory
 		}
 		$this->argv = $argv;
 		
-		// check namespace validity against registry
-		if(!parent::getRegistry()->isPrefix($namespace)) {
-			trigger_error("Invalid namespace $namespace",E_USER_ERROR);
-			return null;
-		}
 		$this->setNamespace($namespace);
 	}
 	
@@ -175,16 +170,23 @@ class Bio2RDFizer extends RDFFactory
 		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) exit;
 		if(parent::getParameterValue('graph_uri')) parent::setGraphURI(parent::getParameterValue('graph_uri'));	
 		
-		$bio2rdf_dataset_version = "bio2rdf-".$this->getNamespace()."-".date("Ymd");
-		$this->setDatasetURI("bio2rdf_dataset:".$bio2rdf_dataset_version);
-		$this->setBio2RDFReleaseFile($bio2rdf_dataset_version.".nt");
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
 		$this->getRegistry()->setCacheTime(parent::GetParameterValue('registry_cache_time'));
 		$this->getRegistry()->setUnregisteredNSAction(parent::GetParameterValue('unregistered_ns'));
 		$schemes = explode(",", parent::getParameterValue('uri_scheme'));
 		$this->getRegistry()->setURISchemePriority($schemes);
 		$this->setRDFModel(parent::getParameterValue('rdf_model'));
-	}
+		
+		// check namespace validity against registry
+		if(!$this->getRegistry()->isPrefix($this->getNamespace())) {
+			trigger_error("Invalid namespace ".$this->getNamespace(),E_USER_ERROR);
+			return null;
+		}
+	
+		$bio2rdf_dataset_version = "bio2rdf-".$this->getNamespace()."-".date("Ymd");
+		$this->setDatasetURI("bio2rdf_dataset:".$bio2rdf_dataset_version);
+		$this->setBio2RDFReleaseFile($bio2rdf_dataset_version.".nt");
+		}
 	
 	public function clear()
 	{
