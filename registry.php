@@ -213,7 +213,7 @@ class CRegistry
 			}
 			$ret = file_put_contents($this->getLocalRegistryFilename(), $buf);
 			if($ret === FALSE) {
-				trigger_error("Unable to save local registry file ".this->getLocalRegistryFilename(), E_USER_ERROR);
+				trigger_error("Unable to save local registry file ".$this->getLocalRegistryFilename(), E_USER_ERROR);
 				return FALSE;
 			}
 			trigger_error("Download complete", E_USER_NOTICE);
