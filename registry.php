@@ -189,17 +189,16 @@ class CRegistry
 			$now = new DateTime(date("Y-m-d", time()));
 			$interval = date_diff($now,$file);
 			$days = $interval->format('%a');
-			if($this->cache_time <= $days) {
-				trigger_error("Registry is set to be updated",E_USER_NOTICE);
-				$download = true;
-			} else if($days > $this->cache_time) {
-				trigger_error("Registry is out of date by ".($days-$this->cache_time), E_USER_WARNING);
+			if($this->cache_time == 0) {
+				trigger_error("Registry is out of date by ".($days-$this->cache_time)." days", E_USER_WARNING);
 				$download = false;
-			} else {
+			} else if($this->cache_time <= $days) {
 				trigger_error("Registry is up to date.", E_USER_NOTICE);
 				$download = false;
+			} else {
+				trigger_error("Registry is set to be updated",E_USER_NOTICE);
+				$download = true;
 			}
-					
 		} else {
 			trigger_error("no local copy of registry.", E_USER_WARNING);
 			$download = true;
@@ -411,7 +410,7 @@ class CRegistry
 		$this->parseQName($qname,$ns,$id);
 		
 		if(isset($scheme)) {
-			return $this->registry[$ns][$scheme]."$ns:$id";
+			return $this->registry[$ns][$scheme]."$id";
 		} else {
 			// otherwise go through the scheme priority
 			foreach($this->getURISchemePriority() AS $scheme) {
