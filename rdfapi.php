@@ -126,6 +126,10 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad with a literal value */
 	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
+		if(!is_string($literal)) {
+			trigger_error("\$literal is not a literal",E_USER_ERROR);
+			return null;
+		}
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
 		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
@@ -151,7 +155,7 @@ class RDFFactory extends Application
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		
 		$lt_uri = null;
-		if(isset($lt)) $lt_uri = $this->getRegistry()->getFQURI($lt);		
+		if(isset($lt)) $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
 		
