@@ -130,10 +130,11 @@ class RDFFactory extends Application
 			trigger_error("\$literal is not a literal",E_USER_ERROR);
 			return null;
 		}
+		$l = $this->safeLiteral($literal);
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
 		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
-		return "<$s_uri> <$p_uri> \"$literal\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
+		return "<$s_uri> <$p_uri> \"$l\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
 	}
 	
 	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
@@ -186,4 +187,3 @@ class RDFFactory extends Application
 	}
 
 }
-
