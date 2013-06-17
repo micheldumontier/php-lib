@@ -56,6 +56,8 @@ class Bio2RDFizer extends RDFFactory
 	private $bio2rdf_download_url = null;
 	/** source downloaded files */
 	private $source_download_files = null;
+	/** follow Bio2RDF guidelines */
+	private $bio2rdf_guidelines = true;
 	
 	/** 
 	 * the constructor 
@@ -168,6 +170,15 @@ class Bio2RDFizer extends RDFFactory
 		return $this->vocabulary_namespace;
 	}
 	
+	public function setFollowBio2RDFGuidelines($value)
+	{
+		$this->bio2rdf_guidelines = $value;
+	}
+	public function getFollowBio2RDFGuidelines()
+	{
+		return $this->bio2rdf_guidelines;
+	}
+	
 	public function initialize() 
 	{	
 		parent::addParameter('indir',false,null,'/data/download/'.$this->getPrefix().'/','directory to download into and/or parse from');
@@ -179,6 +190,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
 		parent::addParameter('registry_cache_time',false,null,'1','in days; 0 to force download');
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','provider-uri,bio2rdf-uri','uri scheme preference');
+		parent::addParameter('bio2rdf_guidelines',false,'true|false','true','follow Bio2RDF guidelines');
 		parent::addParameter('rdf_model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
 		parent::addParameter('output_level',false,'dataset|file|record|triple','file','level at which to generate output files');
 		parent::addParameter('output_format',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
@@ -202,6 +214,7 @@ class Bio2RDFizer extends RDFFactory
 		$schemes = explode(",", parent::getParameterValue('uri_scheme'));
 		$this->getRegistry()->setURISchemePriority($schemes);
 		$this->setRDFModel(parent::getParameterValue('rdf_model'));
+		$this->setFollowBio2RDFGuidelines( (parent::getParameterValue('bio2rdf_guidelines')=="true"?true:false) );
 		
 		// check namespace validity against registry
 		if(!$this->getRegistry()->isPrefix($this->getPrefix())) {
@@ -240,23 +253,25 @@ class Bio2RDFizer extends RDFFactory
 			$this->getRegistry()->parseQName($s,$ns,$id);
 
 			$buf  = $this->QQuadL($s,"rdfs:label",$label." [$s]",$lang);
-			$buf .= $this->QQuadL($s,"dc:identifier",$s,null,"xsd:string");
 			if(isset($title) && $title != '') $buf .= $this->QQuadL($s,"dc:title",$title,$lang);
 			if(isset($description) && $description != '') {
 				$buf .= $this->QQuadL($s,"dc:description",$description,$lang);
 			}
-			$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
-			$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
-			if( (($pos = strpos($ns,"_resource")) != FALSE)
-			    || (($pos = strpos($ns,"_vocabulary")) != FALSE)) {
-				$type = substr($ns,0,$pos)."_vocabulary";
-			} else {
-				$type = $ns."_vocabulary";
+			if($this->getFollowBio2RDFGuidelines() == true) {
+				$buf .= $this->QQuadL($s,"dc:identifier",$s,null,"xsd:string");
+				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
+				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
+				if( (($pos = strpos($ns,"_resource")) != FALSE)
+					|| (($pos = strpos($ns,"_vocabulary")) != FALSE)) {
+					$type = substr($ns,0,$pos)."_vocabulary";
+				} else {
+					$type = $ns."_vocabulary";
+				}
+				$buf .= $this->QQuad($s,"rdf:type",$type.":Resource");
+				$buf .= $this->QQuad($s,"void:inDataset",$this->GetDatasetURI());
 			}
-			$buf .= $this->QQuad($s,"rdf:type",$type.":Resource");
-			$buf .= $this->QQuad($s,"void:inDataset",$this->GetDatasetURI());
 		}
-		$buf = '';
+
 		return $buf;
 	}
 	
@@ -275,7 +290,7 @@ class Bio2RDFizer extends RDFFactory
 	function describeIndividual($qname,$label,$parent,$title=null,$description=null,$lang="en") 
 	{
 		$d = $this->describe($qname,$label,$title,$description, $lang);
-		if($d) {
+		if($d && ($this->getFollowBio2RDFGuidelines() == true) ) {
 			$d .= $this->QQuad($qname,"rdf:type","owl:NamedIndividual");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdf:type",$parent);
@@ -288,7 +303,7 @@ class Bio2RDFizer extends RDFFactory
 	public function describeClass($qname,$label,$parent=null,$title=null,$description=null,$lang="en") 
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
-		if($d) {
+		if($d && ($this->getFollowBio2RDFGuidelines() == true)) {
 			$d .= $this->QQuad($qname,"rdf:type","owl:Class");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subClassOf",$parent);
@@ -301,7 +316,7 @@ class Bio2RDFizer extends RDFFactory
 	public function describeProperty($qname,$label,$parent=null,$title=null,$description=null,$lang="en")
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
-		if($d) {
+		if($d && ($this->getFollowBio2RDFGuidelines() == true)) {
 			$d .= $this->QQuad($qname,"rdf:type","rdf:Property");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
@@ -314,7 +329,7 @@ class Bio2RDFizer extends RDFFactory
 	protected function describeObjectProperty($qname,$label,$parent=null,$title=null,$description=null,$lang="en") 
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
-		if($d) {
+		if($d && ($this->getFollowBio2RDFGuidelines() == true)) {
 			$d .= $this->QQuad($qname,"rdf:type","owl:ObjectProperty");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
@@ -328,7 +343,7 @@ class Bio2RDFizer extends RDFFactory
 	protected function describeDatatypeProperty($qname,$label,$parent=null,$title=null,$description=null,$lang="en") 
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
-		if($d) {
+		if($d && ($this->getFollowBio2RDFGuidelines() == true)) {
 			$d .= $this->QQuad($qname,"rdf:type","owl:DatatypeProperty");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
@@ -374,6 +389,7 @@ class Bio2RDFizer extends RDFFactory
 		if($this->getRDFModel() == "sio") {
 			$this->getRegistry()->parseQName($s,$s_ns,$s_id);
 			$this->getRegistry()->parseQName($p,$p_ns,$p_id);
+			$s_ns= str_replace("_resource","",$s_ns);
 			if(!isset($o_type)) { // make the o-type from the predicate
 				$o_type = $s_ns."_vocabulary:".ucfirst($p_id);
 				$buf .= $this->describeClass($o_type,str_replace("-"," ",$p_id));
@@ -382,6 +398,7 @@ class Bio2RDFizer extends RDFFactory
 				$o = $s_ns."_resource:".md5($s.$p.$l);
 				$buf .= $this->describeIndividual($o,str_replace("-"," ",$p_id),$o_type);
 			}
+			
 			return $buf.$this->triplify($s,$p,$o).$this->QQuadL($o,"rdf:value",$l,$lang,$dt);
 		} else if($this->getRDFModel() == "ovopub") {
 			// @todo
