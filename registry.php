@@ -341,9 +341,9 @@ class CRegistry
 		
 		// record the non-match
 		$this->addNoMatch($prefix);
-		// otherwise fail if need be
-		if($this->getUnregisteredNSAction() == "fail") {
-			trigger_error("Unable to map $prefix in $qname; i was told to fail here.", E_USER_ERROR);
+		// otherwise die if need be
+		if($this->getUnregisteredNSAction() == "die") {
+			trigger_error("Unable to map $prefix in $qname; i was told to die here.", E_USER_ERROR);
 			exit();
 		}	
 		return FALSE;
