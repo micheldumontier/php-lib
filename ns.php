@@ -266,7 +266,7 @@ class CNamespace
 	'psi-mi'=>array(
 		'name'=>'Protein Standards Initiative - Molecular Interactions',
 		'synonyms'=> array('mi','obo.mi','molecularinteractionsontology'),
-		'identifiers.org'=>'obo.psi-mi'
+		'identifiers.org'=>'obo.mi'
 		),
 	'psi-mod'=>array(
 		'name'=>'Protein Standards Initiative - Modifications',
@@ -287,7 +287,7 @@ class CNamespace
 	'taxon'=> array(
 		'name' => 'NCBI Taxonomy',
 		'synonyms'=>array('taxid','ncbitaxon','ncbitaxonomy','ncbi_taxonomy','taxonomy','NCBITaxon'),
-		'identifiers.org'=>'taxon',
+		'identifiers.org'=>'taxonomy',
 		'alt-uri'=>'http://purl.org/obo/owl/NCBITaxon#'),
 	'teddy'=>array('name'=>'TEDDY','uri'=>'http://biomodels.net/teddy/TEDDY#'),
 	'uo' => array('name'=>'Units Ontology','synonyms'=>'unitsontology','uri'=>'http://mimi.case.edu/ontologies/2009/1/UnitsOntology#','example-id'=>'US_pound'),
