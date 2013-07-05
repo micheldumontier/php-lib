@@ -1,9 +1,43 @@
 <?php
+/**
+Copyright (C) 2013 Michel Dumontier
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+*/
+
+/**
+ * Virtuoso Manager
+ * @version 1.0
+ * @author Michel Dumontier
+*/
+
+#location of local virtuoso installation
+$virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.6"; 
+#root directory to be used by this manager 
 $base_dir    = "/sparql";
+#sub directory where virtuoso instances will be placed
 $instance_dir  = $base_dir."/virtuoso";
+#location of the instances.tab file see: https://gist.github.com/jctoledo/5937899 for a sample file
 $instance_file = $base_dir."/instances.tab";
+#apache config file location
 $apache_config_file   = $base_dir."/virtuoso-apache.conf";
-$virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.6";
+
 
 if($argc <= 2 || (isset($argv[2]) && !in_array($argv[2],array("create","refresh","start","stop","apacheconfig")))) {
  echo "$argv[0] [all|ns] [create|start|stop|refresh|apacheconfig] [GB memory to use]".PHP_EOL;
