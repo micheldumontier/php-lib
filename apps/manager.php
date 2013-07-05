@@ -1,8 +1,10 @@
 <?php
+
 $base_dir    = "/sparql";
 $instance_dir  = $base_dir."/virtuoso";
 $instance_file = $base_dir."/instances.tab";
 $apache_config_file   = $base_dir."/virtuoso-apache.conf";
+#location of virtuoso installation
 $virtuoso_dir   = "/usr/local/virtuoso-opensource-6.1.6";
 
 if($argc <= 2 || (isset($argv[2]) && !in_array($argv[2],array("create","refresh","start","stop","apacheconfig")))) {
