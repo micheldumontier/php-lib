@@ -177,7 +177,23 @@ class Application
 		}
 		return $this->parameters[$key]['list'];
 	}
-	
+    /**
+     * @author Dana Klassen<dana.klassen@deri.org>
+     * @description Parse the file list and return list of files
+     *  @returns $files[Arrray] a list of files to parse 
+     */
+    public function getFileList(){
+        $files = array();
+        if($this->GetParameterValue('files') == 'all') {
+            $files = explode("|",$this->GetParameterList('files'));
+            array_shift($files);
+         } else {
+             $files = explode("|",$this->GetParameterValue('files'));
+         } 
+
+        return $files;
+    }   
+
 	public function printParameters()
 	{
 		echo PHP_EOL;
