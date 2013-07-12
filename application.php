@@ -188,7 +188,7 @@ class Application
              $files = explode("|",$this->GetParameterList('files'));
              array_shift($files);
           } else {
-              $files = explode("|",$this->GetParameterValue('files'));
+              $files = explode(",",$this->GetParameterValue('files'));
           } 
 
           return $files;
