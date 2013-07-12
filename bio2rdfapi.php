@@ -65,7 +65,7 @@ class Bio2RDFizer extends RDFFactory
 	 * @input $namespace the dataset prefix
 	*/
 	function __construct($argv, $prefix)
-	{
+    {
 		parent::__construct();
 		
 		// make sure argv is not null
@@ -76,7 +76,8 @@ class Bio2RDFizer extends RDFFactory
 		$this->argv = $argv;
 		$this->setPrefix($prefix);
 		$this->setNamespaces($prefix);
-	}
+        $this->setTimeZone();
+    }
 	
 	/**
 	 * the default descructor
@@ -98,7 +99,14 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$this->prefix = $prefix;
 		return $this;
-	}
+    }
+
+    /**
+     * Set the default timezone to work in
+     */
+    public function setTimeZone($tz = 'America/New_York'){
+        date_default_timezone_set($tz); 
+    }
 	
 	/** 
 	 * get the default dataset prefix
