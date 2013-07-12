@@ -65,7 +65,8 @@ class Bio2RDFizer extends RDFFactory
 	 * @input $namespace the dataset prefix
 	*/
 	function __construct($argv, $prefix)
-	{
+    {
+        date_default_timezone_set('America/New_York'); 
 		parent::__construct();
 		
 		// make sure argv is not null
