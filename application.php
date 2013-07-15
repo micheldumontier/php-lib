@@ -200,7 +200,7 @@ class Application
      */
     public function setupSingleOutfile($file){
         if(strstr($this->GetParameterValue('output_format'),'gz')){
-            $this->SetWriteFile($file.'.gz',true);
+            $this->SetWriteFile($file,true);
         }else{
             $this->SetWriteFile($file,false);
         }
