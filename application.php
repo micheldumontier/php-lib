@@ -177,22 +177,61 @@ class Application
 		}
 		return $this->parameters[$key]['list'];
 	}
-     /**
-      * @author Dana Klassen<dana.klassen@deri.org>
-      * @description Parse the file list and return list of files
-      *  @returns $files[Arrray] a list of files to parse 
-      */
-      public function getFileList(){
-         $files = array();
-         if($this->GetParameterValue('files') == 'all') {
-             $files = explode("|",$this->GetParameterList('files'));
-             array_shift($files);
-          } else {
-              $files = explode(",",$this->GetParameterValue('files'));
-          } 
+    /**
+    * @author Dana Klassen<dana.klassen@deri.org>
+    * @description Parse the file list and return list of files
+    *  @returns $files[Arrray] a list of files to parse 
+    */
+    public function getFileList(){
+        $files = array();
+        if($this->GetParameterValue('files') == 'all') {
+            $files = explode("|",$this->GetParameterList('files'));
+            array_shift($files);
+        } else {
+            $files = explode(",",$this->GetParameterValue('files'));
+        } 
 
-          return $files;
-        }   
+        return $files;
+    }   
+    
+    /**
+     * @author Dana Klassen <dana.klassen@deri.org>
+     * @description Setup the destination write file for the parser
+     */
+    public function setupSingleOutfile($file){
+        if(strstr($this->GetParameterValue('output_format'),'gz')){
+            $this->SetWriteFile($file.'.gz',true);
+        }else{
+            $this->SetWriteFile($file,false);
+        }
+    }
+    
+    /**
+     * @author Dana Klassen <dana.klassen@deri.org>
+     * @description Check and download files specified in script
+     */
+    public function downloadSources(){
+        $outdir     = $this->getParameterValue('outdir');
+        $remote_dir = $this->getParameterValue('download_url');
+        
+        // NOTE :: This requires the full file name, with suffix, be present in the parameter list in the script!
+        foreach($this->getFileList() as $key=>$file){
+            $file_path = $outdir.$file;
+
+            if($this->getParameterValue('download') == 'true' && file_exists($file_path)){
+                unlink($file_path);
+            }
+            
+            if(!file_exists($file_path)){
+                trigger_error($file_path." not found. Will attempt to download.", E_USER_NOTICE);
+
+                if(Utils::Download($remote_dir,array($file),$outdir) === FALSE){
+                    trigger_error("Unable to download $file. skipping", E_USER_WARNING);
+                    continue;
+                }
+            }
+        }
+    }
 
 	public function printParameters()
 	{
