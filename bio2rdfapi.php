@@ -189,12 +189,12 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('parser',false,$this->getPrefix(),$this->getPrefix(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
 		parent::addParameter('registry_cache_time',false,null,'1','in days; 0 to force download');
-		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','provider-uri,bio2rdf-uri','uri scheme preference');
-		parent::addParameter('bio2rdf_guidelines',false,'true|false','true','follow Bio2RDF guidelines');
-		parent::addParameter('rdf_model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
+		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','bio2rdf-uri','uri scheme preference');
+		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
+		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
 		parent::addParameter('output_level',false,'dataset|file|record|triple','file','level at which to generate output files');
 		parent::addParameter('output_format',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
-		parent::addParameter('graph_or_file_pattern',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
+		parent::addParameter('file_type',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
 		parent::addParameter('log_level',false,'error|warning|notice','warning','level at which to print log messages');
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
 		
@@ -205,6 +205,8 @@ class Bio2RDFizer extends RDFFactory
 		setLogLevelFromString($this->getParameterValue('log_level'));
 		if(parent::createDirectory(parent::getParameterValue('indir')) === false) exit;
 		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) exit;
+		if(strstr(parent::getParameterValue('output_format'),".gz")) $this->gz_compress = true;
+		if(strstr(parent::getParameterValue('output_format'),"nquad")) $this->output_format = "nquad";
 		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) exit;
 		if(parent::getParameterValue('graph_uri')) parent::setGraphURI(parent::getParameterValue('graph_uri'));	
 		
@@ -213,8 +215,8 @@ class Bio2RDFizer extends RDFFactory
 		$this->getRegistry()->setUnregisteredNSAction(parent::getParameterValue('unregistered_ns'));
 		$schemes = explode(",", parent::getParameterValue('uri_scheme'));
 		$this->getRegistry()->setURISchemePriority($schemes);
-		$this->setRDFModel(parent::getParameterValue('rdf_model'));
-		$this->setFollowBio2RDFGuidelines( (parent::getParameterValue('bio2rdf_guidelines')=="true"?true:false) );
+		$this->setRDFModel(parent::getParameterValue('model'));
+		$this->setFollowBio2RDFGuidelines( (parent::getParameterValue('guidelines')=="true"?true:false) );
 		
 		// check namespace validity against registry
 		if(!$this->getRegistry()->isPrefix($this->getPrefix())) {
@@ -267,6 +269,8 @@ class Bio2RDFizer extends RDFFactory
 				} else {
 					$type = $ns."_vocabulary";
 				}
+				// identifiers.org
+				// rdf:type <http://identifiers.org/clinicaltrials/resource>
 				$buf .= $this->QQuad($s,"rdf:type",$type.":Resource");
 				$buf .= $this->QQuad($s,"void:inDataset",$this->GetDatasetURI());
 			}
@@ -606,4 +610,38 @@ class Bio2RDFizer extends RDFFactory
 		}
 		return $rights[$right];
 	}	
+	
+	
+	/**
+	 * Write the RDF to the file, taking into account whether it is a record or dataset
+	 */
+	public function setCheckPoint($level, $finalize = false) 
+	{
+		// if rdf present, the generate file if not available and write to it
+		if($this->hasRDF() === TRUE) {
+			// check if there is an active file pointer
+			if($this->writeFileExists() === FALSE) {
+				// create the file from the file pattern
+				$file = $this->getWriteFilePath().parent::getParameterValue('output_level').$this->gz_compress;
+				$this->setWriteFile($file, $this->getOutputCompression());
+			}
+			parent::writeRDFBufferToWriteFile();
+			if($level == parent::getParameterValue('output_level') && $finalize == true) {
+				$this->closeWriteFile();
+			}
+		}
+
+		// if the level is record, then generate a uuid and set it as the graph
+		if($level == parent::getParameterValue('output_level'))
+		{
+			// generate the graph uri
+			if(!isset($uri)) {
+				// generate one
+				$uuid  = uniqid('',true);
+				$uri = $this->getRes().$uuid;
+			}
+			parent::setGraphURI($uri);
+			// open the file pointer
+		}
+	}
 }
