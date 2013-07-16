@@ -65,7 +65,7 @@ class Bio2RDFizer extends RDFFactory
 	 * @input $namespace the dataset prefix
 	*/
 	function __construct($argv, $prefix)
-	{
+    {
 		parent::__construct();
 		
 		// make sure argv is not null
@@ -76,7 +76,8 @@ class Bio2RDFizer extends RDFFactory
 		$this->argv = $argv;
 		$this->setPrefix($prefix);
 		$this->setNamespaces($prefix);
-	}
+        $this->setTimeZone();
+    }
 	
 	/**
 	 * the default descructor
@@ -98,7 +99,14 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$this->prefix = $prefix;
 		return $this;
-	}
+    }
+
+    /**
+     * Set the default timezone to work in
+     */
+    public function setTimeZone($tz = 'America/New_York'){
+        date_default_timezone_set($tz); 
+    }
 	
 	/** 
 	 * get the default dataset prefix
@@ -203,11 +211,9 @@ class Bio2RDFizer extends RDFFactory
 			exit;
 		}
 		setLogLevelFromString($this->getParameterValue('log_level'));
-		if(parent::createDirectory(parent::getParameterValue('indir')) === false) exit;
-		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) exit;
-		if(strstr(parent::getParameterValue('output_format'),".gz")) $this->gz_compress = true;
-		if(strstr(parent::getParameterValue('output_format'),"nquad")) $this->output_format = "nquad";
-		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) exit;
+		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create directory 'indir' !",E_USER_ERROR); exit;}
+		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create directory 'outdir' !",E_USER_ERROR); exit;}
+		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create directory 'registry_dir' !",E_USER_ERROR); exit;}
 		if(parent::getParameterValue('graph_uri')) parent::setGraphURI(parent::getParameterValue('graph_uri'));	
 		
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
