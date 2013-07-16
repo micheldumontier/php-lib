@@ -62,6 +62,7 @@ class RDFFactory extends Application
 	/** add RDF to the string buffer */
 	function addRDF($buf) {$this->buf .= $buf;return TRUE;}
 	/** clear the RDF string buffer */
+	function hasRDF(){if($this->buf != '') return TRUE;return FALSE;}
 	function deleteRDF() {$this->buf = '';return TRUE;}
 
 	/** Set the default graph URI in order to generate quads
@@ -84,6 +85,14 @@ class RDFFactory extends Application
 	{	
 		return $this->read_file;
 	}
+	/** set a base write file pattern */
+	function setWriteFilePath($path)
+	{
+		$this->writeFilePath = $path;
+		return $this;
+	}
+	function getWriteFilePath() {return $this->writeFilePath;}
+	
 	/** ask if the write file is set */
 	function writeFileExists()
 	{
@@ -104,12 +113,12 @@ class RDFFactory extends Application
 	/** write the RDF buffer to the write file */
 	function writeRDFBufferToWriteFile() 
 	{
-		if($this->WriteFileExists() === FALSE) {
+		if($this->writeFileExists() === FALSE) {
 			trigger_error("Write file not set!");
 			return FALSE;
 		} 
-		$this->GetWriteFile()->Write($this->buf);
-		$this->DeleteRDF();
+		$this->getWriteFile()->write($this->buf);
+		$this->deleteRDF();
 		return TRUE;
 	}
 	
