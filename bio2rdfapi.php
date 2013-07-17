@@ -191,8 +191,10 @@ class Bio2RDFizer extends RDFFactory
 	{	
 		parent::addParameter('indir',false,null,'/data/download/'.$this->getPrefix().'/','directory to download into and/or parse from');
 		parent::addParameter('outdir',false,null,'/data/rdf/'.$this->getPrefix().'/','directory to place output files');
-		parent::addParameter('download',false,'true|false','false','set true to download files');
+		parent::addParameter('download',false,'true|false','true','set true to download files or false to use local');
+		parent::addParameter('process',false,'true|false','true','set true to process local files');
 		parent::addParameter('graph_uri',false,null,null,'provide the graph uri to generate n-quads instead of n-triples');
+		parent::addParameter('id_list',false,null,null,'provide a comma-separated list of URIs to process (parser may not support)');
 		
 		parent::addParameter('parser',false,$this->getPrefix(),$this->getPrefix(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
@@ -201,8 +203,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
 		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
 		parent::addParameter('output_level',false,'dataset|file|record|triple','file','level at which to generate output files');
-		parent::addParameter('output_format',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
-		parent::addParameter('file_type',false,'nt|nt.gz|nquad|nquad.gz','nt.gz','output format');
+		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nt.gz','output format');
 		parent::addParameter('log_level',false,'error|warning|notice','warning','level at which to print log messages');
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
 		
@@ -219,8 +220,7 @@ class Bio2RDFizer extends RDFFactory
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
 		$this->getRegistry()->setCacheTime(parent::getParameterValue('registry_cache_time'));
 		$this->getRegistry()->setUnregisteredNSAction(parent::getParameterValue('unregistered_ns'));
-		$schemes = explode(",", parent::getParameterValue('uri_scheme'));
-		$this->getRegistry()->setURISchemePriority($schemes);
+		$this->getRegistry()->setURISchemePriority(explode(",", parent::getParameterValue('uri_scheme')));
 		$this->setRDFModel(parent::getParameterValue('model'));
 		$this->setFollowBio2RDFGuidelines( (parent::getParameterValue('guidelines')=="true"?true:false) );
 		
@@ -269,8 +269,8 @@ class Bio2RDFizer extends RDFFactory
 				$buf .= $this->QQuadL($s,"dc:identifier",$s,null,"xsd:string");
 				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
 				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
-				if( (($pos = strpos($ns,"_resource")) != FALSE)
-					|| (($pos = strpos($ns,"_vocabulary")) != FALSE)) {
+				if( (($pos = strpos($ns,"_resource")) !== FALSE)
+					|| (($pos = strpos($ns,"_vocabulary")) !== FALSE)) {
 					$type = substr($ns,0,$pos)."_vocabulary";
 				} else {
 					$type = $ns."_vocabulary";
@@ -363,7 +363,14 @@ class Bio2RDFizer extends RDFFactory
 		return '';
 	}
 
-	
+	/**
+	 * function to simply generate annotated triples
+	 * @param string $s the subject qname (ns:id)
+	 * @param string $p the predicate qname (ns:id)
+	 * @param string $o the object qname (ns:id)
+	 * @param string $o_parent optional set parent uri of the object
+	 * @param string $class assert that the object is a subclass (true) or instance (false; default)
+	 */
 	public function triplify($s,$p,$o,$o_parent=null,$class = false)
 	{
 		$buf = '';
@@ -371,7 +378,7 @@ class Bio2RDFizer extends RDFFactory
 		if(strstr($p,"_vocabulary")) {
 			$a = explode(":",$p,2);
 			$p_label = str_replace("-"," ",$a[1]);
-			if($a[1] != $p_label) $buf .= $this->describeObjectProperty($p,$p_label);
+			$buf .= $this->describeObjectProperty($p,$p_label);
 		}
 		// now generate a type description
 		if($o_parent != null) {
@@ -419,7 +426,7 @@ class Bio2RDFizer extends RDFFactory
 			if(strstr($p,"_vocabulary")) {
 				$a = explode(":",$p,2);
 				$p_label = str_replace("-"," ",$a[1]);
-				if($a[1] != $p_label) $buf .= $this->describeDatatypeProperty($p,$p_label);
+				$buf .= $this->describeDatatypeProperty($p,$p_label);
 			}
 			
 			if(isset($lang)) {
@@ -638,7 +645,8 @@ class Bio2RDFizer extends RDFFactory
 		}
 
 		// if the level is record, then generate a uuid and set it as the graph
-		if($level == parent::getParameterValue('output_level'))
+		if($level == parent::getParameterValue('output_level')
+		  && in_array(parent::getParameterValue('output_format'), array('nq','nq.gz')))
 		{
 			// generate the graph uri
 			if(!isset($uri)) {
