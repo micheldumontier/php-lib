@@ -59,6 +59,8 @@ class CRegistry
 	private $no_match = null;
 	/** a list of the prioritized uri schemes */
 	private $uri_schemes = array ("original","bio2rdf","identifiers.org");
+	/** a list of resources that must use the original provider uri */
+	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc");
 	
 	public function __construct()
 	{
@@ -396,6 +398,19 @@ class CRegistry
 		// otherwise return the input
 		return "$ns:$id";		
 	}
+	
+	public function setDefaultURISchemes($ns)
+	{
+		if(is_array($ns)) $this->default_uri_schemes = $ns;
+		else {
+			$this->default_uri_schemes[] = $ns;
+		}
+		return $this;
+	}
+	public function getDefaultURISchemes()
+	{
+		return $this->default_uri_schemes;
+	}
 
 	/** get the fully qualified URI for a qname and a uri scheme 
 	 * 
@@ -404,21 +419,27 @@ class CRegistry
 	 * @return string the fully qualified URI
 	 */
 	public function getFQURI($qname, $scheme = null)
-	{
+	{		
 		$this->initialize();
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
 		
+		// exclude the defaults 
+		if(in_array($ns,$this->getDefaultURISchemes())) {
+			return $this->registry[$ns]['provider-uri'].$id;
+		}
+			
 		if(isset($scheme)) {
-			return $this->registry[$ns][$scheme]."$id";
+			return $this->registry[$ns][$scheme].$id;
 		} else {
 			// otherwise go through the scheme priority
 			foreach($this->getURISchemePriority() AS $scheme) {
 				if(isset($this->registry[$ns][$scheme])) {					
-					return $this->registry[$ns][$scheme]."$id";
+					return $this->registry[$ns][$scheme].$id;
 				}
 			}
 		}
+		
 		
 		// we have problem.
 		if($this->getUnregisteredNSAction() == "fail") {
