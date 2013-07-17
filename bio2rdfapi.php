@@ -392,7 +392,11 @@ class Bio2RDFizer extends RDFFactory
 	
 	public function triplifyString($s,$p,$l,$dt=null,$lang=null,$o=null,$o_type=null)
 	{
-		$buf = '';
+        $buf = '';
+
+        // NOTE :: This would save alot of headache making this mandatory
+        $l = $this->SafeLiteral($l);
+
 		if(!isset($dt)) {
 			$dt = $this->guessDatatype($l);
 		}
@@ -427,7 +431,7 @@ class Bio2RDFizer extends RDFFactory
 			} else if(isset($dt)) {
 				return $buf.$this->QQuadL($s,$p,$l,null,$dt);
 			} else {
-				return $buf.$this->QQuadL($s,$p,$l,null,"xsd:string");
+                return $buf.$this->QQuadL($s,$p,$l,null,"xsd:string");
 			}
 		}
 	
