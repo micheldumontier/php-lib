@@ -50,7 +50,7 @@ class CRegistry
 	/** the local version of the registry */
 	private $local_registry_file = 'registry.csv';
 	/** the local registry filepath */
-	private $local_registry_filepath = null;
+	private $local_registry_filepath = '/data/download/registry/registry.csv';
 	/** the registry cache time in days */
 	private $cache_time = 1;
 	/** the action to take if registry doesn't contain namespace */
@@ -182,8 +182,6 @@ class CRegistry
 		trigger_error("BEGIN",E_USER_NOTICE);
 		$download = true;
 
-		if($this->getLocalRegistryFilename() == null) $this->setLocalRegistry("");
-		
 		if(file_exists($this->getLocalRegistryFilename())) {
 			// check whether the file is current
 			$file = new DateTime(date("Y-m-d",filemtime($this->getLocalRegistryFilename())));
@@ -193,7 +191,7 @@ class CRegistry
 			if($this->cache_time == 0) {
 				trigger_error("Registry is out of date by ".($days-$this->cache_time)." days", E_USER_WARNING);
 				$download = false;
-			} else if($this->cache_time <= $days) {
+			} else if($this->cache_time > $days) {
 				trigger_error("Registry is up to date.", E_USER_NOTICE);
 				$download = false;
 			} else {
@@ -212,7 +210,7 @@ class CRegistry
 				trigger_error("Unable to get remote registry file", E_USER_ERROR);
 			}
 			// make the directory
-			$ret = mkdir($this->local_registry_dir);
+			$ret = @mkdir($this->local_registry_dir);
 			if($ret === false) {
 				trigger_error("Unable to create registry directory ".$this->local_registry_dir);
 				exit;
