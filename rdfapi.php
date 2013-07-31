@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 
-require('application.php');
-require('registry.php');
+require_once('application.php');
+require_once('registry.php');
 
 /**
  * An RDF API for PHP
