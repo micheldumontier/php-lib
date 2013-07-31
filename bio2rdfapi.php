@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-require('rdfapi.php');
+require(__DIR__.'/rdfapi.php');
 
 /**
  * Bio2RDF API
@@ -165,15 +165,30 @@ class Bio2RDFizer extends RDFFactory
 		$this->resource_namespace   = $prefix."_resource:";
 	}
 	
+	/**
+	 * Get the assigned namespace e.g. 'bind:'
+	 *
+	 * @output string the namespace
+	 */
 	public function getNamespace()
 	{
 		return $this->default_namespace;
 	}
 	
+	/**
+	 * Get the resource namespace e.g. 'bind_resource:'
+	 * 
+	 * @output string the resource namespace for the dataset
+	 */
 	public function getRes() {
 		return $this->resource_namespace;
 	}
-		
+	
+	/**
+	 * Get the vocabulary namespace e.g. 'bind_vocabulary:'
+	 * 
+	 * @output string the vocabulary namespace for the dataset
+	 */
 	public function getVoc() {
 		return $this->vocabulary_namespace;
 	}
