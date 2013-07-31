@@ -75,6 +75,12 @@ class CXML
 				$body .= $l;
 
 				$this->xmlroot = simplexml_load_string($this->header.$body);
+				if($this->xmlroot === FALSE) {
+					trigger_error("Error in loading XML");
+					foreach(libxml_get_errors() as $error) {
+						echo "\t", $error->message;
+					}	
+				}
 				$body = ''; 
 				$parsing = false;
 				return TRUE;
