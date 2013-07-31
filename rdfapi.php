@@ -42,7 +42,7 @@ class RDFFactory extends Application
 	private $dataset_uri = null;
 	private $declared = null;
 	
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		$this->registry = new CRegistry();
@@ -52,46 +52,46 @@ class RDFFactory extends Application
 	 * Get the namespace object
 	 * @return object the namespace object
 	 */
-	function getRegistry() 
+	public function getRegistry() 
 	{
 		return $this->registry;
 	}
 	
 	/** get the RDF buffer */
-	function getRDF() {return $this->buf;}
+	public function getRDF() {return $this->buf;}
 	/** add RDF to the string buffer */
-	function addRDF($buf) {$this->buf .= $buf;return TRUE;}
+	public function addRDF($buf) {$this->buf .= $buf;return TRUE;}
 	/** clear the RDF string buffer */
-	function hasRDF(){if($this->buf != '') return TRUE;return FALSE;}
-	function deleteRDF() {$this->buf = '';return TRUE;}
+	public function hasRDF(){if($this->buf != '') return TRUE;return FALSE;}
+	public function deleteRDF() {$this->buf = '';return TRUE;}
 
 	/** Set the default graph URI in order to generate quads
 	 * @param string $graph_uri The Graph URI to set
 	 */
-	function setGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
+	public function setGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
 	/** Get the default graph URI
 	 * @return string the default graph uri
 	 */
-	function getGraphURI() {return $this->graph_uri;}
+	public function getGraphURI() {return $this->graph_uri;}
 	
 	/** Set the read file */
-	function setReadFile($file,$gzcompress=false)
+	public function setReadFile($file,$gzcompress=false)
 	{
 		$this->read_file = new FileFactory($file,$gzcompress);
 		return $this->read_file;
 	}
 	/** get the read file */
-	function getReadFile()
+	public function getReadFile()
 	{	
 		return $this->read_file;
 	}
 	/** set a base write file pattern */
-	function setWriteFilePath($path)
+	public function setWriteFilePath($path)
 	{
 		$this->writeFilePath = $path;
 		return $this;
 	}
-	function getWriteFilePath() {return $this->writeFilePath;}
+	public function getWriteFilePath() {return $this->writeFilePath;}
 	
 	/** ask if the write file is set */
 	function writeFileExists()
@@ -100,18 +100,18 @@ class RDFFactory extends Application
 		return FALSE;
 	}
 	/** set the write file and mode */
-	function setWriteFile($file,$gzcompress=false)
+	public function setWriteFile($file,$gzcompress=false)
 	{
 		$this->write_file = new FileFactory($file,$gzcompress);
 		return $this->write_file;
 	}
 	/** get the write file */
-	function getWriteFile()
+	public function getWriteFile()
 	{
 		return $this->write_file;
 	}
 	/** write the RDF buffer to the write file */
-	function writeRDFBufferToWriteFile() 
+	public function writeRDFBufferToWriteFile() 
 	{
 		if($this->writeFileExists() === FALSE) {
 			trigger_error("Write file not set!");
@@ -123,7 +123,7 @@ class RDFFactory extends Application
 	}
 	
 	/** Generate a n-triple or n-quad */
-	function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
+	public function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
@@ -133,7 +133,7 @@ class RDFFactory extends Application
 	}
 
 	/** Generate a n-triple or n-quad with a literal value */
-	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
+	public function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
 		if(!is_string($literal)) {
 			trigger_error("\$literal is not a literal",E_USER_ERROR);
@@ -147,9 +147,10 @@ class RDFFactory extends Application
 	}
 	
 	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
-	function QQuad($s,$p,$o,$g = null)
+	public function QQuad($s,$p,$o,$g = null)
 	{
-		$s_uri = $this->getRegistry()->getFQURI($s);
+		if(strstr($s,"http://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		$o_uri = $this->getRegistry()->getFQURI($o);
 		$g_uri = null;
@@ -159,9 +160,11 @@ class RDFFactory extends Application
 	}
 	
 	/** Generate a n-triple or n-quad with literal value using registry qualified names (qname) for the subject and predicate */
-	function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
+	public function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
 	{
-		$s_uri = $this->getRegistry()->getFQURI($s);
+		if(strstr($s,"http://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
+		
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		
 		$lt_uri = null;
@@ -173,9 +176,10 @@ class RDFFactory extends Application
 	}
 	
 	/** Generate a n-triple or n-quad with a fully qualified uri as the object and a qname subject and predicate  */
-	function QQuadO_URL($s,$p,$o_uri,$g=null) 
+	public function QQuadO_URL($s,$p,$o_uri,$g=null) 
 	{
-		$s_uri = $this->getRegistry()->getFQURI($s);
+		if(strstr($s,"http://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
@@ -184,13 +188,14 @@ class RDFFactory extends Application
 	}
 
 	/** Generate a safe literal using a special escape */
-	function safeLiteral($s)
+	public static function safeLiteral($s)
 	{
-		return $this->specialEscape($s);
+		$s_noslash = stripslashes($s);
+		return addcslashes($s_noslash, "\\\'\"\n\r\t");
 	}
 	
 	/** the special escape for n-triples */
-	function specialEscape($str){
+	public static function specialEscape($str){
 		$s_noslash = stripslashes($str);
 		return addcslashes($s_noslash, "\\\'\"\n\r\t");
 	}
