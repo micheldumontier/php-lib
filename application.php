@@ -110,7 +110,7 @@ class Application
 		array_shift ($argv);
 	
 		if(isset($argv[0]) && ($argv[0] == "--help" || $argv[0] == "-help" || $argv[0] == "-")) return FALSE;
-			
+		
 		// build a new parameter - value array
 		foreach($argv AS $value) {
 			list($key,$value) = explode("=",$value);
@@ -119,7 +119,7 @@ class Application
 				return FALSE;
 			}
 			if($value == '') {
-				trigger_error("No value for mandatory parameter $key", E_USER_WARNING);
+				trigger_error("No value for parameter $key", E_USER_WARNING);
 				return FALSE;
 			}
 			$myargs[$key] = $value;
