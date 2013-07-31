@@ -46,7 +46,7 @@ class CRegistry
 	/** the remote location of the registry */
 	private $remote_registry_url = 'https://docs.google.com/spreadsheet/pub?key=0AmzqhEUDpIPvdFR0UFhDUTZJdnNYdnJwdHdvNVlJR1E&single=true&gid=0&output=csv';
 	/** the local registry directory */
-	private $local_registry_dir = '';
+	private $local_registry_dir = '/data/download/registry/';
 	/** the local version of the registry */
 	private $local_registry_file = 'registry.csv';
 	/** the local registry filepath */
@@ -99,7 +99,6 @@ class CRegistry
 			$this->local_registry_dir = $dir;
 			$this->local_registry_filepath = $dir.$this->local_registry_file;
 		}
-		else throw new InvalidArgumentException("null or empty local registry file location");
 		return $this;
 	}
 	
@@ -211,6 +210,12 @@ class CRegistry
 			$buf = file_get_contents($this->remote_registry_url);
 			if($buf === FALSE) {
 				trigger_error("Unable to get remote registry file", E_USER_ERROR);
+			}
+			// make the directory
+			$ret = mkdir($this->local_registry_dir);
+			if($ret === false) {
+				trigger_error("Unable to create registry directory ".$this->local_registry_dir);
+				exit;
 			}
 			$ret = file_put_contents($this->getLocalRegistryFilename(), $buf);
 			if($ret === FALSE) {
