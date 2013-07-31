@@ -212,8 +212,7 @@ class CRegistry
 			// make the directory
 			$ret = @mkdir($this->local_registry_dir);
 			if($ret === false) {
-				trigger_error("Unable to create registry directory ".$this->local_registry_dir);
-				exit;
+				trigger_error("Directory exists or unable to create registry directory ".$this->local_registry_dir,E_USER_NOTICE);
 			}
 			$ret = file_put_contents($this->getLocalRegistryFilename(), $buf);
 			if($ret === FALSE) {
