@@ -66,7 +66,6 @@ class CXML
 		while(($l = gzgets($this->fp, 80000)) !== FALSE) {
 			if($elementToParse == null) {$content .= $l; continue;}
 			else if($this->header == '') {$this->header = $l; continue;}
-		
 			$exception = false;
 			if( strstr($l,"<".$elementToParse.">") && strstr($l,"</".$elementToParse.">")) {
 				$exception = true;
@@ -88,7 +87,7 @@ class CXML
 				if($parsing == true) {
 					$body .= $l;
 				} else {
-					if(strstr($l,"<$elementToParse>") || strstr($l,"<$elementToParse ")) {
+					if(strstr($l,"<$elementToParse>") || strstr($l,"<$elementToParse ") || strstr($l,"<$elementToParse\n") || strstr($l,"<$elementToParse\r\n")) {
 						$parsing = true;
 						$body .= $l;
 					}
