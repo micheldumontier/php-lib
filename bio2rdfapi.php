@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-require(__DIR__.'/rdfapi.php');
+require_once(__DIR__.'/rdfapi.php');
 
 /**
  * Bio2RDF API
