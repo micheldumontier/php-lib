@@ -27,9 +27,12 @@ SOFTWARE.
  * @author Michel Dumontier
  * @description 
 */
-require('utils.php');
-require('fileapi.php');
+require_once('utils.php');
+require_once('fileapi.php');
 
+if(!defined('LOGFNC')) {
+
+define('LOGFNC',1);
 $g_loglevel = E_USER_ERROR;
 function setLogLevel($level){global $g_loglevel; $g_loglevel = $level;}
 function getLogLevel() {global $g_loglevel; return $g_loglevel;}
@@ -54,7 +57,8 @@ function error_handler($level, $message, $file, $line, $context)
 	}
 	return(false); //Otherwise, use PHP's error handler
 }
-	
+
+} // end defined	
 	
 class Application
 {
