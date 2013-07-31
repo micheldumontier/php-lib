@@ -28,7 +28,7 @@ SOFTWARE.
  * @description 
 */
 
-class OWLFactory extends RDFizer
+class OWLFactory extends RDFFactory
 {
 	private $types = null;
 	
@@ -39,7 +39,6 @@ class OWLFactory extends RDFizer
 	
 	function DeclareClass($uri)
 	{
-			$this->types[$uri] = $this->ns->Get
 	}
 }
 
