@@ -158,6 +158,37 @@ class Utils
 		closedir($dh);
 		return $files; 
 	}
+	
+	/**
+	 * Download a file from $url and place it in $lfile
+	 * This is similar to file_put_contents ($lfile, file_get_contents ($url)),
+	 * but with built-in error handling.
+	 *
+	 * If the target url does not exist, or if the file could not be written,
+	 * an error is triggered (E_USER_ERROR).
+	 * A file will not be created if the download failed.
+	 */
+	public static function DownloadSingle ($url, $lfile)
+	{
+		echo "downloading $url...";
+		if ( !($fpRead = fopen($url, "rb")) ) {
+			trigger_error ("Unable to get $url", E_USER_ERROR);
+			exit(-1);
+		}
+
+		if ( !($fpWrite = fopen($lfile, "wb")) )
+		{
+			trigger_error ("Unable to write to $lfile", E_USER_ERROR);
+			exit(-1);
+		}
+
+		stream_copy_to_stream ($fpRead, $fpWrite);
+
+		fclose($fpWrite);
+		fclose($fpRead);
+
+		echo "done!".PHP_EOL;
+	}	
 
 	
 	/**

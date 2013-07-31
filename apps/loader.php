@@ -3,7 +3,7 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $isql = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql = "/virtuoso/bin/isql";
+//$isql = "/virtuoso-opensource/bin/isql";
 
 $options = array(
  "file" => "filename",
@@ -210,6 +210,10 @@ foreach($files AS $file) {
  
 	// guess the loader
 	$fp = fopen($f,'r');
+	if($fp === FALSE) {
+		trigger_error("Unable to open $f");
+		continue;
+	}
 	$l = fgets($fp);
 	$xml = false;
 	if(strstr($l,'<?xml')) $xml = true;
@@ -219,7 +223,6 @@ foreach($files AS $file) {
 		echo "$f is not an xml file... skipping";
  		continue;
 	}
-  	// guess the loader
 	fclose($fp);
 
 	// http://docs.openlinksw.com/virtuoso/fn_ttlp_mt.html
@@ -241,7 +244,7 @@ $tries = 10;
   echo "Loading $file into $graph ...".PHP_EOL; 
 
   $cmd = $program."($fcmd ('$f'), '', '".$graph."', ".$options['flags'].", ".$options['threads']."); checkpoint;";
-//   echo $cmd_pre.$cmd.$cmd_post;
+// echo $cmd_pre.$cmd.$cmd_post;
   $out = shell_exec($cmd_pre.$cmd.$cmd_post);
  
   if(strstr($out,"Error")) {
