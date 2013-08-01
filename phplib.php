@@ -23,7 +23,6 @@ SOFTWARE.
 
 require_once(__DIR__.'/application.php');
 require_once(__DIR__.'/bio2rdfapi.php');
-require_once(__DIR__.'/biopax2bio2rdf.php');
 require_once(__DIR__.'/dataset.php');
 require_once(__DIR__.'/dataresource.php');
 require_once(__DIR__.'/fileapi.php');
