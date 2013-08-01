@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-require_once(__DIR__.'/rdfapi.php');
 
 /**
  * Bio2RDF API
@@ -29,7 +28,7 @@ require_once(__DIR__.'/rdfapi.php');
  * @author Michel Dumontier 
  * @version 1.0
 */
-
+require_once(__DIR__.'/rdfapi.php');
 class Bio2RDFizer extends RDFFactory
 {
 	/** the application arguments */
@@ -214,6 +213,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('parser',false,$this->getPrefix(),$this->getPrefix(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
 		parent::addParameter('registry_cache_time',false,null,'1','in days; 0 to force download');
+		parent::addParameter('bio2rdf_release',false,null,'3','Bio2RDF release number');
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','bio2rdf-uri','uri scheme preference');
 		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
 		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
@@ -245,9 +245,10 @@ class Bio2RDFizer extends RDFFactory
 			return null;
 		}
 	
-		$bio2rdf_dataset_version = "bio2rdf-".$this->getPrefix()."-".date("Ymd");
-		$this->setDatasetURI("bio2rdf_dataset:".$bio2rdf_dataset_version);
-		$this->setBio2RDFReleaseFile($bio2rdf_dataset_version.".nt");
+		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nt";
+		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-".date("Ymd");
+		$this->setDatasetURI($bio2rdf_dataset_uri);
+		$this->setBio2RDFReleaseFile($bio2rdf_release_file);
 	}
 	
 	public function clear()
