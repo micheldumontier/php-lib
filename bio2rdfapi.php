@@ -256,6 +256,34 @@ class Bio2RDFizer extends RDFFactory
 		$this->declared = null;
 		$this->getRegistry()->clearNoMatchList();
 	}
+
+	/** this function generates the basic entity metadata only once unless the cache is cleared */
+	public function declareEntity($qname)
+	{
+		$buf = '';
+		if(!isset($this->declared[$qname])
+			&& $this->getFollowBio2RDFGuidelines() == true) {
+
+			$my_qname = $this->getRegistry()->mapQName($qname);
+			$this->declared[$my_qname] = true;
+			$this->getRegistry()->parseQName($my_qname,$ns,$id);
+			
+			$buf .= $this->QQuadL($my_qname,"dc:identifier",$my_qname,null,"xsd:string");
+			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
+			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
+			if( (($pos = strpos($ns,"_resource")) !== FALSE)
+				|| (($pos = strpos($ns,"_vocabulary")) !== FALSE)) {
+				$type = substr($ns,0,$pos)."_vocabulary";
+			} else {
+				$type = $ns."_vocabulary";
+			}
+			// identifiers.org
+			// @todo replace with identifiers.org types e.g http://identifiers.org/clinicaltrials/resource
+			$buf .= $this->QQuad($my_qname,"rdf:type","$type:Resource");
+			$buf .= $this->QQuad($my_qname,"void:inDataset",$this->getDatasetURI());
+		}
+		return $buf;
+	}
 	
 	/** 
 	 * Describe a resource in terms of label, title and description 
@@ -271,33 +299,20 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$buf = '';
 		if(!isset($this->declared[$qname])) {
-			$this->declared[$qname] = '';
-			
-			$s = $this->getRegistry()->mapQName($qname);
-			$this->getRegistry()->parseQName($s,$ns,$id);
+			$buf .= $this->declareEntity($qname);
+		}
+		if(!isset($this->declared['d'.$qname])) {
+			$this->declared['d'.$qname] = true;
 
-			$buf  = $this->QQuadL($s,"rdfs:label",$label." [$s]",$lang);
-			if(isset($title) && $title != '') $buf .= $this->QQuadL($s,"dc:title",$title,$lang);
+			$my_qname = $this->getRegistry()->mapQName($qname);
+			$this->getRegistry()->parseQName($my_qname,$ns,$id);
+			
+			$buf  .= $this->QQuadL($my_qname,"rdfs:label",$label." [$my_qname]",$lang);
+			if(isset($title) && $title != '') $buf .= $this->QQuadL($my_qname,"dc:title",$title,$lang);
 			if(isset($description) && $description != '') {
-				$buf .= $this->QQuadL($s,"dc:description",$description,$lang);
-			}
-			if($this->getFollowBio2RDFGuidelines() == true) {
-				$buf .= $this->QQuadL($s,"dc:identifier",$s,null,"xsd:string");
-				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
-				$buf .= $this->QQuadL($s,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
-				if( (($pos = strpos($ns,"_resource")) !== FALSE)
-					|| (($pos = strpos($ns,"_vocabulary")) !== FALSE)) {
-					$type = substr($ns,0,$pos)."_vocabulary";
-				} else {
-					$type = $ns."_vocabulary";
-				}
-				// identifiers.org
-				// rdf:type <http://identifiers.org/clinicaltrials/resource>
-				$buf .= $this->QQuad($s,"rdf:type",$type.":Resource");
-				$buf .= $this->QQuad($s,"void:inDataset",$this->GetDatasetURI());
+				$buf .= $this->QQuadL($my_qname,"dc:description",$description,$lang);
 			}
 		}
-
 		return $buf;
 	}
 	
@@ -408,14 +423,14 @@ class Bio2RDFizer extends RDFFactory
 				$buf .= parent::QQuad($o,"rdfs:subClassOf",$o_parent);
 			}
 		}
-		
+		$buf .= $this->declareEntity($s).$this->declareEntity($p).$this->declareEntity($o);
 		return $this->QQuad($s,$p,$o).$buf;
 	}
 	
 	
 	public function triplifyString($s,$p,$l,$dt=null,$lang=null,$o=null,$o_type=null)
 	{
-		$buf = '';
+		$buf = $this->declareEntity($s).$this->declareEntity($p);
 		if(!isset($dt)) {
 			$dt = $this->guessDatatype($l);
 		}
