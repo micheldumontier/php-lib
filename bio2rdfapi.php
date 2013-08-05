@@ -245,7 +245,7 @@ class Bio2RDFizer extends RDFFactory
 			return null;
 		}
 	
-		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nt";
+		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nq";
 		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-".date("Ymd");
 		$this->setDatasetURI($bio2rdf_dataset_uri);
 		$this->setBio2RDFReleaseFile($bio2rdf_release_file);
