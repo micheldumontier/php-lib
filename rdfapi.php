@@ -127,7 +127,7 @@ class RDFFactory extends Application
 	{
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
 		
 		return "<$s_uri> <$p_uri> <$o_uri> $graph_uri .".PHP_EOL;
 	}
@@ -142,19 +142,22 @@ class RDFFactory extends Application
 		$l = $this->safeLiteral($literal);
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
 		return "<$s_uri> <$p_uri> \"$l\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
 	}
 	
 	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
 	public function QQuad($s,$p,$o,$g = null)
 	{
-		if(strstr($s,"http://")) $s_uri = $s;
+		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		$o_uri = $this->getRegistry()->getFQURI($o);
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
@@ -162,7 +165,7 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad with literal value using registry qualified names (qname) for the subject and predicate */
 	public function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
 	{
-		if(strstr($s,"http://")) $s_uri = $s;
+		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		
 		$p_uri = $this->getRegistry()->getFQURI($p);
@@ -171,6 +174,9 @@ class RDFFactory extends Application
 		if(isset($lt)) $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->QuadL($s_uri,$p_uri,$l,$lang,$lt_uri,$g_uri);		
 	}
@@ -178,11 +184,14 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad with a fully qualified uri as the object and a qname subject and predicate  */
 	public function QQuadO_URL($s,$p,$o_uri,$g=null) 
 	{
-		if(strstr($s,"http://")) $s_uri = $s;
+		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		$p_uri = $this->getRegistry()->getFQURI($p);
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
