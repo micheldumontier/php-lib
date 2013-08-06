@@ -189,8 +189,7 @@ class CRegistry
 			$interval = date_diff($now,$file);
 			$days = $interval->format('%a');
 			if($this->cache_time == 0) {
-				trigger_error("Registry is out of date by ".($days-$this->cache_time)." days", E_USER_WARNING);
-				$download = false;
+				$download = true;
 			} else if($this->cache_time > $days) {
 				trigger_error("Registry is up to date.", E_USER_NOTICE);
 				$download = false;
