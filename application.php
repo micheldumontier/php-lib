@@ -49,10 +49,10 @@ function error_handler($level, $message, $file, $line, $context)
 		debug_print_backtrace();
 		return(true); //And prevent the PHP error handler from continuing
 	} else if($level === E_USER_WARNING) {
-		if(getLogLevel() >= E_USER_WARNING) echo "WARNING: $message";
+		if(getLogLevel() >= E_USER_WARNING) echo PHP_EOL."WARNING: $message";
 		return (true);
 	} else if($level === E_USER_NOTICE) {
-		if(getLogLevel() >= E_USER_NOTICE) echo "NOTICE: $message";
+		if(getLogLevel() >= E_USER_NOTICE) echo PHP_EOL."NOTICE: $message";
 		return(true);
 	}
 	return(false); //Otherwise, use PHP's error handler
