@@ -58,6 +58,9 @@ class Bio2RDFizer extends RDFFactory
 	/** follow Bio2RDF guidelines */
 	private $bio2rdf_guidelines = true;
 	
+	/** dataset file  */
+	private $dataset_file = null;
+	
 	/** 
 	 * the constructor 
 	 * 
@@ -201,6 +204,20 @@ class Bio2RDFizer extends RDFFactory
 		return $this->bio2rdf_guidelines;
 	}
 	
+	public function writeToReleaseFile($buf)
+	{
+		if(!isset($this->dataset_file)) {
+			$this->dataset_file = new FileFactory(parent::getParameterValue("outdir").$this->getBio2RDFReleaseFile());
+		}
+		$this->dataset_file->write($buf);
+	}
+	public function closeReleaseFile()
+	{
+		if(isset($this->dataset_file)) {
+			$this->dataset_file->close();
+		}
+	}
+	
 	public function initialize() 
 	{	
 		parent::addParameter('indir',false,null,'/data/download/'.$this->getPrefix().'/','directory to download into and/or parse from');
@@ -273,6 +290,7 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$buf = '';
 		if(!isset($this->declared[$qname])
+			&& !strstr($qname,"://")
 			&& $this->getFollowBio2RDFGuidelines() == true) {
 
 			$my_qname = $this->getRegistry()->mapQName($qname);
