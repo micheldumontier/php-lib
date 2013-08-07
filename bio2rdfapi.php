@@ -228,6 +228,16 @@ class Bio2RDFizer extends RDFFactory
 			exit;
 		}
 		setLogLevelFromString($this->getParameterValue('log_level'));
+
+		//make sure in and out directories end with slash
+		if(substr(parent::getParameterValue('indir'), -1) !== "/"){
+			parent::setParameterValue('indir', parent::getParameterValue('indir')."/") 
+		}
+		
+		if(substr(parent::getParameterValue('outdir'), -1) !== "/"){
+			parent::setParameterValue('outdir', parent::getParameterValue('outdir')."/") 
+		}
+		
 		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create directory 'indir' !",E_USER_ERROR); exit;}
 		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create directory 'outdir' !",E_USER_ERROR); exit;}
 		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create directory 'registry_dir' !",E_USER_ERROR); exit;}
