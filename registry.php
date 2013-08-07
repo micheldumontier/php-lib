@@ -366,7 +366,7 @@ class CRegistry
 		if(count($a) == 1) {
 			// there is no prefix
 			$prefix = null;
-			$prefix = trim($name);
+			$identifier = trim($name);
 		} else {
 			$prefix = strtolower(trim($a[0]));
 			$identifier = trim($a[1]);
