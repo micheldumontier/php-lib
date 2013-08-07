@@ -236,7 +236,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
 		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
 		parent::addParameter('output_level',false,'dataset|file|record|triple','file','level at which to generate output files');
-		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nt.gz','output format');
+		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nq.gz','output format');
 		parent::addParameter('log_level',false,'error|warning|notice','warning','level at which to print log messages');
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
 		
@@ -258,6 +258,7 @@ class Bio2RDFizer extends RDFFactory
 		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create directory 'indir' !",E_USER_ERROR); exit;}
 		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create directory 'outdir' !",E_USER_ERROR); exit;}
 		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create directory 'registry_dir' !",E_USER_ERROR); exit;}
+		
 		if(parent::getParameterValue('graph_uri')) parent::setGraphURI(parent::getParameterValue('graph_uri'));	
 		
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
@@ -277,6 +278,16 @@ class Bio2RDFizer extends RDFFactory
 		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-".date("Ymd");
 		$this->setDatasetURI($bio2rdf_dataset_uri);
 		$this->setBio2RDFReleaseFile($bio2rdf_release_file);
+		
+		// setup the default dataset graph
+		if(parent::getParameterValue('dataset_graph') == true && parent::getGraphURI() == '') {
+			parent::setGraphURI($this->getDatasetURI());
+		} 
+		
+		if(parent::getParameterValue('dataset_graph') == false && parent::getGraphURI() == '') {
+			$gz = (strstr(parent::getParameterValue('output_format'),"gz")?".gz":"");
+			parent::setParameterValue('output_format','nt'.$gz);
+		}		
 	}
 	
 	public function clear()
