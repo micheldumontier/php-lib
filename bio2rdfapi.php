@@ -235,7 +235,7 @@ class Bio2RDFizer extends RDFFactory
 		}
 		
 		if(substr(parent::getParameterValue('outdir'), -1) !== "/"){
-			parent::setParameterValue('indir', parent::getParameterValue('outdir')."/") 
+			parent::setParameterValue('outdir', parent::getParameterValue('outdir')."/") 
 		}
 		
 		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create directory 'indir' !",E_USER_ERROR); exit;}
