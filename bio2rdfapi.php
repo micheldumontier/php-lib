@@ -235,7 +235,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','bio2rdf-uri','uri scheme preference');
 		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
 		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
-		parent::addParameter('output_level',false,'dataset|file|record|triple','file','level at which to generate output files');
+		parent::addParameter('output_level',false,'dataset|file|record|triple','dataset','level at which to generate output files');
 		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nq.gz','output format');
 		parent::addParameter('log_level',false,'error|warning|notice','warning','level at which to print log messages');
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
@@ -701,6 +701,9 @@ class Bio2RDFizer extends RDFFactory
 	 */
 	public function setCheckPoint($level, $finalize = false) 
 	{
+		// @todo complete this functionality
+		return true;
+		
 		// if rdf present, the generate file if not available and write to it
 		if($this->hasRDF() === TRUE) {
 			// check if there is an active file pointer
@@ -720,13 +723,14 @@ class Bio2RDFizer extends RDFFactory
 		  && in_array(parent::getParameterValue('output_format'), array('nq','nq.gz')))
 		{
 			// generate the graph uri
-			if(!isset($uri)) {
+			if(parent::getGraphURI() == '') {
 				// generate one
 				$uuid  = uniqid('',true);
 				$uri = $this->getRes().$uuid;
+				parent::setGraphURI($uri);
 			}
-			parent::setGraphURI($uri);
-			// open the file pointer
+
+			// @todo open new files
 		}
 	}
 }
