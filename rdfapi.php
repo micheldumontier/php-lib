@@ -151,8 +151,13 @@ class RDFFactory extends Application
 	{
 		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
-		$p_uri = $this->getRegistry()->getFQURI($p);
-		$o_uri = $this->getRegistry()->getFQURI($o);
+		
+		if(strstr($p,"://")) $p_uri = $p;
+		else $p_uri = $this->getRegistry()->getFQURI($p);
+		
+		if(strstr($o,"://")) $o_uri = $o;
+		else $o_uri = $this->getRegistry()->getFQURI($o);
+		
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
 		else if(isset($this->graph_uri) && $this->graph_uri != '') {
@@ -168,7 +173,8 @@ class RDFFactory extends Application
 		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		
-		$p_uri = $this->getRegistry()->getFQURI($p);
+		if(strstr($p,"://")) $p_uri = $p;
+		else $p_uri = $this->getRegistry()->getFQURI($p);
 		
 		$lt_uri = null;
 		if(isset($lt)) $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
