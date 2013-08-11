@@ -168,18 +168,28 @@ class Utils
 	 * an error is triggered (E_USER_ERROR).
 	 * A file will not be created if the download failed.
 	 */
-	public static function DownloadSingle ($url, $lfile)
+	public static function DownloadSingle ($url, $lfile, $return_on_fail = false)
 	{
-		echo "downloading $url...";
+		trigger_error("downloading $url...",E_USER_NOTICE);
 		if ( !($fpRead = fopen($url, "rb")) ) {
-			trigger_error ("Unable to get $url", E_USER_ERROR);
-			exit(-1);
+			if($return_on_fail === false) {
+				trigger_error ("Unable to get $url", E_USER_ERROR);
+				exit(-1);
+			} else {
+				trigger_error ("Unable to get $url", E_USER_WARNING);
+				return false;
+			}
 		}
 
 		if ( !($fpWrite = fopen($lfile, "wb")) )
 		{
-			trigger_error ("Unable to write to $lfile", E_USER_ERROR);
-			exit(-1);
+			if($return_on_fail === false) {
+				trigger_error ("Unable to write to $lfile", E_USER_ERROR);
+				exit(-1);
+			} else {
+				trigger_error ("Unable to get $url", E_USER_WARNING);
+				return false;
+			}
 		}
 
 		stream_copy_to_stream ($fpRead, $fpWrite);
@@ -187,7 +197,7 @@ class Utils
 		fclose($fpWrite);
 		fclose($fpRead);
 
-		echo "done!".PHP_EOL;
+		trigger_error("done!",E_USER_NOTICE);
 	}	
 
 	
