@@ -234,29 +234,30 @@ class CRegistry
 "providerURI",     // [2] => Provider Base URI
 "alternateURI",    // [3] => Alternative Base URI
 "miriam",          // [4] => MIRIAM
-"bioportal",       // [5] => BioPortal Ontology ID 
-"datahub",         // [6] => thedatahub
-"abbreviation",    // [7] => Abbreviation
-"title",           // [8] => Title
-"description",     // [9] => Description
-"pubmed",          // [10] => PubMed ID
-"organization",    // [11] => Organization
-"type",            // [12] => Type (warehouse, dataset or terminology)
-"keywords",        // [13] => Keywords
-"homepage",        // [14] => Homepage
-"homepage_up",     // [15] => homepage still available?
-"subnamespace",    // [16] => sub-namespace in dataset
-"partOfCollection", // [17] => part of collection
-"license",         // [18] => License URL
-"licenseText",     // [19] => License Text
-"rights",          // [20] => Rights
-"id_regex",        // [21] => ID regex
-"example_id",      // [22] => ExampleID
-"html_template",   // [23] => Provider HTML URL
-"empty",           // [24] =>
-"miriam_notes",    // [25] => MIRIAM curator notes
-"miriam_coverage", // [26] => MIRIAM coverage
-"miriam_updates",  // [27] => updates
+"biodbcore",       // [5] => BioDBcore ID 
+"bioportal",       // [6] => BioPortal Ontology ID 
+"datahub",         // [7] => thedatahub
+"abbreviation",    // [8] => Abbreviation
+"title",           // [9] => Title
+"description",     // [10] => Description
+"pubmed",          // [11] => PubMed ID
+"organization",    // [12] => Organization
+"type",            // [13] => Type (warehouse, dataset or terminology)
+"keywords",        // [14] => Keywords
+"homepage",        // [15] => Homepage
+"homepage_up",     // [16] => homepage still available?
+"subnamespace",    // [17] => sub-namespace in dataset
+"partOfCollection", // [18] => part of collection
+"license",         // [19] => License URL
+"licenseText",     // [20] => License Text
+"rights",          // [21] => Rights
+"id_regex",        // [22] => ID regex
+"example_id",      // [23] => ExampleID
+"html_template",   // [24] => Provider HTML URL
+"empty",           // [25] =>
+"miriam_notes",    // [26] => MIRIAM curator notes
+"miriam_coverage", // [27] => MIRIAM coverage
+"miriam_updates",  // [28] => updates
 );
 
 		if (($fp = fopen($this->getLocalRegistryFilename(), "r")) === FALSE) {
@@ -264,6 +265,10 @@ class CRegistry
 			return FALSE;
 		}
 		$header = fgetcsv($fp);
+		if(count($header) != 30) {
+			trigger_error("Expecting 30 columns, found ".count($header));
+			return FALSE;
+		}
 		while (($r = fgetcsv($fp)) !== FALSE) {
 			$prefix = $r[0];
 			$e = null;
@@ -299,7 +304,7 @@ class CRegistry
 				foreach( explode(",",$r[3]) AS $alt_uri) {
 					$this->map[$alt_uri] = $uri;
 				}
-			}	
+			}
 		}
 	}
 
@@ -311,6 +316,18 @@ class CRegistry
 			return null;
 		} 		
 		return $this->registry[$ns];
+	}
+	
+	/** get the namespace by providing an externally linked id (bioportal, miriam, ckan, etc)
+	 * @param id string the identifier
+	 * @param source string the 
+	 * @return object an entry object
+	 */
+	public function getNamespaceFromID($id, $source)
+	{
+		foreach($this->registry AS $ns => $e) {
+			if(isset($e[$source]) && $e[$source] == $id) return $ns;
+		}
 	}
 	
 	/** normalize the prefix for the prefix map */
