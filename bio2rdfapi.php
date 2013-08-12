@@ -344,8 +344,12 @@ class Bio2RDFizer extends RDFFactory
 		if(!isset($this->declared['d'.$qname])) {
 			$this->declared['d'.$qname] = true;
 
-			$my_qname = $this->getRegistry()->mapQName($qname);
-			$this->getRegistry()->parseQName($my_qname,$ns,$id);
+			if(strstr($qname, '://')){
+				$my_qname = $qname;
+			} else {
+				$my_qname = $this->getRegistry()->mapQName($qname);
+				$this->getRegistry()->parseQName($my_qname,$ns,$id);
+			}
 			
 			$buf  .= $this->QQuadL($my_qname,"rdfs:label",$label." [$my_qname]",$lang);
 			if(isset($title) && $title != '') $buf .= $this->QQuadL($my_qname,"dc:title",$title,$lang);
