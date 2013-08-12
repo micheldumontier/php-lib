@@ -21,7 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-require_once(__DIR__.'/rdfapi.php');
 require_once(__DIR__.'/../arc2/ARC2.php'); // available on git @ https://github.com/semsol/arc2.git
 	
 /**
@@ -29,7 +28,7 @@ require_once(__DIR__.'/../arc2/ARC2.php'); // available on git @ https://github.
  * @version 1.0
  * @author Michel Dumontier
 */
-Class BioPAX2Bio2RDF extends RDFFactory
+Class BioPAX2Bio2RDF
 {
 	private $file = null;
 	private $buf = null;
@@ -38,12 +37,11 @@ Class BioPAX2Bio2RDF extends RDFFactory
 	private $bio2rdf_ns = null;
 	private $dataset_uri = null;
 	private $declared = null;
-	private $registry = null;
+	private $rdfizer = null;
 	
-	function __construct($registry)
+	function __construct($rdfizer)
 	{
-		parent::__construct();
-		$this->setRegistry($registry);
+		$this->setRdfizer($rdfizer);
 	}
 	
 	function SetFile($file)
@@ -108,13 +106,13 @@ Class BioPAX2Bio2RDF extends RDFFactory
 		return $this;
 	}
 	
-	function SetRegistry($registry){
-		$this->registry = $registry;
+	function SetRDFizer($rdfizer){
+		$this->rdfizer = $rdfizer;
 		return $this;
 	}
 
-	function GetRegistry(){
-		return $this->registry;
+	function GetRDFizer(){
+		return $this->rdfizer;
 	}
 
 	function Parse()
@@ -132,8 +130,8 @@ Class BioPAX2Bio2RDF extends RDFFactory
 			exit;
 		}
 		
-		$rdf_type = $this->getRegistry()->GetFQURI("rdf:type");
-		$url  = $this->getRegistry()->GetFQURI("bio2rdf_vocabulary:url");
+		$rdf_type = $this->getRDFizer()->getRegistry()->GetFQURI("rdf:type");
+		$url  = $this->getRDFizer()->getRegistry()->GetFQURI("bio2rdf_vocabulary:url");
 		
 		$triples = $parser->getTriples();
 		foreach($triples AS $i => $a) {
@@ -177,7 +175,7 @@ Class BioPAX2Bio2RDF extends RDFFactory
 									continue;
 								}
 								$id_string = $xref_obj[$this->biopax['id']][0]['value'];
-								$this->getRegistry()->ParseQName($id_string,$db,$id);
+								$this->getRDFizer()->getRegistry()->ParseQName($id_string,$db,$id);
 								if(!$db) {
 									if(isset($xref_obj[$this->biopax['db']][0]['value'])) {
 										$db =  $xref_obj[$this->biopax['db']][0]['value'];
@@ -187,15 +185,15 @@ Class BioPAX2Bio2RDF extends RDFFactory
 									}
 								}
 								if($db == "ICD") $db = "icd9";
-								$qname = $this->getRegistry()->MapQName("$db:$id");
-								$this->getRegistry()->ParseQName($qname,$db,$id);
+								$qname = $this->getRDFizer()->getRegistry()->MapQName("$db:$id");
+								$this->getRDFizer()->getRegistry()->ParseQName($qname,$db,$id);
 								if($db == "go") {
 									if(!is_numeric($id[0])) {
 										echo "skipping non-numeric GO identifier: $id".PHP_EOL;
 										continue;
 									}
 								}
-								$new_uri = $this->getRegistry()->getFQURI($qname);
+								$new_uri = $this->getRDFizer()->getRegistry()->getFQURI($qname);
 								
 								// set the new uri
 								$xrefs[$o_uri] = $new_uri;
@@ -217,20 +215,20 @@ Class BioPAX2Bio2RDF extends RDFFactory
 								$o['value'] = "$db:$id";
 								$o['type'] = 'literal';
 								$o['datatype'] = 'http://www.w3.org/2001/XMLSchema#string';
-								$index[$new_uri][$this->getRegistry()->GetFQURI("dc:identifier")][] = $o;
+								$index[$new_uri][$this->getRDFizer()->getRegistry()->GetFQURI("dc:identifier")][] = $o;
 								
 							} else $new_uri = $xrefs[$o_uri];
 						
 							// now determine the nature of the relation
 							$type = $xref_obj[$rdf_type][0]['value'];
 							if($type == $this->biopax['unificationXref']) {
-								$rel = $this->getRegistry()->GetFQURI("biopax_vocabulary:identical-to");
+								$rel = $this->getRDFizer()->getRegistry()->GetFQURI("biopax_vocabulary:identical-to");
 							} elseif($type == $this->biopax['relationshipXref']) {
-								$rel = $this->getRegistry()->GetFQURI("biopax_vocabulary:related-to");
+								$rel = $this->getRDFizer()->getRegistry()->GetFQURI("biopax_vocabulary:related-to");
 							} elseif($type == $this->biopax['publicationXref']) {
-								$rel = $this->getRegistry()->GetFQURI("biopax_vocabulary:publication");
+								$rel = $this->getRDFizer()->getRegistry()->GetFQURI("biopax_vocabulary:publication");
 							} elseif($type == $this->biopax['Xref']) {
-								$rel = $this->getRegistry()->GetFQURI("biopax_vocabulary:related-to");
+								$rel = $this->getRDFizer()->getRegistry()->GetFQURI("biopax_vocabulary:related-to");
 							}						
 							 
 							// unset the old ref and put in the new one
@@ -261,12 +259,12 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				if($ns == "biomodels.db") {
 					$id = str_replace("/","_",$m[2]);
 				}
-				$this->getRegistry()->ParseQName($id,$ns2,$id2);
+				$this->getRDFizer()->getRegistry()->ParseQName($id,$ns2,$id2);
 				if($ns2) {
 					$id = $id2;
 				}
 				$s = "http://identifiers.org/$ns/$id";
-				$s_uri = $this->getRegistry()->GetFQURI($this->getRegistry()->MapQName("$ns:$id"));
+				$s_uri = $this->getRDFizer()->getRegistry()->GetFQURI($this->getRDFizer()->getRegistry()->MapQName("$ns:$id"));
 			} else {
 				$s_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$s);
 				if(!$s_uri) {
@@ -274,19 +272,19 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				}
 			}
 			if(isset($this->dataset_uri)) {
-				$rdf .= $this->Quad($s_uri,$this->getRegistry()->GetFQURI("void:inDataset"),$this->getRegistry()->GetFQURI($this->dataset_uri));
+				$rdf .= $this->getRDFizer()->triplify($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("void:inDataset"),$this->getRDFizer()->getRegistry()->GetFQURI($this->dataset_uri));
 			}
 			
-			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->Quad($s_uri,$this->getRegistry()->GetFQURI("owl:sameAs"),$s);
+			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->getRDFizer()->triplify($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("owl:sameAs"),$s);
 			
 			// add an rdfs:label
 			if(isset($p_list[$this->biopax['name']][0]['value'])) {
 				$label = $p_list[$this->biopax['name']][0]['value'];
-				if($label) $rdf .= $this->QuadL($s_uri,$this->getRegistry()->GetFQURI("rdfs:label"),$label);
+				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("rdfs:label"),$label);
 			}
 			if(isset($p_list[$this->biopax['term']][0]['value'])) {
 				$label = $p_list[$this->biopax['term']][0]['value'];
-				if($label) $rdf .= $this->QuadL($s_uri,$this->getRegistry()->GetFQURI("rdfs:label"),$label);
+				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("rdfs:label"),$label);
 			}
 			
 			foreach($p_list AS $p => $o_list) {
@@ -294,26 +292,26 @@ Class BioPAX2Bio2RDF extends RDFFactory
 				foreach($o_list AS $o) {
 					if($o['type'] == 'uri') {
 						$o_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$o['value']);				
-						$rdf .= $this->Quad($s_uri,$p,$o_uri);
+						$rdf .= $this->getRDFizer()->triplify($s_uri,$p,$o_uri);
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							$rdf .= $this->Quad($p,$this->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:ObjectProperty"));
+							$rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:ObjectProperty"));
 						}
 					} elseif($o['type'] == 'bnode') {
-						$rdf .= $this->Quad($s_uri,$p ,$o['value']);
+						$rdf .= $this->getRDFizer()->triplify($s_uri,$p ,$o['value']);
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							$rdf .= $this->Quad($p,$this->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:ObjectProperty"));
+							$rdf .=$this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:ObjectProperty"));
 						}
 					} else if($o['type'] == 'literal') {
-						$literal = $this->SafeLiteral($o['value']);
+						$literal = $this->getRDFizer()->SafeLiteral($o['value']);
 						if($literal == '') continue;
 						
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							if($p == $this->biopax['comment'] || $p == $this->getRegistry()->GetFQURI("dc:identifier")) {
-								$rdf .= $this->Quad($p,$this->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:AnnotationProperty"));
-							} else $rdf .= $this->Quad($p,$this->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:DatatypeProperty"));
+							if($p == $this->biopax['comment'] || $p == $this->getRDFizer()->getRegistry()->GetFQURI("dc:identifier")) {
+								$rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:AnnotationProperty"));
+							} else $rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:DatatypeProperty"));
 						}
 						
 						$datatype = null;
@@ -321,10 +319,10 @@ Class BioPAX2Bio2RDF extends RDFFactory
 							if(strstr($o['datatype'],"http://")) {
 								$datatype = $o['datatype'];
 							} else {
-								$datatype = $this->getRegistry()->GetFQURI($o['datatype']);
+								$datatype = $this->getRDFizer()->getRegistry()->GetFQURI($o['datatype']);
 							}
 						}
-						$rdf .= $this->QuadL($s_uri,$p,$literal,null,$datatype);
+						$rdf .= $this->getRDFizer()->triplifyString($s_uri,$p,$literal,null,$datatype);
 					}				
 				} // foreach o_list
 			} // foreach p_list
