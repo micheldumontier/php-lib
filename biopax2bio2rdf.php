@@ -175,7 +175,14 @@ Class BioPAX2Bio2RDF
 									continue;
 								}
 								$id_string = $xref_obj[$this->biopax['id']][0]['value'];
-								$this->getRDFizer()->getRegistry()->ParseQName($id_string,$db,$id);
+								
+								//check for PANTHER domain IDs which can contain colons
+								if(stristr($id_string, "pthr")){
+									$id = $id_string;
+								} else {
+									$this->getRDFizer()->getRegistry()->ParseQName($id_string,$db,$id);
+								}
+								
 								if(!$db) {
 									if(isset($xref_obj[$this->biopax['db']][0]['value'])) {
 										$db =  $xref_obj[$this->biopax['db']][0]['value'];
@@ -185,6 +192,9 @@ Class BioPAX2Bio2RDF
 									}
 								}
 								if($db == "ICD") $db = "icd9";
+
+
+
 								$qname = $this->getRDFizer()->getRegistry()->MapQName("$db:$id");
 								$this->getRDFizer()->getRegistry()->ParseQName($qname,$db,$id);
 								if($db == "go") {
