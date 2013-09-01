@@ -112,19 +112,25 @@ class Application
 		// get rid of the script argument
 		$this->name = $argv[0];
 		array_shift ($argv);
-	
-		if(isset($argv[0]) && ($argv[0] == "--help" || $argv[0] == "-help" || $argv[0] == "-")) return FALSE;
-		
+
 		// build a new parameter - value array
+		$ret = TRUE;
 		foreach($argv AS $value) {
-			list($key,$value) = explode("=",$value);
+			if(in_array($value, array("-help", "-help", '-h', "-"))) $ret = FALSE;
+
+			$a = explode("=",$value);
+			if(count($a) != 2) {
+				trigger_error("Invalid key value pair: $value",E_USER_WARNING);
+			}
+			$key = $a[0];
+			$value = $a[1];
 			if(!isset($this->parameters[$key]) && ($allow_any_key == false)) {
 				echo PHP_EOL."ERROR: Invalid parameter - $key".PHP_EOL;
-				return FALSE;
+				$ret = FALSE;
 			}
 			if($value == '') {
 				trigger_error("No value for parameter $key", E_USER_WARNING);
-				return FALSE;
+				$ret = FALSE;
 			}
 			$myargs[$key] = $value;
 		}
@@ -156,7 +162,7 @@ class Application
 			if($this->parameters[$key]['value'] === 'false') $this->parameters[$key]['value'] = false;
 		}
 		$g_loglevel = $old_log_level;
-		return TRUE;
+		return $ret;
 	}
 	
 	public function setParameterValue($key,$value)
@@ -170,7 +176,10 @@ class Application
 			trigger_error("Invalid parameter - $key", E_USER_ERROR);
 			return FALSE;
 		}
-		return $this->parameters[$key]['value'];
+		if(isset($this->parameters[$key]['value'])) {
+			return $this->parameters[$key]['value'];
+		}
+		return null;
 	}
 	
 	public function getParameterList($key) 
