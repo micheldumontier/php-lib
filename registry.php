@@ -60,7 +60,7 @@ class CRegistry
 	/** a list of the prioritized uri schemes */
 	private $uri_schemes = array ("original","bio2rdf","identifiers.org");
 	/** a list of resources that must use the original provider uri */
-	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav");
+	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto");
 	
 	public function __construct()
 	{
@@ -203,22 +203,19 @@ class CRegistry
 		}
 		
 		if($download === true) {
-			echo("Downloading dataset registry").PHP_EOL;
-			$buf = file_get_contents($this->remote_registry_url);
-			if($buf === FALSE) {
-				trigger_error("Unable to get remote registry file", E_USER_ERROR);
-			}
-			// make the directory
-			$ret = @mkdir($this->local_registry_dir);
+			trigger_error("Downloading dataset registry", E_USER_NOTICE);
+			$ret = Utils::DownloadSingle($this->remote_registry_url, $this->getLocalRegistryFilename(), true);
 			if($ret === false) {
-				trigger_error("Directory exists or unable to create registry directory ".$this->local_registry_dir,E_USER_NOTICE);
+				// couldn't download
+				if(!file_exists($this->getLocalRegistryFilename())) {
+					trigger_error("Unable to download copy of registry and no registry exists - must exit", E_USER_ERROR);
+					exit(-1);
+				} else {
+					trigger_error("Unable to download copy of registry, will use existing copy",E_USER_WARNING);
+				}
+			} else {
+				trigger_error("Download complete", E_USER_NOTICE);
 			}
-			$ret = file_put_contents($this->getLocalRegistryFilename(), $buf);
-			if($ret === FALSE) {
-				trigger_error("Unable to save local registry file ".$this->getLocalRegistryFilename(), E_USER_ERROR);
-				return FALSE;
-			}
-			trigger_error("Download complete", E_USER_NOTICE);
 		} 
 		trigger_error("END",E_USER_NOTICE);
 		return TRUE;
@@ -266,7 +263,7 @@ class CRegistry
 		}
 		$header = fgetcsv($fp);
 		if(count($header) != 30) {
-			trigger_error("Expecting 30 columns, found ".count($header));
+			trigger_error("Expecting 30 columns, found ".count($header), E_USER_ERROR);
 			return FALSE;
 		}
 		while (($r = fgetcsv($fp)) !== FALSE) {
@@ -298,11 +295,11 @@ class CRegistry
 				$syn = $this->normalizePrefix(preg_replace("/\([^\)]+/","",$syn));
 				$this->map[$syn] = $prefix;
 			}
-			
+
 			// add alternative URIs to map
 			if($uri && $r[3] != '') {
 				foreach( explode(",",$r[3]) AS $alt_uri) {
-					$this->map[$alt_uri] = $uri;
+					$this->map[trim($alt_uri)] = $prefix;
 				}
 			}
 		}
@@ -316,6 +313,19 @@ class CRegistry
 			return null;
 		} 		
 		return $this->registry[$ns];
+	}
+	
+	public function getEntryValueByKey($prefix,$key)
+	{
+		$entry = $this->getEntry($prefix);
+		if(isset($entry)) {
+			if(isset($entry[$key])) {
+				return $entry[$key];
+			} else {
+				trigger_error("Unable to get $key from registry entry $prefix",E_USER_ERROR);
+				return null;
+			}
+		}
 	}
 	
 	/** get the namespace by providing an externally linked id (bioportal, miriam, ckan, etc)
@@ -447,7 +457,7 @@ class CRegistry
 			return $this->registry[$ns]['provider-uri'].$id;
 		}
 			
-		if(isset($scheme)) {
+		if(isset($scheme) && isset($this->registry[$ns][$scheme])) {
 			return $this->registry[$ns][$scheme].$id;
 		} else {
 			// otherwise go through the scheme priority
@@ -502,6 +512,13 @@ class CRegistry
 		}
 		
 	}
+	
+	public function getPrefixFromURI($uri)
+	{
+		if(isset($this->map[$uri] )) return $this->map[$uri];
+		return null;
+	}
+	
 }
 
 
