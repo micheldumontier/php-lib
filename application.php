@@ -170,7 +170,7 @@ class Application
 			trigger_error("Invalid parameter - $key", E_USER_ERROR);
 			return FALSE;
 		}
-		return $this->parameters[$key]['value'];
+		return @$this->parameters[$key]['value'];
 	}
 	
 	public function getParameterList($key) 
