@@ -145,7 +145,8 @@ class DataResource
 		}
 		if($this->getSource() !== null) {
 			foreach($this->getSource() AS $source) {
-				$rdf .= (strstr($source,"://")?
+				if(!empty($source)) 
+ 				 $rdf .= (strstr($source,"://")?
 					$f->QQuadO_URL($dataset_uri,"dc:source",$source)
 					:$f->QQuadL($dataset_uri,"dc:source",$source));
 			}
