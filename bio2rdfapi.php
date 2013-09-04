@@ -259,7 +259,10 @@ class Bio2RDFizer extends RDFFactory
 		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create directory 'outdir' !",E_USER_ERROR); exit;}
 		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create directory 'registry_dir' !",E_USER_ERROR); exit;}
 		
-		if(parent::getParameterValue('graph_uri')) parent::setGraphURI(parent::getParameterValue('graph_uri'));	
+		if(parent::getParameterValue('graph_uri')) {
+			parent::setGraphURI(parent::getParameterValue('graph_uri'));	
+		}
+		if(strstr(parent::getParameterValue('output_format'),".nt")) {parent::setParameterValue('dataset_graph',false);}
 		
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
 		$this->getRegistry()->setCacheTime(parent::getParameterValue('registry_cache_time'));
@@ -270,8 +273,7 @@ class Bio2RDFizer extends RDFFactory
 		
 		// check namespace validity against registry
 		if(!$this->getRegistry()->isPrefix($this->getPrefix())) {
-			trigger_error("Invalid namespace ".$this->getPrefix(),E_USER_ERROR);
-			return null;
+			trigger_error("Invalid namespace ".$this->getPrefix(),E_USER_WARNING);
 		}
 	
 		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nq";
@@ -487,8 +489,8 @@ class Bio2RDFizer extends RDFFactory
 				$buf .= $this->describeClass($o_type,str_replace("-"," ",$p_id));
 			}
 			if(!isset($o)) {
-				$o = $s_ns."_resource:".md5($s.$p.$l);
-				$buf .= $this->describeIndividual($o,str_replace("-"," ",$p_id),$o_type);
+				$o = $s_ns."_resource:".md5($p.$l);
+				$buf .= $this->describeIndividual($o,$l,$o_type);
 			}
 			
 			return $buf.$this->triplify($s,$p,$o).$this->QQuadL($o,"rdf:value",$l,$lang,$dt);
@@ -504,7 +506,7 @@ class Bio2RDFizer extends RDFFactory
 				$buf .= $this->describeDatatypeProperty($p,$p_label);
 			}
 			
-			if(isset($lang)) {
+			if(isset($lang) && $lang != '') {
 				return $buf.$this->QQuadL($s,$p,$l,$lang);
 			} else if(isset($dt)) {
 				return $buf.$this->QQuadL($s,$p,$l,null,$dt);

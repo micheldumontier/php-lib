@@ -44,9 +44,10 @@ class FileFactory
 		}
 		$this->gzcompress = $gzcompress;
 		$this->filename = $filename;
+		return $this;
 	}
 	
-	function Open($mode = "r")
+	function open($mode = "r")
 	{
 		if($this->gzcompress == true) {
 			if($mode == "r") $mode = "rb";
@@ -62,16 +63,21 @@ class FileFactory
 		return TRUE;
 	}
 	
-	function SetFilePointer($fp)
+	function getFileName(){
+			return (string) $this->filename;
+	}
+	
+	function setFilePointer($fp)
 	{
 		$this->fp = $fp;
+		return $this;
 	}
-	function GetFilePointer()
+	function getFilePointer()
 	{
 		return $this->fp;
 	}
 	
-	function Read($size = null)
+	function read($size = null)
 	{
 		if(!isset($this->fp)) {
 			$this->Open("r");
@@ -81,14 +87,14 @@ class FileFactory
 		}
 		return fgets($this->fp);
 	}
-	function Write($buf)
+	function write($buf)
 	{
 		if(!isset($this->fp)) {
 			$this->Open("w");
 		}
 		return fwrite($this->fp,$buf);
 	}
-	function Close()
+	function close()
 	{
 		$ret = TRUE;
 		if(isset($this->fp)) {
@@ -97,8 +103,6 @@ class FileFactory
 		}
 		return $ret;
 	}
-	function GetFileName(){
-			return (string) $this->filename;
-	}
+
 }
 ?>

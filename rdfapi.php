@@ -177,7 +177,11 @@ class RDFFactory extends Application
 		else $p_uri = $this->getRegistry()->getFQURI($p);
 		
 		$lt_uri = null;
-		if(isset($lt)) $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
+		if(isset($lt)) {
+			if(strstr($lt,"://")) $lt_uri = $lt;
+			else $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
+		}
+		
 		$g_uri = null;
 		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
 		else if(isset($this->graph_uri) && $this->graph_uri != '') {
