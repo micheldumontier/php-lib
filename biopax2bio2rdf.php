@@ -332,7 +332,7 @@ Class BioPAX2Bio2RDF
 								$datatype = $this->getRDFizer()->getRegistry()->GetFQURI($o['datatype']);
 							}
 						}
-						$rdf .= $this->getRDFizer()->triplifyString($s_uri,$p,$literal,null,$datatype);
+						$rdf .= $this->getRDFizer()->triplifyString($s_uri,$p,$literal,$datatype);
 					}				
 				} // foreach o_list
 			} // foreach p_list
