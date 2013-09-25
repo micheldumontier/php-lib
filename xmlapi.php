@@ -37,6 +37,7 @@ class CXML
 	function __construct($path,$file = null) 
 	{
 		$filepath = $path.$file;
+		printf("File path: ".$filepath."\n");
 		if(strstr($filepath,".zip")) {
 			$z = new ZipArchive();
 			if ($z->open($filepath) == FALSE) {
@@ -44,7 +45,8 @@ class CXML
 				return FALSE;
 			}
 			$nozip = substr($filepath,0,strrpos($filepath,".zip"));
-			$this->fp = $z->getStream($nozip);
+			$zip_basename = basename($nozip); // Only filename, relative to archive, not file-system is used.
+			$this->fp = $z->getStream($zip_basename); 
 		} else {
 			$this->fp = gzopen($filepath,"r");
 			if($this->fp === FALSE) {
