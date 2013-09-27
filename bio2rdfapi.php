@@ -708,6 +708,9 @@ class Bio2RDFizer extends RDFFactory
 	public function setCheckPoint($level, $finalize = false) 
 	{
 		// @todo complete this functionality
+		if($this->writeFileExists() !== FALSE) {
+			parent::writeRDFBufferToWriteFile();
+		}
 		return true;
 		
 		// if rdf present, the generate file if not available and write to it
