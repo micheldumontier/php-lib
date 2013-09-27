@@ -79,7 +79,7 @@ if($options['instance'] != 'instancename') {
  fclose($fp);
 }
 
-$cmd_pre = "$isql -S ".$options['port']." -U ".$options['user']." -P ".$options['pass']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; $cmd_post = '"';
+$cmd_pre = "$isql -H ".$options['instance']." -S ".$options['port']." -U ".$options['user']." -P ".$options['pass']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; $cmd_post = '"';
 
 // associate a prefix with namespace
 // http://docs.openlinksw.com/virtuoso/fn_xml_set_ns_decl.html
