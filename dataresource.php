@@ -178,8 +178,10 @@ class DataResource
 				$rdf .= $f->QQuadL($dataset_uri,"dc:format",$format);
 			}
 		}
+		
 		if($this->getDataset() !== null) {
 			$rdf .= $f->QQuadO_URL($this->getDataset(), "dcat:distribution",$dataset_uri);
+			$rdf .= $f->QQuad($this->getDataset(), "rdf:type", "dc:Dataset");
 		}
 		
 		if($this->getLicense() !== null) {
