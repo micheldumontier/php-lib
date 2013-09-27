@@ -2,12 +2,15 @@
 // script to facilitate loading into virtuoso
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
-$isql   = "/usr/local/virtuoso-opensource/bin/isql";
-$isql_windows = "/virtuoso-opensource/bin/isql.exe";
+$isql = getenv('VIRTUOSO_BIN');
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
- $isql = $isql_windows;
-}
+//$isql   = "/usr/local/virtuoso-opensource/bin/isql";
+//$isql_windows = "/virtuoso-opensource/bin/isql.exe";
+
+//if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+// $isql = $isql_windows;
+//}
+
 if(!file_exists($isql)) {
 	trigger_error("ISQL could not be found at $isql",E_USER_ERROR);
 }
@@ -55,7 +58,7 @@ foreach($argv AS $i=> $arg) {
 if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
- $instance_file = "instances.tab";
+ $instance_file = getenv('INSTANCEFILE'); //"instances.tab";
  if(!file_exists($instance_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
