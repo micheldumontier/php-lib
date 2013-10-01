@@ -9,7 +9,7 @@ $options = array(
  "graph" => "graphname",
  "gprefix" => "graphprefix",
  "instance" => "instancename",
- "instancefile" => "instance.tab",
+ "instancesfile" => "instances.tab",
  "port" => "1111",
  "user" => "dba",
  "pass" => "dba",
@@ -43,7 +43,14 @@ foreach($argv AS $i=> $arg) {
  else {echo "unknown key $b[0]";exit;}
 }
 
+// check isql binary
 $isql = $options['isql']; 
+
+$isql_windows = "/virtuoso-opensource/bin/isql.exe";
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+ $isql = $isql_windows;
+}
+
 if(!file_exists($isql)) {
 	trigger_error("ISQL could not be found at $isql",E_USER_ERROR);
 }
@@ -52,13 +59,13 @@ if(!file_exists($isql)) {
 if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
- $instance_file = $options['instancefile']; //default: "instances.tab";
+ $instances_file = $options['instancesfile']; //default: "instances.tab";
 
- if(!file_exists($instance_file)) {
+ if(!file_exists($instances_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
  }
- $fp = fopen($instance_file,"r");
+ $fp = fopen($instances_file,"r");
  if(!isset($fp)) {
 	trigger_error("Unable to open $instance_file");
 	exit;
