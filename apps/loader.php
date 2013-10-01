@@ -2,26 +2,14 @@
 // script to facilitate loading into virtuoso
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
-$isql = getenv('VIRTUOSO_BIN');
-
-//$isql   = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql_windows = "/virtuoso-opensource/bin/isql.exe";
-
-//if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-// $isql = $isql_windows;
-//}
-
-if(!file_exists($isql)) {
-	trigger_error("ISQL could not be found at $isql",E_USER_ERROR);
-}
-
-
 $options = array(
+ "isql" => "/usr/local/virtuoso-opensource/bin/isql"; 
  "file" => "filename",
  "dir" => "dirname",
  "graph" => "graphname",
  "gprefix" => "graphprefix",
  "instance" => "instancename",
+ "instancefile" => "instance.tab",
  "port" => "1111",
  "user" => "dba",
  "pass" => "dba",
@@ -55,10 +43,17 @@ foreach($argv AS $i=> $arg) {
  else {echo "unknown key $b[0]";exit;}
 }
 
+$isql = $options['isql']; 
+if(!file_exists($isql)) {
+	trigger_error("ISQL could not be found at $isql",E_USER_ERROR);
+}
+
+
 if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
- $instance_file = getenv('INSTANCEFILE'); //"instances.tab";
+ $instance_file = $options['instancefile']; //default: "instances.tab";
+
  if(!file_exists($instance_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
@@ -77,6 +72,9 @@ if($options['instance'] != 'instancename') {
   }
  }
  fclose($fp);
+}
+else {
+  $options['instance']='localhost';
 }
 
 $cmd_pre = "$isql -H ".$options['instance']." -S ".$options['port']." -U ".$options['user']." -P ".$options['pass']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; $cmd_post = '"';
