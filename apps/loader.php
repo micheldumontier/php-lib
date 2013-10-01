@@ -3,7 +3,7 @@
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
 $options = array(
- "isql" => "/usr/local/virtuoso-opensource/bin/isql"; 
+ "isql" => "/usr/local/virtuoso-opensource/bin/isql", 
  "file" => "filename",
  "dir" => "dirname",
  "graph" => "graphname",
