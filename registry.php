@@ -67,6 +67,8 @@ class CRegistry
 		
 	}
 	
+	public function getRegistry() {return $this->registry;}
+	
 	/** initialize the registry; fetch if need be and parse */
 	public function initialize()
 	{
@@ -269,7 +271,7 @@ class CRegistry
 		while (($r = fgetcsv($fp)) !== FALSE) {
 			$prefix = $r[0];
 			$e = null;
-			$a = array_slice($r,0,24);
+			$a = array_slice($r,0,25);
 			foreach($a AS $i => $v) {
 				$k = $keys[$i];
 				$e[$k] = $v;
@@ -448,7 +450,6 @@ class CRegistry
 	 */
 	public function getFQURI($qname, $scheme = null)
 	{		
-		$this->initialize();
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
 		
@@ -462,12 +463,11 @@ class CRegistry
 		} else {
 			// otherwise go through the scheme priority
 			foreach($this->getURISchemePriority() AS $scheme) {
-				if(isset($this->registry[$ns][$scheme])) {					
+				if(isset($this->registry[$ns][$scheme])) {
 					return $this->registry[$ns][$scheme].$id;
 				}
 			}
-		}
-		
+		} 
 		
 		// we have problem.
 		if($this->getUnregisteredNSAction() == "fail") {
@@ -486,7 +486,6 @@ class CRegistry
 	 */
 	public function getBio2RDF_URI($qname)
 	{
-		$this->initialize();
 		return "http://bio2rdf.org/$qname";
 	}
 	/** 
@@ -497,20 +496,29 @@ class CRegistry
 	 */
 	public function getMappedBio2RDF_URI($qname)
 	{
-		$this->initialize();
 		return "http://bio2rdf.org/".$this->mapQName($qname);
 	}
 	
 	public function getIdentifiersDotOrg_URI($qname)
 	{
-		$this->initialize();
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
 		$e = $this->getEntry($ns);
-		if(isset($e->miriam) && ($e->miriam != '')) {
-			//@todo
+		if(isset($e['miriam']) && ($e['miriam'] != '')) {
+			return 'http://identifiers.org/'.$ns;
 		}
-		
+		return null;
+	}
+	
+	public function getProviderURI($qname)
+	{
+		$qname = $this->mapQName($qname);
+		$this->parseQName($qname,$ns,$id);
+		$e = $this->getEntry($ns);
+		if(isset($e['provider_uri']) && ($e['provider_uri'] != '')) {
+			return $e['provider_uri'].$id;
+		}
+		return null;
 	}
 	
 	public function getPrefixFromURI($uri)
@@ -518,6 +526,8 @@ class CRegistry
 		if(isset($this->map[$uri] )) return $this->map[$uri];
 		return null;
 	}
+	
+
 	
 }
 
