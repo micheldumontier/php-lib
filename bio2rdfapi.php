@@ -307,12 +307,24 @@ class Bio2RDFizer extends RDFFactory
 			&& $this->getFollowBio2RDFGuidelines() == true) {
 
 			$my_qname = $this->getRegistry()->mapQName($qname);
+			
 			$this->declared[$my_qname] = true;
 			$this->getRegistry()->parseQName($my_qname,$ns,$id);
 			
 			$buf .= $this->QQuadL($my_qname,"dc:identifier",$my_qname,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
+			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:uri",$this->getRegistry()->getFQURI($qname),null,"xsd:string");
+			// add identifers.org uri
+			$myid = $this->getRegistry()->getIdentifiersDotOrg_URI($qname);
+			if($myid) {
+				$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:x-miriam",$myid,null,"xsd:string");
+			}
+			$myid = $this->getRegistry()->getProviderURI($qname);
+			if($myid) {
+				$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:provider-uri",$myid,null,"xsd:string");
+			}
+			
 			if( (($pos = strpos($ns,"_resource")) !== FALSE)
 				|| (($pos = strpos($ns,"_vocabulary")) !== FALSE)) {
 				$type = substr($ns,0,$pos)."_vocabulary";
@@ -451,6 +463,7 @@ class Bio2RDFizer extends RDFFactory
 	public function triplify($s,$p,$o,$o_parent=null,$class = false)
 	{
 		$buf = '';
+		$s = trim($s);$p = trim($p); $o = trim($o);
 		// see if we can get the fast description of the predicate and type removing a dash
 		if(strstr($p,"_vocabulary")) {
 			$a = explode(":",$p,2);
@@ -476,6 +489,9 @@ class Bio2RDFizer extends RDFFactory
 	
 	public function triplifyString($s,$p,$l,$dt=null,$lang=null,$o=null,$o_type=null)
 	{
+		$s = trim($s);$p = trim($p); $l = trim($l);
+		if(empty($l) || $l == '') return;
+		
 		$buf = $this->declareEntity($s).$this->declareEntity($p);
 		if(!isset($dt)) {
 			$dt = $this->guessDatatype($l);
@@ -705,7 +721,7 @@ class Bio2RDFizer extends RDFFactory
 	/**
 	 * Write the RDF to the file, taking into account whether it is a record or dataset
 	 */
-	public function setCheckPoint($level, $finalize = false) 
+	public function setCheckPoint($level = 'record', $finalize = false) 
 	{
 		// @todo complete this functionality
 		if($this->writeFileExists() !== FALSE) {
