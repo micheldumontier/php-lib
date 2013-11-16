@@ -262,7 +262,7 @@ class Bio2RDFizer extends RDFFactory
 		if(parent::getParameterValue('graph_uri')) {
 			parent::setGraphURI(parent::getParameterValue('graph_uri'));	
 		}
-		if(strstr(parent::getParameterValue('output_format'),".nt")) {parent::setParameterValue('dataset_graph',false);}
+		if(strstr(parent::getParameterValue('output_format'),"nt")) {parent::setParameterValue('dataset_graph',false);}
 		
 		$this->getRegistry()->setLocalRegistry(parent::getParameterValue('registry_dir'));
 		$this->getRegistry()->setCacheTime(parent::getParameterValue('registry_cache_time'));
@@ -289,7 +289,7 @@ class Bio2RDFizer extends RDFFactory
 		if(parent::getParameterValue('dataset_graph') == false && parent::getGraphURI() == '') {
 			$gz = (strstr(parent::getParameterValue('output_format'),"gz")?".gz":"");
 			parent::setParameterValue('output_format','nt'.$gz);
-		}		
+		}
 	}
 	
 	public function clear()
