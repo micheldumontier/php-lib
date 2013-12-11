@@ -315,15 +315,37 @@ class Bio2RDFizer extends RDFFactory
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:identifier",$id,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:uri",$this->getRegistry()->getFQURI($qname),null,"xsd:string");
-			// add identifers.org uri
+			if(!isset($this->declared["bio2rdf_vocabulary:namespace"])) {
+				$this->declared["bio2rdf_vocabulary:namespace"] = true;
+				$buf .= $this->QQuadL("bio2rdf_vocabulary:namespace","rdfs:label","Bio2RDF namespace");
+			}
+			if(!isset($this->declared["bio2rdf_vocabulary:identifier"])) {
+				$this->declared["bio2rdf_vocabulary:identifier"] = true;
+				$buf .= $this->QQuadL("bio2rdf_vocabulary:identifier","rdfs:label","Bio2RDF identifier");
+			}
+			if(!isset($this->declared["bio2rdf_vocabulary:uri"])) {
+				$this->declared["bio2rdf_vocabulary:uri"] = true;
+				$buf .= $this->QQuadL("bio2rdf_vocabulary:uri","rdfs:label","Bio2RDF uri");
+			}
+
+			// add identifiers.org uri
 			$myid = $this->getRegistry()->getIdentifiersDotOrg_URI($qname);
 			if($myid) {
-				$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:x-miriam",$myid,null,"xsd:string");
+				$buf .= $this->QQuad($my_qname,"bio2rdf_vocabulary:x-identifiers.org",$myid);
 			}
+			if(!isset($this->declared["bio2rdf_vocabulary:x-identifiers.org"])) {
+				$this->declared["bio2rdf_vocabulary:x-identifiers.org"] = true;
+				$buf .= $this->QQuadL("bio2rdf_vocabulary:x-identifiers.org","rdfs:label","identifiers.org URI");
+			}
+			// get provider URI
 			$myid = $this->getRegistry()->getProviderURI($qname);
 			if($myid) {
-				$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:provider-uri",$myid,null,"xsd:string");
+				$buf .= $this->QQuad($my_qname,"bio2rdf_vocabulary:x-provider-uri",$myid);
 			}
+			if(!isset($this->declared["bio2rdf_vocabulary:x-provider-uri"])) {
+				$this->declared["bio2rdf_vocabulary:x-provider-uri"] = true;
+				$buf .= $this->QQuadL("bio2rdf_vocabulary:x-provider-uri","rdfs:label","Provider URI");
+			}			
 			
 			if( (($pos = strpos($ns,"_resource")) !== FALSE)
 				|| (($pos = strpos($ns,"_vocabulary")) !== FALSE)) {
@@ -331,9 +353,11 @@ class Bio2RDFizer extends RDFFactory
 			} else {
 				$type = $ns."_vocabulary";
 			}
-			// identifiers.org
-			// @todo replace with identifiers.org types e.g http://identifiers.org/clinicaltrials/resource
 			$buf .= $this->QQuad($my_qname,"rdf:type","$type:Resource");
+			if(!isset($this->declared["$type:Resource"])) {
+				$this->declared["$type:Resource"] = true;
+				$buf .= $this->QQuadL("$type:Resource","rdfs:label","$ns resource [$type:Resource]");
+			}
 			$buf .= $this->QQuad($my_qname,"void:inDataset",$this->getDatasetURI());
 		}
 		return $buf;
@@ -365,10 +389,10 @@ class Bio2RDFizer extends RDFFactory
 				$this->getRegistry()->parseQName($my_qname,$ns,$id);
 			}
 			
-			$buf  .= $this->QQuadL($my_qname,"rdfs:label",$label." [$my_qname]",$lang);
-			if(isset($title) && $title != '') $buf .= $this->QQuadL($my_qname,"dc:title",$title,$lang);
+			$buf  .= $this->triplifyString($my_qname,"rdfs:label",$label." [$my_qname]",null,$lang);
+			if(isset($title) && $title != '') $buf .= $this->triplifyString($my_qname,"dc:title",$title,null,$lang);
 			if(isset($description) && $description != '') {
-				$buf .= $this->QQuadL($my_qname,"dc:description",$description,$lang);
+				$buf .= $this->triplifyString($my_qname,"dc:description",$description,null,$lang);
 			}
 		}
 		return $buf;
@@ -388,9 +412,9 @@ class Bio2RDFizer extends RDFFactory
 	 
 	function describeIndividual($qname,$label,$parent,$title=null,$description=null,$lang="en") 
 	{
-		$d = $this->describe($qname,$label,$title,$description, $lang);
+		$d = $this->describe($qname,$label,$title,$description,$lang);
 		if($d && ($this->getFollowBio2RDFGuidelines() == true) ) {
-			$d .= $this->QQuad($qname,"rdf:type","owl:NamedIndividual");
+			//$d .= $this->QQuad($qname,"rdf:type","owl:NamedIndividual");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdf:type",$parent);
 			}
@@ -403,7 +427,7 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
 		if($d && ($this->getFollowBio2RDFGuidelines() == true)) {
-			$d .= $this->QQuad($qname,"rdf:type","owl:Class");
+			//$d .= $this->QQuad($qname,"rdf:type","owl:Class");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subClassOf",$parent);
 			}
@@ -523,7 +547,7 @@ class Bio2RDFizer extends RDFFactory
 			}
 			
 			if(isset($lang) && $lang != '') {
-				return $buf.$this->QQuadL($s,$p,$l,$lang);
+				return $buf.$this->QQuadL($s,$p,$l,null,$lang);
 			} else if(isset($dt)) {
 				return $buf.$this->QQuadL($s,$p,$l,null,$dt);
 			} else {
