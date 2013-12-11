@@ -505,7 +505,7 @@ class CRegistry
 		$this->parseQName($qname,$ns,$id);
 		$e = $this->getEntry($ns);
 		if(isset($e['miriam']) && ($e['miriam'] != '')) {
-			return 'http://identifiers.org/'.$ns;
+			return 'http://identifiers.org/'.$ns.'/'.$id;
 		}
 		return null;
 	}
