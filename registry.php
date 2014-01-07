@@ -60,7 +60,7 @@ class CRegistry
 	/** a list of the prioritized uri schemes */
 	private $uri_schemes = array ("original","bio2rdf","identifiers.org");
 	/** a list of resources that must use the original provider uri */
-	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto");
+	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto","sio");
 	
 	public function __construct()
 	{
