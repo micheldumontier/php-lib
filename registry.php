@@ -455,7 +455,8 @@ class CRegistry
 		
 		// exclude the defaults 
 		if(in_array($ns,$this->getDefaultURISchemes())) {
-			return $this->registry[$ns]['provider-uri'].$id;
+			if(isset($this->registry[$ns]['provider-uri']))
+				return $this->registry[$ns]['provider-uri'].$id;
 		}
 			
 		if(isset($scheme) && isset($this->registry[$ns][$scheme])) {
@@ -524,10 +525,30 @@ class CRegistry
 	public function getPrefixFromURI($uri)
 	{
 		if(isset($this->map[$uri] )) return $this->map[$uri];
+		$base = substr($uri, 0, strrpos("/",$uri)+1);
+		if(isset($this->map[$base] )) return $this->map[$base];
+		$base = substr($uri, 0, strrpos("#",$uri)+1);
+		if(isset($this->map[$base] )) return $this->map[$base];	
 		return null;
 	}
 	
-
+	public function getQNameFromURI($uri)
+	{
+		if(isset($this->map[$uri] )) return $this->map[$uri];
+		$p = strrpos("/",$uri);
+		if($p === FALSE) {	
+			$p = strrpos("#",$uri);
+		}
+		if($p !== FALSE) {
+			$base = substr($uri,0,$p+1);
+			$id = substr($uri,$p+1);
+			if(isset($this->map[$base])) {
+				return $this->map[$base].":".$id;
+			}
+		}
+		return null;
+		
+	}
 	
 }
 
