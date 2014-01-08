@@ -547,7 +547,7 @@ class Bio2RDFizer extends RDFFactory
 			}
 			
 			if(isset($lang) && $lang != '') {
-				return $buf.$this->QQuadL($s,$p,$l,null,$lang);
+				return $buf.$this->QQuadL($s,$p,$l,$lang);
 			} else if(isset($dt)) {
 				return $buf.$this->QQuadL($s,$p,$l,null,$dt);
 			} else {
