@@ -130,7 +130,7 @@ Class BioPAX2Bio2RDF
 			exit;
 		}
 		
-		$rdf_type = $this->getRDFizer()->getRegistry()->GetFQURI("rdf:type");
+		$rdf_type = $this->getRDFizer()->getRegistry()->GetFQURI("rdf:type", "provider-uri");
 		$url  = $this->getRDFizer()->getRegistry()->GetFQURI("bio2rdf_vocabulary:url");
 		
 		$triples = $parser->getTriples();
@@ -260,8 +260,7 @@ Class BioPAX2Bio2RDF
 		} // foreach index
 
 		$rdf = '';
-		foreach($index AS $s => $p_list) {	
-		
+		foreach($index AS $s => $p_list) {
 			preg_match("/http\:\/\/identifiers\.org\/([^\/]+)\/(.*)/",$s,$m);
 			if(isset($m[1])) {
 				$ns = $m[1];
@@ -269,32 +268,38 @@ Class BioPAX2Bio2RDF
 				if($ns == "biomodels.db") {
 					$id = str_replace("/","_",$m[2]);
 				}
-				$this->getRDFizer()->getRegistry()->ParseQName($id,$ns2,$id2);
+				$this->getRDFizer()->getRegistry()->parseQName($id,$ns2,$id2);
 				if($ns2) {
 					$id = $id2;
 				}
 				$s = "http://identifiers.org/$ns/$id";
-				$s_uri = $this->getRDFizer()->getRegistry()->GetFQURI($this->getRDFizer()->getRegistry()->MapQName("$ns:$id"));
+				$s_uri = $this->getRDFizer()->getRegistry()->getFQURI("$ns:$id");
 			} else {
 				$s_uri = str_replace($this->base_ns,$this->bio2rdf_ns,$s);
 				if(!$s_uri) {
 					continue;
 				}
 			}
+			// check for bio2rdf 
+			if(FALSE !== ($pos = strpos($s_uri,"http://bio2rdf.org/"))) {
+				$a = explode (":",substr($s_uri,19),2);
+				$s_uri = $a[0].":".$a[1];
+			}
+
 			if(isset($this->dataset_uri)) {
-				$rdf .= $this->getRDFizer()->triplify($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("void:inDataset"),$this->getRDFizer()->getRegistry()->GetFQURI($this->dataset_uri));
+				$rdf .= $this->getRDFizer()->triplify($s_uri,"void:inDataset",$this->dataset_uri);
 			}
 			
-			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->getRDFizer()->triplify($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("owl:sameAs"),$s);
+			if($s[0] != '_' && $s != $s_uri) $rdf .= $this->getRDFizer()->triplify($s_uri,"owl:sameAs",$s);
 			
 			// add an rdfs:label
 			if(isset($p_list[$this->biopax['name']][0]['value'])) {
 				$label = $p_list[$this->biopax['name']][0]['value'];
-				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("rdfs:label"),$label);
+				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,"rdfs:label",$label);
 			}
 			if(isset($p_list[$this->biopax['term']][0]['value'])) {
 				$label = $p_list[$this->biopax['term']][0]['value'];
-				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,$this->getRDFizer()->getRegistry()->GetFQURI("rdfs:label"),$label);
+				if($label) $rdf .= $this->getRDFizer()->triplifyString($s_uri,"rdfs:label",$label);
 			}
 			
 			foreach($p_list AS $p => $o_list) {
@@ -305,13 +310,13 @@ Class BioPAX2Bio2RDF
 						$rdf .= $this->getRDFizer()->triplify($s_uri,$p,$o_uri);
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							$rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:ObjectProperty"));
+							$rdf .= $this->getRDFizer()->triplify($p,"rdf:type", "owl:ObjectProperty");
 						}
 					} elseif($o['type'] == 'bnode') {
 						$rdf .= $this->getRDFizer()->triplify($s_uri,$p ,$o['value']);
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							$rdf .=$this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRegistry()->GetFQURI("owl:ObjectProperty"));
+							$rdf .=$this->getRDFizer()->triplify($p,"rdf:type","owl:ObjectProperty");
 						}
 					} else if($o['type'] == 'literal') {
 						$literal = $this->getRDFizer()->SafeLiteral($o['value']);
@@ -319,18 +324,14 @@ Class BioPAX2Bio2RDF
 						
 						if(!isset($this->declared[$p])) {
 							$this->declared[$p] = '';
-							if($p == $this->biopax['comment'] || $p == $this->getRDFizer()->getRegistry()->GetFQURI("dc:identifier")) {
-								$rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:AnnotationProperty"));
-							} else $rdf .= $this->getRDFizer()->triplify($p,$this->getRDFizer()->getRegistry()->GetFQURI("rdf:type"), $this->getRDFizer()->getRegistry()->GetFQURI("owl:DatatypeProperty"));
+							if($p == $this->biopax['comment'] || $p == $this->getRDFizer()->getRegistry()->getFQURI("dc:identifier")) {
+								$rdf .= $this->getRDFizer()->triplify($p,"rdf:type","owl:AnnotationProperty");
+							} else $rdf .= $this->getRDFizer()->triplify($p,"rdf:type","owl:DatatypeProperty");
 						}
 						
 						$datatype = null;
 						if(isset($o['datatype']) && $o['datatype'] != '') {
-							if(strstr($o['datatype'],"http://")) {
-								$datatype = $o['datatype'];
-							} else {
-								$datatype = $this->getRDFizer()->getRegistry()->GetFQURI($o['datatype']);
-							}
+							$datatype = $o['datatype'];
 						}
 						$rdf .= $this->getRDFizer()->triplifyString($s_uri,$p,$literal,$datatype);
 					}				
