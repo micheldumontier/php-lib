@@ -49,6 +49,10 @@ class FileFactory
 	
 	function open($mode = "r")
 	{
+		if($this->filename == null) {
+			trigger_error("No filename set!",E_USER_ERROR);
+			return FALSE;
+		}
 		if($this->gzcompress == true) {
 			if($mode == "r") $mode = "rb";
 			if($mode == "w") $mode = "wb";
@@ -89,17 +93,22 @@ class FileFactory
 	}
 	function write($buf)
 	{
+		$ret = null;
 		if(!isset($this->fp)) {
-			$this->Open("w");
+			$ret = $this->Open("w");
 		}
-		return fwrite($this->fp,$buf);
+		if($buf) {
+			$ret = fwrite($this->fp,$buf);
+		}
+		return $ret; 
 	}
 	function close()
 	{
-		$ret = TRUE;
+		$ret = FALSE;
 		if(isset($this->fp)) {
 			$ret = fclose($this->fp);
 			$this->fp = null;
+			$this->filename = null;
 		}
 		return $ret;
 	}
