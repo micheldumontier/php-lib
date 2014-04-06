@@ -173,8 +173,8 @@ class Utils
 		trigger_error("downloading $url...",E_USER_NOTICE);
 		if ( !($fpRead = fopen($url, "rb")) ) {
 			if($return_on_fail === false) {
-				trigger_error ("Unable to get $url", E_USER_ERROR);
-				exit(-1);
+				trigger_error ("Unable to get $url", E_USER_WARNING);
+				return false;
 			} else {
 				trigger_error ("Unable to get $url", E_USER_WARNING);
 				return false;
@@ -184,8 +184,8 @@ class Utils
 		if ( !($fpWrite = fopen($lfile, "wb")) )
 		{
 			if($return_on_fail === false) {
-				trigger_error ("Unable to write to $lfile", E_USER_ERROR);
-				exit(-1);
+				trigger_error ("Unable to write to $lfile", E_USER_WARNING);
+				return false;
 			} else {
 				trigger_error ("Unable to get $url", E_USER_WARNING);
 				return false;
@@ -198,6 +198,7 @@ class Utils
 		fclose($fpRead);
 
 		trigger_error("done!",E_USER_NOTICE);
+		return true;
 	}	
 
 	
