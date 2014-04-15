@@ -277,7 +277,7 @@ class Bio2RDFizer extends RDFFactory
 		}
 	
 		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nq";
-		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-".date("Ymd");
+		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-r".parent::getParameterValue('bio2rdf_release');
 		$this->setDatasetURI($bio2rdf_dataset_uri);
 		$this->setBio2RDFReleaseFile($bio2rdf_release_file);
 		
@@ -782,5 +782,10 @@ class Bio2RDFizer extends RDFFactory
 
 			// @todo open new files
 		}
+	}
+
+	public function getDate($timestamp = null)
+	{
+		return date ("Y-m-d\TH:i:sP", $timestamp);
 	}
 }
