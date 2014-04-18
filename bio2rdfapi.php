@@ -670,4 +670,9 @@ class Bio2RDFizer extends RDFFactory
 			// @todo open new files
 		}
 	}
+
+	public function getDate($timestamp = null)
+	{
+		return date ("Y-m-d\TH:i:sP", $timestamp);
+	}
 }
