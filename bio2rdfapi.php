@@ -310,6 +310,7 @@ class Bio2RDFizer extends RDFFactory
 			
 			$this->declared[$my_qname] = true;
 			$this->getRegistry()->parseQName($my_qname,$ns,$id);
+			if(in_array($ns, $this->getRegistry()->getDefaultURISchemes())) break;
 			
 			$buf .= $this->QQuadL($my_qname,"dc:identifier",$my_qname,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
@@ -417,6 +418,7 @@ class Bio2RDFizer extends RDFFactory
 			//$d .= $this->QQuad($qname,"rdf:type","owl:NamedIndividual");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdf:type",$parent);
+				$d .= $this->QQuad($parent,"rdf:type","owl:Class");
 			}
 			return $d;
 		}
@@ -427,9 +429,10 @@ class Bio2RDFizer extends RDFFactory
 	{
 		$d = $this->describe($qname,$label,$title,$description,$lang);
 		if($d) {
-			//$d .= $this->QQuad($qname,"rdf:type","owl:Class");
+			$d .= $this->QQuad($qname,"rdf:type","owl:Class");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subClassOf",$parent);
+				$d .= $this->QQuad($parent,"rdf:type","owl:Class");
 			}
 			return $d;
 		}
@@ -443,6 +446,7 @@ class Bio2RDFizer extends RDFFactory
 			$d .= $this->QQuad($qname,"rdf:type","rdf:Property");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
+				$d .= $this->QQuad($parent,"rdf:type","rdf:Property");
 			}
 			return $d;
 		}
@@ -456,6 +460,7 @@ class Bio2RDFizer extends RDFFactory
 			$d .= $this->QQuad($qname,"rdf:type","owl:ObjectProperty");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
+				$d .= $this->QQuad($parent,"rdf:type","owl:ObjectProperty");
 			}
 			return $d;
 			
@@ -470,6 +475,7 @@ class Bio2RDFizer extends RDFFactory
 			$d .= $this->QQuad($qname,"rdf:type","owl:DatatypeProperty");
 			if(isset($parent) && $parent != null) {
 				$d .= $this->QQuad($qname,"rdfs:subPropertyOf",$parent);
+				$d .= $this->QQuad($parent,"rdf:type","owl:DatatypeProperty");
 			}
 			return $d;
 		}
@@ -509,7 +515,6 @@ class Bio2RDFizer extends RDFFactory
 		$buf .= $this->declareEntity($s).$this->declareEntity($p).$this->declareEntity($o);
 		return $this->QQuad($s,$p,$o).$buf;
 	}
-	
 	
 	public function triplifyString($s,$p,$l,$dt=null,$lang=null,$o=null,$o_type=null)
 	{
