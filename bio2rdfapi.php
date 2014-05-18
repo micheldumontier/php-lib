@@ -310,7 +310,7 @@ class Bio2RDFizer extends RDFFactory
 			
 			$this->declared[$my_qname] = true;
 			$this->getRegistry()->parseQName($my_qname,$ns,$id);
-			if(in_array($ns, $this->getRegistry()->getDefaultURISchemes())) break;
+			if(in_array($ns, $this->getRegistry()->getDefaultURISchemes())) return;
 			
 			$buf .= $this->QQuadL($my_qname,"dc:identifier",$my_qname,null,"xsd:string");
 			$buf .= $this->QQuadL($my_qname,"bio2rdf_vocabulary:namespace",$ns,null,"xsd:string");
