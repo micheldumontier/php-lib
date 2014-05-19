@@ -11,7 +11,9 @@ $options = array(
  "p" => "dba",
  "o" => "1111",
  "g" => "graph",
- "t" => "4" // threads
+ "t" => "8", // threads
+ "r" => "false", // rank
+ "dg" => "false" // deletegraph
 );
 
 
@@ -72,17 +74,35 @@ if($options['d'][$len-1] != '/') $options['d'] .= '/';
 if($options['f']=='filepattern') $options['f'] = '*';
 if($options['f']=='filepattern') $options['f'] = '*';
 
-$cmd_pre = "$isql -S ".$options['o']." -U ".$options['u']." -P ".$options['p']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; 
+$cmd_pre = "$isql -S ".$options['o']." -U ".$options['u']." -P ".$options['p']." verbose=off banner=off prompt=off echo=ON errors=stdout exec=".'"'; 
 $cmd_post = '"';
 
+
+
+// delete graph
+if($options['dg'] == "true" && $options['g'] != '') {
+  $cmd = "SPARQL clear graph <".$options['g'].">";
+  echo $cmd.PHP_EOL;
+  $exec = $cmd_pre.$cmd.$cmd_post;
+  echo $out = shell_exec($exec);
+}
+
+// delete queue
 $cmd = "DELETE from DB.DBA.load_list";
 $exec = $cmd_pre.$cmd.$cmd_post;
-$out = shell_exec($exec);
-echo $out;
+echo $out = shell_exec($exec);
 
+// load data
 $cmd = "ld_dir('".$options['d']."','".$options['f']."','".$options['g']."');rdf_loader_run();checkpoint;";
-$exec = $cmd_pre.$cmd.$cmd_post;
 echo $cmd.PHP_EOL;
-$out = shell_exec($exec);
-echo $out;
+$exec = $cmd_pre.$cmd.$cmd_post;
+echo $out = shell_exec($exec);
+
+// rank
+if($options['r'] == "true") {
+  $cmd = "s_rank();checkpoint;";
+  echo $cmd.PHP_EOL;
+  $exec = $cmd_pre.$cmd.$cmd_post;
+  echo $out = shell_exec($exec);
+}
 
