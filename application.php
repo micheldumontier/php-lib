@@ -94,6 +94,12 @@ class Application
 		$this->parameters[$key] = array('mandatory' => $mandatory, 'list' => $list, 'default' => $default, 'description' => $description);
 		return TRUE;
 	}
+
+	public function deleteParameter($key)
+	{
+		if(isset($this->parameters[$key])) unset($this->parameters[$key]);
+		return TRUE;
+	}
 	
 	/**
 	 * Set parameters from command line arguments
