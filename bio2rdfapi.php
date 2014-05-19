@@ -239,6 +239,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nq.gz','output format');
 		parent::addParameter('log_level',false,'error|warning|notice','warning','level at which to print log messages');
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
+		parent::addParameter('statistics',false,'true|false','false','generate statistics for this dataset');
 		
 		if(parent::setParameters($this->argv) == false) {
 			parent::printParameters($this->argv);
