@@ -149,6 +149,8 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
 	public function QQuad($s,$p,$o,$g = null)
 	{
+		if($s == null or $s == '' or $p == null or $p == '' or $o == null or $o == '') return '';
+		
 		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		
@@ -170,6 +172,8 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad with literal value using registry qualified names (qname) for the subject and predicate */
 	public function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
 	{
+		if($s == null or $s == '' or $p == null or $p == '' or $l == null or $l == '') return '';
+		
 		if(strstr($s,"://")) $s_uri = $s;
 		else $s_uri = $this->getRegistry()->getFQURI($s);
 		
