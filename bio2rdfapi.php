@@ -278,7 +278,8 @@ class Bio2RDFizer extends RDFFactory
 		}
 		$this->setBio2RDFVersion( parent::getParameterValue('bio2rdf_release'));
 		$bio2rdf_release_file = "bio2rdf-".$this->getPrefix().".nq";
-		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-R".$this->getBio2RDFVersion();
+//		$bio2rdf_dataset_uri  = "bio2rdf_dataset:bio2rdf-".$this->getPrefix()."-R".$this->getBio2RDFVersion();
+		$bio2rdf_dataset_uri  = $this->getPrefix()."_resource:bio2rdf.dataset.".$this->getPrefix().".R".$this->getBio2RDFVersion();
 		$this->setDatasetURI($bio2rdf_dataset_uri);
 		$this->setBio2RDFReleaseFile($bio2rdf_release_file);
 		
@@ -405,6 +406,8 @@ class Bio2RDFizer extends RDFFactory
 			} else if ($title != $label) {
 				$buf .= $this->triplifyString($my_qname,"dc:title",$title,null,$lang);
 				$buf .= $this->triplifyString($my_qname,"dc:alternate",$label,null,$lang);
+			} else {
+				$buf .= $this->triplifyString($my_qname,"dc:title",$title,null,$lang);
 			}
 			
 			if(isset($description) && $description != '') {
