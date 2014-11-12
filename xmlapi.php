@@ -62,6 +62,7 @@ class CXML
 	
 	function Parse($elementToParse = null)
 	{
+		$level = 0;
 		$content = '';
 		$body = '';
 		$parsing = false;
@@ -72,9 +73,8 @@ class CXML
 			if( strstr($l,"<".$elementToParse.">") && strstr($l,"</".$elementToParse.">")) {
 				$exception = true;
 			}
-			if($exception == false && $parsing == true && strstr($l,"</".$elementToParse.">")) {
+			if($exception == false && $parsing == true && strstr($l,"</".$elementToParse.">") && $level == 1) {
 				$body .= $l;
-
 				$this->xmlroot = simplexml_load_string($this->header.$body);
 				if($this->xmlroot === FALSE) {
 					trigger_error("Error in loading XML");
@@ -87,11 +87,14 @@ class CXML
 				return TRUE;
 			} else {
 				if($parsing == true) {
+					if(strstr($l,"<$elementToParse>") || strstr($l,"<$elementToParse ") || strstr($l,"<$elementToParse\n") || strstr($l,"<$elementToParse\r\n")) $level++;
+					if(strstr($l,"</".$elementToParse.">")) $level--;
 					$body .= $l;
 				} else {
 					if(strstr($l,"<$elementToParse>") || strstr($l,"<$elementToParse ") || strstr($l,"<$elementToParse\n") || strstr($l,"<$elementToParse\r\n")) {
 						$parsing = true;
 						$body .= $l;
+						$level ++;
 					}
 				}
 			}
