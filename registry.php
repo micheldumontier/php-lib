@@ -60,7 +60,7 @@ class CRegistry
 	/** a list of the prioritized uri schemes */
 	private $uri_schemes = array ("original","bio2rdf","identifiers.org");
 	/** a list of resources that must use the original provider uri */
-	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto","sio","dcat");
+	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto","sio","dcat","cito","idot","prov","faldo");
 	
 	public function __construct()
 	{
@@ -357,7 +357,7 @@ class CRegistry
 		}
 		return FALSE;
 	}
-	
+
 	/** get the preferred prefix */
 	public function getPreferredPrefix($prefix)
 	{
@@ -365,22 +365,22 @@ class CRegistry
 		if($this->isPrefix($prefix)) {
 			return $prefix;
 		}
+
 		// otherwise try the map
 		$myprefix = $this->normalizePrefix($prefix);
 		if(isset($this->map[$myprefix])) {
 			return $this->map[$myprefix];
 		}
-		
 		// record the non-match
 		$this->addNoMatch($prefix);
 		// otherwise die if need be
 		if($this->getUnregisteredNSAction() == "die") {
 			trigger_error("Unable to map $prefix in $qname; i was told to die here.", E_USER_ERROR);
 			exit();
-		}	
+		}
 		return FALSE;
 	}
-		
+
 	/** Parse a prefixed name (e.g. GI:12345) into its constitutive parts
 	 * 
 	 * @param string $name the potentially prefixed name
@@ -402,7 +402,7 @@ class CRegistry
 		}
 		return TRUE;
 	}
-	
+
 	/** Map a qualified name (e.g. ko:KO12345) into a preferred qname (e.g. kegg:KO12345)
 	 * 
 	 * @param string $qname 		the qualified name
@@ -413,11 +413,15 @@ class CRegistry
 	public function mapQName($qname,$delimiter=':')
 	{
 		$this->initialize();
-		$ns = '';
+		$ns='';
 		$id='';
-		
 		// parse the qname
 		$this->parseQName($qname,$ns,$id,$delimiter);
+		if(!$ns) {
+			trigger_error("Invalid qname $qname", E_USER_ERROR);
+			return FALSE;
+		}
+
 		// find the preferred prefix
 		$prefix = $this->getPreferredPrefix($ns);
 		if($prefix !== FALSE) {
@@ -426,7 +430,7 @@ class CRegistry
 		}
 
 		// otherwise return the input
-		return "$ns:$id";		
+		return "$ns:$id";
 	}
 	
 	public function setDefaultURISchemes($ns)
@@ -449,7 +453,7 @@ class CRegistry
 	 * @return string the fully qualified URI
 	 */
 	public function getFQURI($qname, $scheme = null)
-	{		
+	{
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
 		
