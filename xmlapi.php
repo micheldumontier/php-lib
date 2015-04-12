@@ -34,22 +34,27 @@ class CXML
 	private $xmlroot = '';
 	private $header = '';
 	
-	function __construct($path,$file = null) 
+	function __construct($filepath,$file = null) 
 	{
-		$filepath = $path.$file;
 		if(strstr($filepath,".zip")) {
 			$z = new ZipArchive();
 			if ($z->open($filepath) == FALSE) {
 				trigger_error("Unable to open $filepath", E_USER_ERROR);
 				return FALSE;
 			}
-			$nozip = substr($filepath,0,strrpos($filepath,".zip"));
-			$zip_basename = basename($nozip); // Only filename, relative to archive, not file-system is used.
+			if(!isset($file)) {
+				$nozip = substr($filepath,0,strrpos($filepath,".zip"));
+				$zip_basename = basename($nozip); // Only filename, relative to archive, not file-system is used.
+			} else $zip_basename = $file;
 			$this->fp = $z->getStream($zip_basename); 
+			if($this->fp === FALSE) {
+				trigger_error("unable to open $filepath",E_USER_ERROR);
+				exit;
+			}
 		} else {
 			$this->fp = gzopen($filepath,"r");
 			if($this->fp === FALSE) {
-				trigger_error("unable to open $filepath");
+				trigger_error("unable to open $filepath", E_USER_ERROR);
 				exit;
 			}
 		}
