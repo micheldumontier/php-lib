@@ -230,7 +230,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('parser',false,$this->getPrefix(),$this->getPrefix(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
 		parent::addParameter('registry_cache_time',false,null,'1','in days; 0 to force download');
-		parent::addParameter('bio2rdf_release',false,null,'3','Bio2RDF release number');
+		parent::addParameter('bio2rdf_release',false,null,'4','Bio2RDF release number');
 		parent::addParameter('dataset_graph',false,'true|false','true','use the date versioned dataset graph uri to generate an nquad dataset description file');
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','bio2rdf-uri','uri scheme preference');
 		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
@@ -303,6 +303,8 @@ class Bio2RDFizer extends RDFFactory
 	/** this function generates the basic entity metadata only once unless the cache is cleared */
 	public function declareEntity($qname)
 	{
+		if(!isset($qname) or $qname == '') return '';
+
 		$buf = '';
 		if(!isset($this->declared[$qname])
 			&& !strstr($qname,"://")
