@@ -53,6 +53,18 @@ class FileFactory
 			trigger_error("No filename set!",E_USER_ERROR);
 			return FALSE;
 		}
+		if($mode == "w" or $mode == "wb") {
+			// create the directory
+			$path = pathinfo($this->filename);
+			if(isset($path['dirname']) and $path['dirname'] != '' and !is_dir($path['dirname']) ) {
+				$ret = @mkdir($path['dirname'],'0777',true);
+				if($ret === FALSE) {
+					trigger_error("Unable to create requisite directory for ".$this->filename,E_USER_ERROR);
+					return FALSE;
+				}
+			}
+		}
+		
 		if($this->gzcompress == true) {
 			if($mode == "r") $mode = "rb";
 			if($mode == "w") $mode = "wb";
@@ -87,9 +99,9 @@ class FileFactory
 			$this->Open("r");
 		}
 		if(isset($size)) {
-			return fgets($this->fp,$size);
+			return stream_get_line($this->fp,$size,"\n");
 		}
-		return fgets($this->fp);
+		return stream_get_line($this->fp,null,"\n");
 	}
 	function write($buf)
 	{
