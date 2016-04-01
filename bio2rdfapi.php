@@ -366,7 +366,9 @@ class Bio2RDFizer extends RDFFactory
 			$buf .= $this->QQuad($my_qname,"rdf:type","$type:Resource");
 			if(!isset($this->declared["$type:Resource"])) {
 				$this->declared["$type:Resource"] = true;
-				$buf .= $this->QQuadL("$type:Resource","rdfs:label","$ns resource [$type:Resource]");
+				$label = "$ns resource";
+				if(strstr($ns, "_resource")) $label = str_replace("_"," ",$ns);
+				$buf .= $this->QQuadL("$type:Resource","rdfs:label","$label [$type:Resource]");
 				$buf .= $this->QQuad("$type:Resource","rdf:type","rdfs:Resource");
 			}
 			$buf .= $this->QQuad($my_qname,"void:inDataset",$this->getDatasetURI());
@@ -401,7 +403,6 @@ class Bio2RDFizer extends RDFFactory
 				$my_qname = $this->getRegistry()->mapQName($qname);
 				$this->getRegistry()->parseQName($my_qname,$ns,$id);
 			}
-			
 			$buf .= $this->triplifyString($my_qname,"rdfs:label",$label." [$my_qname]",null,$lang);
 			if(!isset($title)) {
 				$buf .= $this->triplifyString($my_qname,"dc:title",$label,null,$lang);
