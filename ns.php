@@ -410,6 +410,7 @@ class CNamespace
 		'synonyms' => array('dosac-cobs-2dpage'),
 	),
 	'dpd'		=> array('name' => 'Health Canada Drug Product Database','url'=>'http://www.hc-sc.gc.ca/dhp-mps/prodpharma/databasdon/index-eng.php'),
+	'dbpedia'	=> array('name' => 'DBPedia', 'url'=>'http://dbpedia.org'),
 	'drugbank'  => array('name' => 'DrugBank','url'=>'http://drugbank.ca'),
 	'drugbank_target'  => array('name' => 'DrugBank targets'),
 	'ec' => array(
