@@ -213,14 +213,12 @@ class RDFFactory extends Application
 	/** Generate a safe literal using a special escape */
 	public static function safeLiteral($s)
 	{
-		$s_noslash = stripslashes($s);
-		return addcslashes($s_noslash, "\b\f\\\'\"\n\r\t");
+		return addcslashes($s, "\0..\37");
 	}
 	
 	/** the special escape for n-triples */
 	public static function specialEscape($str){
-		$s_noslash = stripslashes($str);
-		return addcslashes($s_noslash, "\b\f\\\'\"\n\r\t");
+		return safeLiteral($str);
 	}
 
 }
