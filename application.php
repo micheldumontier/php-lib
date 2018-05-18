@@ -63,7 +63,7 @@ function error_handler($level, $message, $file, $line, $context)
 class Application
 {
 	private $name = '';
-	private $parameters = '';
+	private $parameters = null;
 	
 	public function __construct() 
 	{
