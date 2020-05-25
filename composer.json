@@ -1,0 +1,7 @@
+{
+    "name": "micheldumontier/php-lib",
+    "description": "A PHP library of useful functions",
+    "require": {
+        "php": "^7.2",
+    }
+}
