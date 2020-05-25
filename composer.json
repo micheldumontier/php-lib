@@ -1,6 +1,8 @@
 {
     "name": "micheldumontier/php-lib",
     "description": "A PHP library of useful functions",
+    "version": "1.0.0",
+    "license": "MIT License",
     "require": {
         "php": "^7.2"
     }
