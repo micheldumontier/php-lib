@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright (C) 2012 Michel Dumontier
+Copyright (C) 2012-2013 Michel Dumontier
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,8 +22,8 @@ SOFTWARE.
 */
 
 
-require('application.php');
-require('ns.php');
+require_once('application.php');
+require_once('registry.php');
 
 /**
  * An RDF API for PHP
@@ -34,8 +34,7 @@ require('ns.php');
 class RDFFactory extends Application
 {
 	private $buf = '';
-	private $default_namespace = null;
-	private $ns = null;
+	private $registry = null;
 	private $types = null;
 	private $read_file=null;
 	private $write_file=null;
@@ -43,379 +42,183 @@ class RDFFactory extends Application
 	private $dataset_uri = null;
 	private $declared = null;
 	
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
-		$this->ns = new CNamespace();
+		$this->registry = new CRegistry();
 	}
 	
-	/** Get the namespace object
+	/** 
+	 * Get the namespace object
 	 * @return object the namespace object
 	 */
-	function GetNS() {return $this->ns;}
-	
-	/** Set the default namespace for the RDF application
-	 * @param string $ns the namespace to set as default
-	 */
-	function SetDefaultNamespace($ns) 
+	public function getRegistry() 
 	{
-		if($this->GetNS()->isNS($ns)) {
-			$this->default_namespace = $ns;
-		} else {
-			trigger_error("Unable to find $ns in namespace registry",E_USER_ERROR);
-			exit;
-		}
-		$this->default_namespace = $ns;
-		
-		$date = date("Ymd");
-		$this->SetDatasetURI("bio2rdf_dataset:bio2rdf-$ns-$date");
+		return $this->registry;
 	}
-	function GetNamespace() {return $this->default_namespace;}
-	function GetResourceNamespace() {return $this->default_namespace."_resource";}
-	function GetVocabularyNamespace() {return $this->default_namespace."_vocabulary";}
 	
-	function GetRDF() {return $this->buf;}
-	function AddRDF($buf) {$this->buf .= $buf;return TRUE;}
-	function DeleteRDF() {$this->buf = '';return TRUE;}
+	/** get the RDF buffer */
+	public function getRDF() {return $this->buf;}
+	/** add RDF to the string buffer */
+	public function addRDF($buf) {$this->buf .= $buf;return TRUE;}
+	/** clear the RDF string buffer */
+	public function hasRDF(){if($this->buf != '') return TRUE;return FALSE;}
+	public function deleteRDF() {$this->buf = '';return TRUE;}
 
 	/** Set the default graph URI in order to generate quads
 	 * @param string $graph_uri The Graph URI to set
 	 */
-	function SetGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
+	public function setGraphURI($graph_uri) {$this->graph_uri = $graph_uri;}
 	/** Get the default graph URI
 	 * @return string the default graph uri
 	 */
-	function GetGraphURI() {return $this->graph_uri;}
+	public function getGraphURI() {return $this->graph_uri;}
 	
-	function SetReadFile($file,$gzcompress=false)
+	/** Set the read file */
+	public function setReadFile($file,$gzcompress=false)
 	{
 		$this->read_file = new FileFactory($file,$gzcompress);
 		return $this->read_file;
 	}
-	function GetReadFile()
+	/** get the read file */
+	public function getReadFile()
 	{	
 		return $this->read_file;
 	}
-	function WriteFileExists()
+	/** set a base write file pattern */
+	public function setWriteFilePath($path)
+	{
+		$this->writeFilePath = $path;
+		return $this;
+	}
+	public function getWriteFilePath() {return $this->writeFilePath;}
+	
+	/** ask if the write file is set */
+	function writeFileExists()
 	{
 		if(isset($this->write_file)) return TRUE;
 		return FALSE;
 	}
-	function SetWriteFile($file,$gzcompress=false)
+	/** set the write file and mode */
+	public function setWriteFile($file,$gzcompress=false)
 	{
 		$this->write_file = new FileFactory($file,$gzcompress);
 		return $this->write_file;
 	}
-	function GetWriteFile()
+	/** get the write file */
+	public function getWriteFile()
 	{
 		return $this->write_file;
 	}
-	function WriteRDFBufferToWriteFile() 
+	/** write the RDF buffer to the write file */
+	public function writeRDFBufferToWriteFile() 
 	{
-		if($this->WriteFileExists() === FALSE) {
+		if($this->writeFileExists() === FALSE) {
 			trigger_error("Write file not set!");
 			return FALSE;
 		} 
-		$this->GetWriteFile()->Write($this->buf);
-		$this->DeleteRDF();
+		$this->getWriteFile()->write($this->buf);
+		$this->deleteRDF();
 		return TRUE;
 	}
 	
-	function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
+	/** Generate a n-triple or n-quad */
+	public function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
 		
 		return "<$s_uri> <$p_uri> <$o_uri> $graph_uri .".PHP_EOL;
 	}
 
-	function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
+	/** Generate a n-triple or n-quad with a literal value */
+	public function QuadL($s_uri, $p_uri, $literal, $lang = null, $lt_uri = null, $g_uri = null)
 	{
+		if(!is_string($literal)) {
+			trigger_error("\$literal is not a literal",E_USER_ERROR);
+			return null;
+		}
+		$l = $this->safeLiteral($literal);
 		$graph_uri = '';
 		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
-
-		if(isset($lang) && isset($lt_uri)) {
-			trigger_error("Literal can only hold a language tag *or* datatype", E_USER_ERROR);
-			return FALSE;
-		}
-		return "<$s_uri> <$p_uri> \"$literal\"".(isset($lang)?"@$lang ":'').(isset($lt_uri)?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
+		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
+		return "<$s_uri> <$p_uri> \"$l\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
 	}
 	
-	function QuadText($s_uri, $p_uri, $text, $lang = null, $g_uri = null)
+	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
+	public function QQuad($s,$p,$o,$g = null)
 	{
-		$graph_uri = '';
-		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri)) $graph_uri = "<".$this->graph_uri.">";
+		if($s == null or $s == '' or $p == null or $p == '' or $o == null or $o == '') return '';
 		
-		if(isset($lang) && isset($lt_uri)) {
-			trigger_error("Literal can only hold a language tag *or* datatype", E_USER_ERROR);
-			return FALSE;
-		}
-		return "<$s_uri> <$p_uri> \"\"\"$text\"\"\"".(isset($lang)?"@$lang ":'')." $graph_uri .".PHP_EOL;
-	}
-	
-	
-	function QQuad($s,$p,$o,$g = null)
-	{
-		$s_uri = $this->ns->getFQURI($s);
-		$p_uri = $this->ns->getFQURI($p);
-		$o_uri = $this->ns->getFQURI($o);
+		if(strstr($s,"://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
+		
+		if(strstr($p,"://")) $p_uri = $p;
+		else $p_uri = $this->getRegistry()->getFQURI($p);
+		
+		if(strstr($o,"://")) $o_uri = $o;
+		else $o_uri = $this->getRegistry()->getFQURI($o);
+		
 		$g_uri = null;
-		if(isset($g)) $g_uri = $this->ns->getFQURI($g);
+		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
 	
-	function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
+	/** Generate a n-triple or n-quad with literal value using registry qualified names (qname) for the subject and predicate */
+	public function QQuadL($s,$p,$l,$lang=null,$lt=null,$g=null)
 	{
-		$s_uri = $this->ns->getFQURI($s);
-		$p_uri = $this->ns->getFQURI($p);
+		if($s == null or $s == '' or $p == null or $p == '' or $l == null or $l == '') return '';
+		
+		if(strstr($s,"://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
+		
+		if(strstr($p,"://")) $p_uri = $p;
+		else $p_uri = $this->getRegistry()->getFQURI($p);
 		
 		$lt_uri = null;
-		if(isset($lt)) $lt_uri = $this->ns->getFQURI($lt);		
+		if(isset($lt)) {
+			if(strstr($lt,"://")) $lt_uri = $lt;
+			else $lt_uri = $this->getRegistry()->getFQURI($lt,"provider-uri");		
+		}
+		
 		$g_uri = null;
-		if(isset($g)) $g_uri = $this->ns->getFQURI($g);
+		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->QuadL($s_uri,$p_uri,$l,$lang,$lt_uri,$g_uri);		
 	}
 	
-	function QQuadText($s,$p,$l,$lang=null,$g=null)
+	/** Generate a n-triple or n-quad with a fully qualified uri as the object and a qname subject and predicate  */
+	public function QQuadO_URL($s,$p,$o_uri,$g=null) 
 	{
-		$s_uri = $this->ns->getFQURI($s);
-		$p_uri = $this->ns->getFQURI($p);
-		
-		$lt_uri = null;
-		if(isset($lt)) $lt_uri = $this->ns->getFQURI($lt);		
+		if(strstr($s,"://")) $s_uri = $s;
+		else $s_uri = $this->getRegistry()->getFQURI($s);
+		$p_uri = $this->getRegistry()->getFQURI($p);
 		$g_uri = null;
-		if(isset($g)) $g_uri = $this->ns->getFQURI($g);
-		
-		return $this->QuadText($s_uri,$p_uri,$l,$lang,$g_uri);		
-	}
-	
-	function QQuadO_URL($s,$p,$o_uri,$g=null) 
-	{
-		$s_uri = $this->ns->getFQURI($s);
-		$p_uri = $this->ns->getFQURI($p);
-		$g_uri = null;
-		if(isset($g)) $g_uri = $this->ns->getFQURI($g);
+		if(isset($g)) $g_uri = $this->getRegistry()->getFQURI($g);
+		else if(isset($this->graph_uri) && $this->graph_uri != '') {
+			$g_uri = $this->getRegistry()->getFQURI($this->graph_uri);
+		}
 		
 		return $this->Quad($s_uri,$p_uri,$o_uri,$g_uri);
 	}
 
-	function DeclareURI($uri)
-	{	
-		$this->declared[$uri] = '';
-	}
-	function IsDeclared($uri)
+	/** Generate a safe literal using a special escape */
+	public static function safeLiteral($s)
 	{
-		if(isset($this->declared[$uri])) return TRUE;
-		return FALSE;
+		return addcslashes($s, "\0..\37");
 	}
-	function GetDeclared()
-	{
-		return $this->declared;
-	}
-	function ClearDeclared()
-	{
-		$this->declared = null;
+	
+	/** the special escape for n-triples */
+	public static function specialEscape($str){
+		return safeLiteral($str);
 	}
 
-	function QDeclare($qname,$label)
-	{
-		$buf = '';
-		if(!isset($this->declared[$qname])) {
-			$this->declared[$qname] = $label;
-			$a = explode(":",$qname,2);
-			$slabel = $this->SafeLiteral($label);
-			$buf  = $this->QQuadL($qname,"rdfs:label","$slabel [$qname]");
-			$buf .= $this->QQuadL($qname,"dc:identifier",$a[1]);
-			$buf .= $this->QQuadL($qname,"dc:source",$a[0]);
-			$buf .= $this->QQuadL($qname,"dc:title",$slabel);
-			
-			if(FALSE !== ($pos = strpos($a[0],"_resource"))) $type = substr($a[0],0,$pos)."_vocabulary";
-			else if(FALSE !== ($pos == strpos($a[0],"_vocabulary"))) $type = $a[0];
-			else $type = $a[0]."_vocabulary";
-			$buf .= $this->QQuad($qname,"rdf:type",$type.":Resource");
-		}
-		return $buf;
-	}	
-	function QDeclareClass($qname,$label) 
-	{
-		$d = $this->QDeclare($qname,$label);
-		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:Class");
-		return '';
-	}
-	function QDeclareObjectProperty($qname,$label) 
-	{
-		$d = $this->QDeclare($qname,$label);
-		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:ObjectProperty");
-		return '';
-	}
-	function QDeclareDatatypeProperty($qname,$label) 
-	{
-		$d = $this->QDeclare($qname,$label);
-		if($d) return $d.$this->QQuad($qname,"rdf:type","owl:DatatypeProperty");
-		return '';
-	}
-
-	function TripleAndType($s,$p,$o,$o_type)
-	{
-		$buf  = $this->QQuad($s,$p,$o);
-		$buf .= $this->QQuad($o,"rdf:type",$o_type);
-		return $buf;		
-	}
-	
-	/**
-		XRef
-		This function asserts the spo triple and declares the object $o of type $type_vocabulary:Resource
-	*/
-	function XRef($s,$p,$o,$o_type = null, $o_label = null)
-	{
-		$buf = $this->QDeclareClass($o,$o_label);
-		$buf .= $this->QQuad($s,$p,$o);
-		if(isset($o_type)) $buf .= $this->QQuad($o,"rdf:type",$o_type);
-		return $buf;
-	}
-	
-	function SafeLiteral($s)
-	{
-		return $this->specialEscape($s);
-	}
-	
-	function specialEscape($str){
-		$s_noslash = stripslashes($str);
-		return addcslashes($s_noslash, "\\\"\n\r\t");
-	}
-	
-	function SetDatasetURI($dataset_uri)
-	{		
-		$this->dataset_uri = $dataset_uri;
-	}
-	function GetDatasetURI()
-	{
-		return $this->dataset_uri;
-	}
-	
-	function GetDatasetDescription(
-		$dataset_name, 
-		$dataset_uri, 
-		$creator_uri, 
-		$publisher_name, 
-		$publisher_uri, 
-		$data_urls = null, 
-		$sparql_endpoint = null, 
-		$source_homepage, 
-		$source_rights, 
-		$source_license = null, 
-		$source_location = null, 
-		$source_version = null)
-	{
-		$rdf = '';
-		$date = date("Y-m-d");
-		//$datetime = date("D M j G:i:s T Y");
-
-		$rdf .= $this->QQuadL($dataset_uri,"rdfs:label","$dataset_name dataset by $publisher_name on $date [$dataset_uri]");
-		$rdf .= $this->QQuad($dataset_uri,"rdf:type","void:Dataset");
-		$rdf .= $this->QQuadL($dataset_uri,"dc:created",$date,null,"xsd:date");
-		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:creator",$creator_uri);
-		$rdf .= $this->QQuadO_URL($dataset_uri,"dc:publisher",$publisher_uri);
-		$rights = array("use-share-modify","attribution","restricted-by-source-license");
-		foreach($rights AS $right) {
-			$rdf .= $this->QQuadL($dataset_uri,"dc:rights",$right);
-		}
-		if(isset($source_license)) $rdf .= $this->QQuadO_URL($dataset_uri,"dc:license","http://creativecommons.org/by-attribution"); // @todo check
-		if(isset($data_urls)) {
-			if(!is_array($data_urls)) $data_urls = array($data_urls);
-			foreach($data_urls AS $u) {
-				$rdf .= $this->QQuadO_URL($dataset_uri,"void:dataDump",$u);
-			}
-		}
-		if(isset($sparql_endpoint)) $rdf .= $this->QQuadO_URL($dataset_uri,"void:sparqlEndpoint",$sparql_endpoint);
-		
-		// source description
-		$source_uri = "bio2rdf_dataset:$dataset_name";
-		
-		// link dataset to source
-		// $rdf .= $this->QQuad($dataset_uri,"dc:source",$source_uri);
-		$rdf .= $this->QQuad($dataset_uri,"prov:wasDerivedFrom",$source_uri);
-		
-		$rdf .= $this->QQuadL($source_uri,"rdfs:label","$dataset_name dataset [$source_uri]");
-		$rdf .= $this->QQuad($source_uri,"rdf:type","void:Dataset");
-		$rdf .= $this->QQuadO_URL($source_uri,"foaf:homepage",$source_homepage);
-		$rights = $source_rights;
-		if(!is_array($rights)) $rights = array($source_rights);
-		foreach($rights AS $right) {
-			$rdf .= $this->QQuadL($source_uri,"dc:rights",$this->GetRightsDescription($right));
-		}
-		if(isset($source_license)) $rdf .= $this->QQuadO_URL($source_uri,"dc:license",$source_license);
-		if(isset($source_location)) $rdf .= $this->QQuadO_URL($source_uri,"rdfs:seeAlso",$source_location);
-		if(isset($source_version)) $rdf .= $this->QQuadL($source_uri,"pav:version",$source_version);
-
-		return $rdf;
-	}
-	
-	function GetBio2RDFReleaseFile($dataset)
-	{
-		return "bio2rdf-$dataset.nt";
-	}
-	
-	function DeleteBio2RDFReleaseFiles($dir)
-	{
-		$files = Utils::GetDirFiles($dir,"/bio2rdf\-.*\.nt/");
-		foreach($files AS $file) {
-			unlink($dir.$file);
-		}
-		
-	}
-	
-	function GetBio2RDFDownloadURL($namespace)
-	{
-		return "http://download.bio2rdf.org/rdf/$namespace/";
-	}
-	
-	function GetBio2RDFDatasetDescription(
-		$namespace, 
-		$script_url, 
-		$download_files,
-		$source_homepage, 
-		$source_rights, 
-		$source_license = null, 
-		$source_location = null, 
-		$source_version = null)
-	{
-		return $this->GetDatasetDescription(				
-			$namespace, 
-			$this->GetDatasetURI(), 
-			$script_url, 
-			"Bio2RDF", 
-			"http://bio2rdf.org", 
-			$download_files,
-			"http://$namespace.bio2rdf.org/sparql", 
-			$source_homepage, 
-			$source_rights, 
-			$source_license, 
-			$source_location, 
-			$source_version);
-	}
-	
-	function GetRightsDescription($right)
-	{
-		$rights = array(
-			"use" => "free to use",
-			"use-share" => "free to use and share as is",
-			"use-share-modify" => "free to use, share, modify",			
-			"no-commercial" => "commercial use requires licensing",
-			"no-derivative" => "no derivatives allowed without permission",
-			"attribution" => "requires attribution",
-			"restricted-by-source-license" => "check source for further restrictions"
-			);
-		if(!isset($rights[$right])) {
-			trigger_error("Unable to find $right in ".implode(",",array_keys($rights))." of rights");
-			return FALSE;
-		}
-		return $rights[$right];
-	}
 }
-

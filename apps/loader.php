@@ -2,19 +2,18 @@
 // script to facilitate loading into virtuoso
 // instance file consists of entries of the form serverport\thttp-port\tinstance-name
 
-$isql = "/usr/local/virtuoso-opensource/bin/isql";
-//$isql = "/virtuoso-opensource/bin/isql";
-
 $options = array(
+ "isql" => "/usr/local/virtuoso-opensource/bin/isql", 
  "file" => "filename",
  "dir" => "dirname",
  "graph" => "graphname",
  "gprefix" => "graphprefix",
  "instance" => "instancename",
+ "instancesfile" => "instances.tab",
  "port" => "1111",
  "user" => "dba",
  "pass" => "dba",
- "flags" => "272",
+ "flags" => "784", // 272 + 512
  "threads" => "4",
  "updatefacet" => "false",
  "deletegraph" => "false",
@@ -24,7 +23,7 @@ $options = array(
  "setpassword" => "",
  "format" => "n3",
  "ignoreerror" => "true",
- "startat" => ""
+ "tries" => "10"
 );
 
 
@@ -44,15 +43,29 @@ foreach($argv AS $i=> $arg) {
  else {echo "unknown key $b[0]";exit;}
 }
 
+// check isql binary
+$isql = $options['isql']; 
+
+$isql_windows = "/virtuoso-opensource/bin/isql.exe";
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+ $isql = $isql_windows;
+}
+
+if(!file_exists($isql)) {
+	trigger_error("ISQL could not be found at $isql",E_USER_ERROR);
+}
+
+
 if($options['instance'] != 'instancename') {
  // load the file and get the port
  // 10001   8001    ncbo
- $instance_file = "instances.tab";
- if(!file_exists($instance_file)) {
+ $instances_file = $options['instancesfile']; //default: "instances.tab";
+
+ if(!file_exists($instances_file)) {
    trigger_error("Please create the requisite instance file; tab delimited - server port\twww port\tname\n");
    exit;
  }
- $fp = fopen($instance_file,"r");
+ $fp = fopen($instances_file,"r");
  if(!isset($fp)) {
 	trigger_error("Unable to open $instance_file");
 	exit;
@@ -67,8 +80,11 @@ if($options['instance'] != 'instancename') {
  }
  fclose($fp);
 }
+else {
+  $options['instance']='localhost';
+}
 
-$cmd_pre = "$isql -S ".$options['port']." -U ".$options['user']." -P ".$options['pass']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; $cmd_post = '"';
+$cmd_pre = "$isql -H ".$options['instance']." -S ".$options['port']." -U ".$options['user']." -P ".$options['pass']." verbose=on banner=off prompt=off echo=ON errors=stdout exec=".'"'; $cmd_post = '"';
 
 // associate a prefix with namespace
 // http://docs.openlinksw.com/virtuoso/fn_xml_set_ns_decl.html
@@ -105,20 +121,16 @@ if($options['dir'] == 'dirname') {
   exit;
  } 
  // get the files
- $files = GetFiles($options['dir']);
+ $files = getFiles($options['dir']);
  $files = getFileR($options['dir']);
 }
 
 $deletegraphs = null; // keep a list of deleted graphs
 
 foreach($files AS $file) {
-	if($options['startat'] != '') {
-		if($options['startat'] == $file) { $options['startat'] = ''; }
-		else continue;
-	}
-
+	$file = str_replace('\\','/',$file);
 	echo 'Processing '.$file."\n";
-
+	
 	// if the graph has not been set, then create a graph name from the file, minus path and extension
 	$graph = $options['graph'];
 	if($graph == "graphname") {
@@ -154,12 +166,12 @@ foreach($files AS $file) {
 	}
 
 	// unzip if necessary
-	$f = str_replace('\\','/',$file);;
+	$f = $file;
 	$fcmd = 'file_to_string_output';
 	if(strstr($file,".gz")) {
 		$gzfile = $file;
 		$un = substr($file,0,-3);
-   
+
 		$out = fopen($un,"w");
 		$in = gzopen($file,"r");
 		while($l = gzgets($in)) {
@@ -167,7 +179,7 @@ foreach($files AS $file) {
 		}
 		fclose($out);
 		gzclose($in);
-   
+  
 		$f = $un;
 	} elseif(strstr($file,".zip")) {
 		$zfile = $file;
@@ -239,27 +251,25 @@ foreach($files AS $file) {
 	if(file_exists($t1)) unlink($t1);
 	if(file_exists($t2)) unlink($t2);
 
-$tries = 10;
+$tries = $options['tries'];
  do { 
-  echo "Loading $file into $graph ...".PHP_EOL; 
-
+  echo "Loading $f into $graph ...".PHP_EOL; 
   $cmd = $program."($fcmd ('$f'), '', '".$graph."', ".$options['flags'].", ".$options['threads']."); checkpoint;";
-// echo $cmd_pre.$cmd.$cmd_post;
   $out = shell_exec($cmd_pre.$cmd.$cmd_post);
- 
+  
   if(strstr($out,"Error")) {
     // *** Error 37000: [Virtuoso Driver][Virtuoso Server]SP029: TURTLE RDF loader, line 43: syntax error
     preg_match("/Error ([0-9]+)\:/",$out,$m);
     if(!isset($m[1]) || (isset($m[1]) && $m[1] != '37000')) {
-	// some other error
-	echo $out;
-	break;
+		// some other error
+		echo $out;
+		break;
     } 
 
     preg_match("/line\s([0-9]+)\:/",$out,$m);
     if(!isset($m[1])) {
-	// some problem here
-	exit;
+		// some problem here
+		exit;
     }
 
     $line = $m[1]; 

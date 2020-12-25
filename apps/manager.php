@@ -143,6 +143,10 @@ function CreateVirtuosoINI($instance,$instance_dir,$virtuoso_dir)
 		"ServerRoot" => $virtuoso_dir."/var/lib/virtuoso/vsp"
 	),
 	"SPARQL" => array(
+		"ShortenLongURIs" => "1",
+		"MaxCacheExpiration" => "1",
+		"ExternalQuerySource" => "1",
+		"ExternalXsltSource" => "1",
 		"MaxQueryCostEstimationTime" => "20000",
 		"MaxQueryExecutionTime" => "10000",
 		"DefaultQuery" => "SELECT distinct ?graph ?type (count(?x) AS ?count) WHERE {graph ?graph {?x a ?type} FILTER (?graph != <b3sifp> && ?graph != <http://www.openlinksw.com/schemas/virtrdf#> && ?graph != <http://www.w3.org/2002/07/owl#> && ?graph != <virtrdf-label> && ?graph != <http://localhost:8890/sparql>)} ORDER BY ASC(?graph) ASC(?type) LIMIT 100")  

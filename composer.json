@@ -1,0 +1,9 @@
+{
+    "name": "micheldumontier/php-lib",
+    "description": "A PHP library of useful functions",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": "^7.2"
+    }
+}

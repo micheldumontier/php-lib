@@ -1,6 +1,6 @@
 <?php
 /**
-Copyright (C) 2012 Michel Dumontier
+Copyright (C) 2013 Michel Dumontier
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -21,25 +21,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/**
- * An OWL API for PHP
- * @version 1.0
- * @author Michel Dumontier
- * @description 
-*/
+require_once(__DIR__.'/application.php');
+require_once(__DIR__.'/bio2rdfapi.php');
+require_once(__DIR__.'/dataset.php');
+require_once(__DIR__.'/dataresource.php');
+require_once(__DIR__.'/fileapi.php');
+require_once(__DIR__.'/owlapi.php');
+require_once(__DIR__.'/rdfapi.php');
+require_once(__DIR__.'/registry.php');
+require_once(__DIR__.'/utils.php');
+require_once(__DIR__.'/xmlapi.php');
 
-class OWLFactory extends RDFFactory
-{
-	private $types = null;
-	
-	function __construct()
-	{
-		parent::__construct();
-	}
-	
-	function DeclareClass($uri)
-	{
-	}
-}
-
-
+?>

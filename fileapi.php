@@ -44,10 +44,27 @@ class FileFactory
 		}
 		$this->gzcompress = $gzcompress;
 		$this->filename = $filename;
+		return $this;
 	}
 	
-	function Open($mode = "r")
+	function open($mode = "r")
 	{
+		if($this->filename == null) {
+			trigger_error("No filename set!",E_USER_ERROR);
+			return FALSE;
+		}
+		if($mode == "w" or $mode == "wb") {
+			// create the directory
+			$path = pathinfo($this->filename);
+			if(isset($path['dirname']) and $path['dirname'] != '' and !is_dir($path['dirname']) ) {
+				$ret = @mkdir($path['dirname'],'0777',true);
+				if($ret === FALSE) {
+					trigger_error("Unable to create requisite directory for ".$this->filename,E_USER_ERROR);
+					return FALSE;
+				}
+			}
+		}
+		
 		if($this->gzcompress == true) {
 			if($mode == "r") $mode = "rb";
 			if($mode == "w") $mode = "wb";
@@ -62,43 +79,51 @@ class FileFactory
 		return TRUE;
 	}
 	
-	function SetFilePointer($fp)
+	function getFileName(){
+			return (string) $this->filename;
+	}
+	
+	function setFilePointer($fp)
 	{
 		$this->fp = $fp;
+		return $this;
 	}
-	function GetFilePointer()
+	function getFilePointer()
 	{
 		return $this->fp;
 	}
 	
-	function Read($size = null)
+	function read($size = null)
 	{
 		if(!isset($this->fp)) {
 			$this->Open("r");
 		}
 		if(isset($size)) {
-			return fgets($this->fp,$size);
+			return stream_get_line($this->fp,$size,"\n");
 		}
-		return fgets($this->fp);
+		return stream_get_line($this->fp,null,"\n");
 	}
-	function Write($buf)
+	function write($buf)
 	{
+		$ret = null;
 		if(!isset($this->fp)) {
-			$this->Open("w");
+			$ret = $this->Open("w");
 		}
-		return fwrite($this->fp,$buf);
+		if($buf) {
+			$ret = fwrite($this->fp,$buf);
+		}
+		return $ret; 
 	}
-	function Close()
+	function close()
 	{
-		$ret = TRUE;
+		$ret = FALSE;
 		if(isset($this->fp)) {
 			$ret = fclose($this->fp);
 			$this->fp = null;
+			$this->filename = null;
 		}
 		return $ret;
 	}
-	function GetFileName(){
-			return (string) $this->filename;
-	}
+
 }
 ?>
