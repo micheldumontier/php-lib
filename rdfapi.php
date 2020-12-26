@@ -211,9 +211,32 @@ class RDFFactory extends Application
 	}
 
 	/** Generate a safe literal using a special escape */
-	public static function safeLiteral($s)
+	/*
+	https://www.w3.org/TR/n-triples/#grammar-production-STRING_LITERAL_QUOTE
+	STRING_LITERAL_QUOTE 	::= 	'"' ([^#x22#x5C#xA#xD] | ECHAR | UCHAR)* '"'
+	ECHAR 	::= 	'\' [tbnrf"'\]
+	UCHAR 	::= 	'\u' HEX HEX HEX HEX | '\U' HEX HEX HEX HEX HEX HEX HEX HEX
+	HEX 	::= 	[0-9] | [A-F] | [a-f]
+
+	#x5C = \ - reverse solidus (ascii 92)
+	#x22 = " - quotation mark (ascii 34)
+	#xA = \n - line feed (ascii 10)
+	#xD = \r - carriage return  (ascii 13)
+
+	### notes
+	* despite the definition, most n-triple parsers barf when the single quote ' is escaped in a double quoted literal
+    * @todo validate hex encoding
+	*/	
+	public static function safeLiteral($str)
 	{
-		return addcslashes($s, "\0..\37");
+		$patterns = array(
+			'/[\x5c]/', '/[\x22]/', '/[\xA]/', '/[\xD]/', '/[\b]/', '/[\t]/', '/[\f]/'
+		);
+		$replacements = array(
+			'\\', '\"', '\n', '\r', '\b', '\t', '\f'
+		);
+		$str = preg_replace($patterns, $replacements, $str); 
+		return $str;
 	}
 	
 	/** the special escape for n-triples */
