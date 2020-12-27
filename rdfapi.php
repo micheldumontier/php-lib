@@ -244,4 +244,16 @@ class RDFFactory extends Application
 		return safeLiteral($str);
 	}
 
+	/** check if an IRI is valid */
+	function checkIRI($str)
+	{
+		$url_regex = "/(([a-zA-Z][0-9a-zA-Z+\-\.]*:)?\/{0,2}[0-9a-zA-Z;\/?:@&=+$\.\-_!~*'()%]+)?(#[0-9a-zA-Z;\/?:@&=+$\.\-_!~*'()%]+)?/";
+		preg_match($url_regex,$str, $match);
+		if($match[0] != $str) {
+			trigger_error("IRI $str is not valid!",E_USER_ERROR);
+			return FALSE;
+		}
+		return TRUE;
+	}
+
 }
