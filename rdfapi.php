@@ -224,16 +224,16 @@ class RDFFactory extends Application
 	#xD = \r - carriage return  (ascii 13)
 
 	### notes
-	* despite the definition, most n-triple parsers barf when the single quote ' is escaped in a double quoted literal
+	* despite the specification, most n-triple parsers barf when the single quote ' is escaped in a double quoted literal
     * @todo validate hex encoding
 	*/	
 	public static function safeLiteral($str)
 	{
 		$patterns = array(
-			'/[\x5c]/', '/[\x22]/', '/[\xA]/', '/[\xD]/', '/[\b]/', '/[\t]/', '/[\f]/'
+			'/\\\\/', '/[\x5c]/', '/[\x22]/', '/[\xA]/', '/[\xD]/', '/[\b]/', '/[\t]/', '/[\f]/'
 		);
 		$replacements = array(
-			'\\', '\"', '\n', '\r', '\b', '\t', '\f'
+			'/\\\\\\/', '\\', '\"', '\n', '\r', '\b', '\t', '\f'
 		);
 		$str = preg_replace($patterns, $replacements, $str); 
 		return $str;
