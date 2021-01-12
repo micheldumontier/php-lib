@@ -256,9 +256,9 @@ class Bio2RDFizer extends RDFFactory
 			parent::setParameterValue('outdir', parent::getParameterValue('outdir')."/"); 
 		}
 		
-		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create directory 'indir' !",E_USER_ERROR); exit;}
-		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create directory 'outdir' !",E_USER_ERROR); exit;}
-		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create directory 'registry_dir' !",E_USER_ERROR); exit;}
+		if(parent::createDirectory(parent::getParameterValue('indir')) === false) {trigger_error("Could not create 'indir' directory ".parent::getParameterValue('indir'),E_USER_ERROR); exit;}
+		if(parent::createDirectory(parent::getParameterValue('outdir')) === false) {trigger_error("Could not create 'outdir' directory ".parent::getParameterValue('outdir'),E_USER_ERROR); exit;}
+		if(parent::createDirectory(parent::getParameterValue('registry_dir')) === false) {trigger_error("Could not create 'registry_dir' directory ".parent::getParameterValue('registry_dir'), E_USER_ERROR); exit;}
 		
 		if(parent::getParameterValue('graph_uri')) {
 			parent::setGraphURI(parent::getParameterValue('graph_uri'));	
