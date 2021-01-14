@@ -61,7 +61,7 @@ class CRegistry
 	private $uri_schemes = array ("original","bio2rdf","identifiers.org");
 	/** a list of resources that must use the original provider uri */
 	private $default_uri_schemes = array ("xsd","rdf","rdfs","owl","void","dc","foaf","pav","mailto","sio","dcat","cito","idot","prov","faldo","dc.types","dc.terms");
-	
+
 	public function __construct()
 	{
 		
@@ -274,7 +274,7 @@ class CRegistry
 			$a = array_slice($r,0,25);
 			foreach($a AS $i => $v) {
 				$k = $keys[$i];
-				$e[$k] = $v;
+				$e[$k] = trim($v);
 			}
 			
 			$this->registry[$prefix] = $e;
@@ -295,13 +295,13 @@ class CRegistry
 			foreach( explode(",",$r[1]) AS $syn) {
 				if(trim($syn) == '') continue;
 				$syn = $this->normalizePrefix(preg_replace("/\([^\)]+/","",$syn));
-				$this->map[$syn] = $prefix;
+				$this->map[$syn] = trim($prefix);
 			}
 
 			// add alternative URIs to map
 			if($uri && $r[3] != '') {
 				foreach( explode(",",$r[3]) AS $alt_uri) {
-					$this->map[trim($alt_uri)] = $prefix;
+					$this->map[trim($alt_uri)] = trim($prefix);
 				}
 			}
 		}
@@ -311,7 +311,7 @@ class CRegistry
 	public function getEntry($ns)
 	{
 		if(!$this->isPrefix($ns)) {
-//			trigger_error("Unable to retrieve $ns",E_USER_ERROR);
+//			trigger_error("Unable to retrieve $ns",E_USER_WARNING);
 			return null;
 		} 		
 		return $this->registry[$ns];
@@ -456,7 +456,7 @@ class CRegistry
 	{
 		$qname = $this->mapQName($qname);
 		$this->parseQName($qname,$ns,$id);
-		
+
 		// exclude the defaults 
 		if(in_array($ns,$this->getDefaultURISchemes())) {
 			if(isset($this->registry[$ns]['provider-uri']))
