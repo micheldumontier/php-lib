@@ -80,7 +80,7 @@ class CXML
 			}
 			if($exception == false && $parsing == true && strstr($l,"</".$elementToParse.">") && $level == 1) {
 				$body .= $l;
-				$this->xmlroot = simplexml_load_string($this->header.$body);
+				$this->xmlroot = simplexml_load_string($this->header.$body, 'SimpleXMLElement', LIBXML_COMPACT | LIBXML_PARSEHUGE);
 				if($this->xmlroot === FALSE) {
 					trigger_error("Error in loading XML");
 					foreach(libxml_get_errors() as $error) {
