@@ -222,10 +222,10 @@ class Bio2RDFizer extends RDFFactory
 	{	
 		parent::addParameter('indir',false,null,'/data/download/'.$this->getPrefix().'/','directory to download into and/or parse from');
 		parent::addParameter('outdir',false,null,'/data/rdf/'.$this->getPrefix().'/','directory to place output files');
-		parent::addParameter('download',false,'true|false','false','set true to download files or false to use local');
+		parent::addParameter('download',false,'true|false','false','set true to force download of relevant files');
 		parent::addParameter('process',false,'true|false','true','set true to process local files');
-		parent::addParameter('graph_uri',false,null,null,'provide the graph uri to generate n-quads instead of n-triples');
-		parent::addParameter('id_list',false,null,null,'provide a comma-separated list of URIs to process (parser may not support)');
+		parent::addParameter('graph_uri',false,null,null,'provide the graph uri in n-quads');
+		parent::addParameter('id_list',false,null,null,'provide a comma-separated list of record identifiers to process (where supported)');
 		
 		parent::addParameter('parser',false,$this->getPrefix(),$this->getPrefix(),'this Bio2RDF parser');
 		parent::addParameter('registry_dir',false,null,'/data/download/registry/','directory for the local version of the regisry');
@@ -233,7 +233,7 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('bio2rdf_release',false,null,'5','Bio2RDF release number');
 		parent::addParameter('dataset_graph',false,'true|false','true','use the date versioned dataset graph uri to generate an nquad dataset description file');
 		parent::addParameter('uri_scheme',false,'provider-uri|bio2rdf-uri|identifiers.org-uri','bio2rdf-uri','uri scheme preference');
-		parent::addParameter('guidelines',false,'true|false','true','follow Bio2RDF guidelines');
+		parent::addParameter('guidelines',false,'true|false','true','implement Bio2RDF guidelines');
 		parent::addParameter('model',false,'simple|sio|ovopub|nanopub','simple','format to selected rdf data model');
 		parent::addParameter('output_level',false,'dataset|file|record|triple','dataset','level at which to generate output files');
 		parent::addParameter('output_format',false,'nt|nt.gz|nq|nq.gz','nq.gz','output format');
@@ -241,6 +241,10 @@ class Bio2RDFizer extends RDFFactory
 		parent::addParameter('unregistered_ns',false,'die|skip|continue','continue','what to do if the namespace is not found in registry');
 		parent::addParameter('statistics',false,'true|false','false','generate statistics for this dataset');
 		
+		parent::addParameter('ncbo_api_key',false,null,null,'BioPortal API key');
+		parent::addParameter('ncbo_api_key_file',false,null,'ncbo.api.key','BioPortal API key file');
+		parent::addParameter('drugbank_login',false,null,'username:password','The username and password to download the drugbank data files');
+
 		if(parent::setParameters($this->argv) == false) {
 			parent::printParameters($this->argv);
 			exit;
