@@ -41,12 +41,28 @@ class RDFFactory extends Application
 	private $graph_uri = null;
 	private $dataset_uri = null;
 	private $declared = null;
+	private $testIRI = TRUE;
+	private $safeIRI = FALSE;
 	
 	public function __construct()
 	{
 		parent::__construct();
 		$this->registry = new CRegistry();
 	}
+
+
+	/** set a boolean flag (true/false) as to whether to make a FQURI safe */
+	public function setSafeIRI($bool)
+	{	$this->safeIRI = $bool; }
+	/** get the status of the boolean flag as to whether to make a FQURI safe */
+	public function getSafeIRI()
+	{	return $this->safeIRI; }
+
+	public function setTestIRI($bool)
+	{	$this->testIRI = $bool;}
+
+	public function getTestIRI()
+	{	return $this->testIRI; }
 	
 	/** 
 	 * Get the namespace object
@@ -125,11 +141,23 @@ class RDFFactory extends Application
 	/** Generate a n-triple or n-quad */
 	public function Quad($s_uri, $p_uri, $o_uri, $g_uri = null)
 	{
-		$graph_uri = '';
-		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
+		if(!isset($g_uri) and $this->graph_uri != '') $g_uri = $this->graph_uri;
 		
-		return "<$s_uri> <$p_uri> <$o_uri> $graph_uri .".PHP_EOL;
+		if($this->safeIRI === TRUE) {
+			$s_uri = $this->makeSafeIRI($s_uri);
+			$p_uri = $this->makeSafeIRI($p_uri);
+			$o_uri = $this->makeSafeIRI($o_uri);
+			$g_uri = $this->makeSafeIRI($g_uri); 
+		}
+
+		if($this->testIRI === TRUE) {
+			$this->checkIRI($s_uri);
+			$this->checkIRI($p_uri);
+			$this->checkIRI($o_uri);
+			if(isset($g_uri)) $this->checkIRI($g_uri);
+		}
+
+		return "<$s_uri> <$p_uri> <$o_uri> ".(isset($g_uri)?"<$g_uri> ":"").".".PHP_EOL;
 	}
 
 	/** Generate a n-triple or n-quad with a literal value */
@@ -140,10 +168,20 @@ class RDFFactory extends Application
 			return null;
 		}
 		$l = $this->safeLiteral($literal);
-		$graph_uri = '';
-		if(isset($g_uri)) $graph_uri = "<$g_uri>";
-		elseif(isset($this->graph_uri) && $this->graph_uri != '') $graph_uri = "<".$this->graph_uri.">";
-		return "<$s_uri> <$p_uri> \"$l\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'')." $graph_uri .".PHP_EOL;
+		if(!isset($g_uri) and $this->graph_uri != '') $g_uri = $this->graph_uri;
+
+		if($this->safeIRI === TRUE) {
+			$s_uri = $this->makeSafeIRI($s_uri);
+			$p_uri = $this->makeSafeIRI($p_uri);
+			$g_uri = $this->makeSafeIRI($g_uri); 
+		}
+
+		if($this->testIRI === TRUE) {
+			$this->checkIRI($s_uri);
+			$this->checkIRI($p_uri);
+			if(isset($g_uri)) $this->checkIRI($g_uri);
+		}
+		return "<$s_uri> <$p_uri> \"$l\"".(isset($lang)?"@$lang ":'').((!isset($lang) && isset($lt_uri))?"^^<$lt_uri>":'').(isset($g_uri)?"<$g_uri> ":"").".".PHP_EOL;
 	}
 	
 	/** Generate a n-triple or n-quad using registry qualified names (qname) for the subject, predicate and object */
@@ -244,16 +282,46 @@ class RDFFactory extends Application
 		return safeLiteral($str);
 	}
 
+	/** implode the parsed url array */
+	function unparse_url($parsed_url) {
+		$scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+		$host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+		$port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+		$user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+		$pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+		$pass     = ($user || $pass) ? "$pass@" : '';
+		$path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+		$query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+		$fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+		return "$scheme$user$pass$host$port$path$query$fragment";
+	} 
+
+	/** construct a safe IRI */
+	function makeSafeIRI($str)
+	{
+		if(!isset($str)) return null;
+		$p = parse_url(trim($str));
+		if($p === false) {
+			trigger_error("Error in parsing $str as URL", E_USER_ERROR);
+			return false;
+        }
+
+		$p['path']     = isset($p['path'])?     str_replace('%2F','/',urlencode($p['path'])) : null;
+		$p['query']    = isset($p['query'])?    str_replace('%2F','/',urlencode($p['query'])) : null;
+		$p['fragment'] = isset($p['fragment'])? str_replace('%2F','/',urlencode($p['fragment'])) : null;
+
+		return $this->unparse_url($p);
+    }
+	
 	/** check if an IRI is valid */
 	function checkIRI($str)
 	{
 		$url_regex = "/(([a-zA-Z][0-9a-zA-Z+\-\.]*:)?\/{0,2}[0-9a-zA-Z;\/?:@&=+$\.\-_!~*'()%]+)?(#[0-9a-zA-Z;\/?:@&=+$\.\-_!~*'()%]+)?/";
 		preg_match($url_regex,$str, $match);
 		if($match[0] != $str) {
-			trigger_error("IRI $str is not valid!",E_USER_ERROR);
+			trigger_error("IRI $str is not valid!",E_USER_ERROR);	
 			return FALSE;
 		}
 		return TRUE;
 	}
-
 }
