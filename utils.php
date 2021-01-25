@@ -168,10 +168,26 @@ class Utils
 	 * an error is triggered (E_USER_ERROR).
 	 * A file will not be created if the download failed.
 	 */
-	public static function DownloadSingle ($url, $lfile, $return_on_fail = false)
+	public static function DownloadSingle ($url, $lfile, $return_on_fail = false, $context = null)
 	{
 		trigger_error("downloading $url...",E_USER_NOTICE);
-		if ( !($fpRead = fopen($url, "rb")) ) {
+		/*
+		$context = stream_context_create(
+			array(
+				'http' => array(
+					'header'  => "Authorization: Basic " . base64_encode("$username:$password"),
+					'follow_location' => 1,
+					'max_redirects' => '20',
+					'ignore_errors' => false
+				)
+		));		
+		*/
+				
+		if(isset($context)) {
+			$fpRead = fopen($url,"rb",false, $context);
+			# var_dump(stream_get_meta_data($fpRead));
+		} else $fpRead = fopen($url, "rb");
+		if ($fpRead === false) {
 			if($return_on_fail === false) {
 				trigger_error ("Unable to get $url", E_USER_WARNING);
 				return false;
