@@ -43,7 +43,7 @@ function setLogLevelFromString($level) {
 }
 
 /** Handle user errors, warnings, and notices */
-function error_handler($level, $message, $file, $line, $context) 
+function error_handler($level, $message, $file, $line, $context = null) 
 {	
 	if($level === E_USER_ERROR) {
 		debug_print_backtrace();
