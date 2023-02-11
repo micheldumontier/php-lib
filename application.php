@@ -46,6 +46,7 @@ function setLogLevelFromString($level) {
 function error_handler($level, $message, $file, $line, $context = null) 
 {	
 	if($level === E_USER_ERROR) {
+		echo PHP_EOL."ERROR: $message".PHP_EOL;
 		debug_print_backtrace();
 		return(true); //And prevent the PHP error handler from continuing
 	} else if($level === E_USER_WARNING) {
