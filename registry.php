@@ -257,6 +257,13 @@ class CRegistry
 "miriam_notes",    // [26] => MIRIAM curator notes
 "miriam_coverage", // [27] => MIRIAM coverage
 "miriam_updates",  // [28] => updates
+"updates",         // [29] => updates
+"year_last_accessible",  // [30] => year last accessible
+"wayback_url",     // [31] => wayback url
+"last_updated",    // [32] => last updated
+"last_updated_by", // [33] => last updated by
+"last_updated_by_orcid" // [34] => last updated by (orcid)
+
 );
 
 		if (($fp = fopen($this->getLocalRegistryFilename(), "r")) === FALSE) {
@@ -264,8 +271,8 @@ class CRegistry
 			return FALSE;
 		}
 		$header = fgetcsv($fp);
-		if(count($header) != 30) {
-			trigger_error("Expecting 30 columns, found ".count($header), E_USER_ERROR);
+		if(count($header) != 35) {
+			trigger_error("Expecting 35 columns, found ".count($header), E_USER_ERROR);
 			return FALSE;
 		}
 		while (($r = fgetcsv($fp)) !== FALSE) {
