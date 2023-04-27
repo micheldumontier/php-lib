@@ -33,12 +33,16 @@ class CXML
 	private $fp;
 	private $xmlroot = '';
 	private $header = '';
+
+	private $zip_basename;
+
+	private $z; 
 	
 	function __construct($filepath,$file = null) 
 	{
 		if(strstr($filepath,".zip")) {
-			$z = new ZipArchive();
-			if ($z->open($filepath) == FALSE) {
+			$this->z = new ZipArchive();
+			if ($this->z->open($filepath) == FALSE) {
 				trigger_error("Unable to open $filepath", E_USER_ERROR);
 				return FALSE;
 			}
@@ -46,7 +50,8 @@ class CXML
 				$nozip = substr($filepath,0,strrpos($filepath,".zip"));
 				$zip_basename = basename($nozip); // Only filename, relative to archive, not file-system is used.
 			} else $zip_basename = $file;
-			$this->fp = $z->getStream($zip_basename); 
+			$this->zip_basename = $zip_basename;
+			$this->fp = $this->z->getStream($zip_basename); 
 			if($this->fp === FALSE) {
 				trigger_error("unable to open $filepath",E_USER_ERROR);
 				exit;
@@ -73,7 +78,12 @@ class CXML
 		$parsing = false;
 		while(($l = gzgets($this->fp, 80000)) !== FALSE) {
 			if($elementToParse == null) {$content .= $l; continue;}
-			else if($this->header == '') {$this->header = $l; continue;}
+			else if($this->header == '') {$this->header = trim($l); continue;}
+			else if($this->header != '' && strstr($l,"?>")) {
+				$this->header .= " ".trim($l); continue;} // still some xml header stuff 
+			if(!isset($exception)) {
+				$this->header .= PHP_EOL;
+			}
 			$exception = false;
 			if( strstr($l,"<".$elementToParse.">") && strstr($l,"</".$elementToParse.">")) {
 				$exception = true;
